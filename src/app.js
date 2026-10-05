@@ -317,10 +317,13 @@ function render() {
   migrateOldDlg(); applyRead();
   document.body.classList.toggle('noro', S.settings.read === 'none');
   const v = $('#view');
-  const map = {home:vHome, en:vEn, look:vLook, jp:vJp, me:vMe};
+  const map = {home:vHome, en:vEn, look:vLook, jp:vJp, oral:vOral, me:vMe};
   v.innerHTML = (map[UI.tab] || vHome)();
+  if(UI.tab==='oral')window.OralModule.mount();
   document.querySelectorAll('.tab').forEach(t => t.setAttribute('aria-current', t.dataset.v === UI.tab ? 'page' : 'false'));
 }
+
+function vOral(){return '<header class="topbar"><div class="grow"><h1>口語聽力</h1><p class="small muted">一次兩句，從零開始聽懂。</p></div></header>'+ORAL_SHELL;}
 
 /* ---------- 今天 ---------- */
 function vHome() {
@@ -844,7 +847,7 @@ document.addEventListener('click', e => {
   const t = e.target.closest('[data-a]'); if (!t) return;
   const a = t.dataset.a, v = t.dataset.v;
   switch (a) {
-    case 'tab': UI.tab = v; try { sessionStorage.setItem('bnk-tab', v); } catch (x) {} render(); window.scrollTo(0, 0); break;
+    case 'tab': if(UI.tab==='oral')window.OralModule.unmount();if(v==='oral'){lsStop();try{speechSynthesis.cancel();}catch(x){}}UI.tab = v; try { sessionStorage.setItem('bnk-tab', v); } catch (x) {} render(); window.scrollTo(0, 0); break;
     case 'startEn': startEn(enDue().length || newCandidates().length ? 0 : 3); break;
     case 'more': SES.more = true; { const extra = newCandidates(3).filter(id => !S.en[id]).slice(0, 3); if (!extra.length) { toast('字庫裡的字都學過了！'); break; } extra.forEach(id => SES.cards.push({t:'teach', id}, {t:'q', id, isNew:true})); renderSes(); autoSpeakCard(); } break;
     case 'startJp': startJp(); break;
@@ -929,7 +932,7 @@ document.addEventListener('keydown', e => {
   if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('.jline')) { e.preventDefault(); e.target.classList.toggle('peek'); }
 });
 
-$('#tabs').innerHTML = [['home','今天',IC.home,''],['en','英文',IC.en,''],['look','查',IC.look,'look'],['jp','日文',IC.jp,'jp'],['me','我的',IC.me,'']].map(([v,l,ic,c]) => `<button class="tab ${c}" data-a="tab" data-v="${v}">${c==='look'?`<span class="dot">${ic}</span>`:ic}<span>${l}</span></button>`).join('');
+$('#tabs').innerHTML = [['home','今天',IC.home,''],['en','英文',IC.en,''],['look','查',IC.look,'look'],['jp','日文',IC.jp,'jp'],['oral','口語聽力',IC.speak,'jp'],['me','我的',IC.me,'']].map(([v,l,ic,c]) => `<button class="tab ${c}" data-a="tab" data-v="${v}">${c==='look'?`<span class="dot">${ic}</span>`:ic}<span>${l}</span></button>`).join('');
 buildIndex();
 render();
 initCloud();

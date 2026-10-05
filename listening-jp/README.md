@@ -1,8 +1,10 @@
-# 聽懂一句：獨立日文口語聽力
+# 聽懂一句：日文口語聽力分頁
 
-入口：`listening-jp/index.html`。完整單一 HTML，不需 API key、安裝套件或登入。
+主要入口是根目錄 `index.html`，底部「口語聽力」分頁。完整單一 HTML，不需 API key、安裝套件或登入。舊的 `listening-jp/index.html` 保留作相容入口。
 
-這是另做的學習工具。原本根目錄的英文／交通 App、`src/data_tasks.js`、`backup-v1` 全部保留；新工具不讀寫原 App 的 `bnk-state-v1`，也不把新教材排入交通課程。
+與英文、交通日文共用同一個 App 的入口與底部導覽。口語的教材、收藏、語音設定與進度獨立，使用 `kiku-independent-v1`；不修改 `bnk-state-v1` 的英文／交通紀錄。若舊相容入口與新入口在相同 origin 開啟，會沿用相同口語進度；跨網站或不同檔案來源需手動匯出／匯入。
+
+手機直接點「口語聽力」，內部四個功能為「練習／課程／詞義／設定」。同頁面原生呈現，CSS 與 DOM 查詢限定在 `#oral-module`，不使用 iframe；切換到其他分頁會停止口語播放並保存練習步驟。原 `backup-v1` 保留。
 
 ## 學習目標與內容
 
@@ -45,20 +47,24 @@
 | `src/shell.html` | 頁面外框 |
 | `validate.js` | 教材引用、唯一性、讀音、選項檢查 |
 | `build.js` | 生成獨立 `index.html`，不改根目錄 |
+| `build-embedded.js` | 將相同教材產生為原 App 的原生分頁，CSS 限定於口語容器 |
+| `../src/oral.generated.js`、`../src/oral.generated.css` | 自動產物，不直接編輯 |
 
 ```sh
 node listening-jp/validate.js
-node listening-jp/build.js
 node tools/validate.js
 ./build.sh
+# 若也要更新舊的相容入口：
+node listening-jp/build.js
 ```
 
 新增課程時，每課維持兩個新句子，完整定義讀音、拼音、中譯、語體、拆解、兩個不同的干擾選項。改變課程總量時同步更新數量檢查與 UI。詞條的成人／一般分類不能被音訊循環自動混用。
 
 ## 本版驗證
 
-- 原 App 的 `node tools/validate.js` 與 `./build.sh` 通過，原 `index.html` 產物相同。
+- 原交通教材 `node tools/validate.js` 與完整 App `./build.sh` 通過。
 - 新教材檢查、建置與 JavaScript 語法檢查通過。
 - `node listening-jp/test-browser.cjs` 以 Playwright／Chromium 逐一走完 24 課；測試結果落帳不重複、重新整理接續、文字提示、慢速、重播、錯答、語音失敗、詞條分類／搜尋／收藏、備份匯出匯入、兩 App 存檔隔離。
 - 測試用語音事件是模擬的，不能當成實際有聲證明。仍需在真實 iPhone 試聽。
 - 手機 360／390、平板 768、桌面 1200 寬度檢查，另檢視手機深色模式。測試需要外部安裝 Playwright 和 Chromium；工具本身沒有這些依賴。
+- `node tools/test-oral-integration.cjs`：原生分頁、原英文／交通紀錄與樣式保持一致、切換與重新整理接續、停止語音、獨立完成紀錄；320／360／390／430／768 寬度沒有橫向捲動，底部分頁點擊區至少 44px。

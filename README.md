@@ -4,13 +4,13 @@
 - **英文**：看懂 Claude／AI 工具介面上的英文（按鈕、權限、錯誤訊息），重點是相似字比較、貼上查字。
 - **日文**：去日本獨旅時能**把一段對話走完**——先開口，聽懂日本人的自然回答，卡住時知道怎麼問下去。
 
-## 另外的獨立工具：聽懂一句
+## 同 App 的「口語聽力」分頁
 
-[開啟／下載口語聽力單檔](listening-jp/index.html) · [教材與開發說明](listening-jp/README.md)
+[完整 App](index.html) · [口語教材與開發說明](listening-jp/README.md)
 
-從零開始的口語聽力：24 個小課、48 句，以及 36 個補充查詞條目（成人語境詞義另列）。它有獨立的程式、教材、入口和存檔，不讀寫下方交通／英文 App 的進度。GitHub 的檔案頁是原始碼預覽；下載 HTML 後用瀏覽器開啟，或由靜態伺服器提供 `listening-jp/` 目錄。
+下載根目錄的 `index.html`，用瀏覽器打開後，直接點底部「口語聽力」。手機介面內可切換練習、課程、詞義與設定。共有 24 個小課、48 句，以及 36 個補充查詞條目（成人語境詞義另列）。教材、收藏和進度獨立保存；同 App 的英文、交通日文仍使用各自原本的紀錄。
 
-建置這個工具：`node listening-jp/validate.js && node listening-jp/build.js`。以下說明仍是原本的交通／英文 App。
+修改口語來源 `listening-jp/src/` 後，跑 `node listening-jp/validate.js`、`node tools/validate.js`，再 `./build.sh`。建置會自動產生 `src/oral.generated.js`、`src/oral.generated.css` 並包入根目錄 `index.html`，不依賴外部頁面或 iframe。原本的 `listening-jp/index.html` 保留相容入口。以下說明仍是交通／英文教材。
 
 ## 使用者與設計前提
 - 目標：問路、搭公車、確認方向、搭錯車後求助。N4 文法當骨架，逐步加入接近自然速度的旅遊聽力與高頻口語；JLPT 只當參考。

@@ -1,7 +1,11 @@
 (() => {
   'use strict';
   const C = JP_COURSE, KEY = 'kiku-independent-v1', DAY = 86400000;
-  const $ = s => document.querySelector(s);
+  const embedded = !!window.ORAL_EMBEDDED;
+  const scope = () => embedded ? document.getElementById('oral-module') : document;
+  const isMounted = () => !!scope();
+  const $ = s => scope()?.querySelector(embedded ? s.replace('#app', '#oral-app').replace('#toast', '#oral-toast') : s);
+  const $$ = s => scope()?.querySelectorAll(s) || [];
   const esc = s => String(s ?? '').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const plain = s => s.replace(/\{([^|{}]+)\|([^{}]+)\}/g,'$1');
   const kana = s => s.replace(/\{([^|{}]+)\|([^{}]+)\}/g,'$2');
@@ -37,7 +41,7 @@
   try { const saved=localStorage.getItem(KEY); S=saved?cleanState(JSON.parse(saved)):defaultState(); }
   catch(e) { S=defaultState(); storageError='無法讀取儲存的進度。你仍可練習；先前資料未被自動刪除。'; }
   function save() { try {localStorage.setItem(KEY,JSON.stringify(S));storageError='';}catch(e){storageError='這個瀏覽器目前無法保存進度。離開前請到「我的」匯出備份。';} }
-  function notify(message){$('#toast').textContent=message;$('#toast').style.display='block';clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('#toast').style.display='none',3400);}
+  function notify(message){const el=$('#toast');if(!el)return;el.textContent=message;el.style.display='block';clearTimeout(toastTimer);toastTimer=setTimeout(()=>{el.style.display='none';},3400);}
   function shuffled(){const a=[0,1,2];for(let i=2;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
   function newSession(id){return {id,stage:0,recorded:false,result:null,q:Array.from({length:3},()=>({order:shuffled(),pick:null,assisted:false,slow:false,plays:0,heard:false}))};}
   function status(id){const d=S.done[id];return !d?'還沒開始':d.listen?'曾純聽完成':d.support?'曾慢聽／重聽完成':'已看字學過';}
@@ -98,14 +102,15 @@
   function getVoices(){try{return window.speechSynthesis?window.speechSynthesis.getVoices().filter(v=>/^ja([_-]|$)/i.test(v.lang)):[];}catch(e){return [];}}
   function settings(){const voices=getVoices();return `<p class="eyebrow">MAKE IT YOUR PACE</p><h1>照你的步調聽。</h1><div class="settings-grid"><section class="card"><h2>聲音與讀音</h2><div class="field"><label for="reading">文字顯示</label><select id="reading" data-setting="reading">${[['both','振假名＋羅馬拼音'],['kana','只有振假名'],['ro','只有羅馬拼音'],['none','只顯示日文原句']].map(([v,l])=>`<option value="${v}" ${S.settings.reading===v?'selected':''}>${l}</option>`).join('')}</select></div><div class="field"><label for="rate">一般播放速度</label><select id="rate" data-setting="rate">${[[.7,'慢慢來 · 0.70'],[.85,'清楚一點 · 0.85'],[1,'一般速度 · 1.00']].map(([v,l])=>`<option value="${v}" ${S.settings.rate===v?'selected':''}>${l}</option>`).join('')}</select><p>課堂裡仍能隨時按「慢一點」。語音的實際速度依裝置不同。</p></div><div class="field"><label for="voice">日文聲音</label><select id="voice" data-setting="voice"><option value="">裝置預設日文聲音</option>${voices.map(v=>`<option value="${esc(v.voiceURI)}" ${S.settings.voice===v.voiceURI?'selected':''}>${esc(v.name)}</option>`).join('')}</select><p>若暫時没有列出聲音，先按下面的試聽。聲線由你的手機或瀏覽器提供。</p></div><div class="backup-actions">${btn('test-audio','▶ 試聽日文')}${btn('stop','停止')}</div><p class="audio-status" role="status">${esc(audioError)}</p></section><section class="card"><h2>你的學習紀錄</h2><p class="small muted">只記錄這套口語課程，與原本的英文、交通教材分開。換裝置或清除瀏覽器資料前，可以先備份。</p><div class="stat-row"><span class="stat"><strong>${Object.keys(S.done).length}</strong>課看過</span><span class="stat"><strong>${S.stars.length}</strong>個收藏</span></div><div class="backup-actions">${btn('export','匯出進度')}${btn('import','匯入進度')}</div><input type="file" id="import-file" accept="application/json,.json" hidden><p class="small muted">匯入只會取代這套課程的進度，會先讓你確認。</p><details><summary>這套練習怎麼安排？</summary><p>先看兩句的意思，再做兩題單句聽辨，最後聽兩句連在一起。每一輪都可以先休息，下次接續。</p><p>看字、慢聽／重聽、純聽會分開記。純聽完成需要實際播完聲音，且三題都第一次答對；朗讀或收藏不會算成聽力通過。</p><p>答錯的課約 6 小時後可複習；看字或慢聽完成，隔天複習。連續純聽完成後，間隔逐漸延長。</p></details><details><summary>聲音的使用範圍</summary><p>使用裝置合成語音，練習辨認詞句。它不能重現真人的口音、含糊發音、情緒與背景噪音，也不代表已聽懂影片。</p><p>請讓畫面亮著並留在這個頁面。鎖屏或切到別的 App 會停止；回來後按播放繼續。若沒有聲音，可以使用文字練習。</p></details></section></div>`;}
   function render(){
+    if(!isMounted())return;
     const route=(location.hash.slice(1)||'home').split('/')[0];
     const active=['home','course','words','settings'].includes(route)?route:route==='learn'?'course':'home';
-    document.querySelectorAll('.nav a').forEach(a=>{const yes=a.hash==='#'+active;a.classList.toggle('active',yes);if(yes)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');});
+    $$('.nav a').forEach(a=>{const yes=a.hash==='#'+active;a.classList.toggle('active',yes);if(yes)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');});
     const views={home,course,words,settings,learn};$('#app').innerHTML=(storageError?`<div class="storage-alert" role="status">${esc(storageError)}</div>`:'')+(views[route]||home)();
     if(route==='course'&&/^#course\/u[1-8]$/.test(location.hash)) document.getElementById(location.hash.split('/')[1])?.scrollIntoView();
   }
-  function audioStatus(text,error=false){audioError=error?text:'';document.querySelectorAll('.audio-status').forEach(el=>{el.textContent=text;el.classList.toggle('error',error);});document.querySelectorAll('.wave').forEach(el=>el.classList.toggle('playing',audioBusy));}
-  function stopAudio(){speechGen++;audioBusy=false;clearTimeout(speechTimer);speechTimer=null;if(settleSpeech){settleSpeech(false);settleSpeech=null;}try{window.speechSynthesis?.cancel();}catch(e){}document.querySelectorAll('.wave').forEach(el=>el.classList.remove('playing'));}
+  function audioStatus(text,error=false){audioError=error?text:'';$$('.audio-status').forEach(el=>{el.textContent=text;el.classList.toggle('error',error);});$$('.wave').forEach(el=>el.classList.toggle('playing',audioBusy));}
+  function stopAudio(){speechGen++;audioBusy=false;clearTimeout(speechTimer);speechTimer=null;if(settleSpeech){settleSpeech(false);settleSpeech=null;}try{window.speechSynthesis?.cancel();}catch(e){}$$('.wave').forEach(el=>el.classList.remove('playing'));}
   function utter(text,rate,gen){return new Promise(resolve=>{
     if(gen!==speechGen||!window.speechSynthesis||!window.SpeechSynthesisUtterance){resolve(false);return;}
     let finished=false;
@@ -137,6 +142,7 @@
   function advance(){const s=S.session;if(!s||s.stage>=5)return;if(s.stage>=2&&currentQ().pick===null)return;stopAudio();s.stage++;sessionAudioReady=false;if(s.stage===5)complete();save();render();window.scrollTo(0,0);}
   function exportProgress(){const blob=new Blob([JSON.stringify({app:'聽懂一句',...S},null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='kiku-progress-'+new Date().toISOString().slice(0,10)+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);notify('已匯出這套課程的進度。');}
   document.addEventListener('click',e=>{
+    if(!isMounted())return;
     const b=e.target.closest('button[data-action]');if(!b||b.disabled)return;const a=b.dataset.action,id=b.dataset.id;
     if(a==='start')start(id);
     else if(a==='resume'){sessionAudioReady=false;go('#learn');}
@@ -153,8 +159,9 @@
     else if(a==='export')exportProgress();
     else if(a==='import')$('#import-file').click();
   });
-  document.addEventListener('input',e=>{if(e.target.id==='word-search'){query=e.target.value;$('#word-results').innerHTML=wordResults();}});
+  document.addEventListener('input',e=>{if(isMounted()&&e.target.id==='word-search'){query=e.target.value;$('#word-results').innerHTML=wordResults();}});
   document.addEventListener('change',async e=>{
+    if(!isMounted())return;
     const key=e.target.dataset.setting;if(key){S.settings[key]=key==='rate'?Number(e.target.value):e.target.value;save();return;}
     if(e.target.id!=='import-file')return;
     const f=e.target.files[0];e.target.value='';if(!f)return;
@@ -162,9 +169,10 @@
     try{const candidate=cleanState(JSON.parse(await f.text()));if(!confirm(`這份備份有 ${Object.keys(candidate.done).length} 課紀錄。要取代目前「聽懂一句」的進度嗎？原本交通、英文教材不受影響。`))return;stopAudio();S=candidate;save();sessionAudioReady=false;render();notify('進度已匯入。');}
     catch(err){notify('無法讀取：'+err.message);}
   });
-  window.addEventListener('hashchange',()=>{stopAudio();audioError='';sessionAudioReady=false;render();if(!/^#course\/u/.test(location.hash))window.scrollTo(0,0);});
-  document.addEventListener('visibilitychange',()=>{if(document.hidden){stopAudio();audioStatus('已暫停。回來後請按播放。');}});
-  window.addEventListener('pagehide',()=>{stopAudio();save();});
+  window.addEventListener('hashchange',()=>{if(!isMounted())return;stopAudio();audioError='';sessionAudioReady=false;render();if(!/^#course\/u/.test(location.hash))window.scrollTo(0,0);});
+  document.addEventListener('visibilitychange',()=>{if(isMounted()&&document.hidden){stopAudio();audioStatus('已暫停。回來後請按播放。');}});
+  window.addEventListener('pagehide',()=>{if(isMounted())stopAudio();save();});
   window.speechSynthesis?.addEventListener('voiceschanged',()=>{if(location.hash==='#settings'&&!audioBusy)render();});
+  window.OralModule = {mount:()=>render(),unmount:()=>{stopAudio();save();sessionAudioReady=false;}};
   render();
 })();
