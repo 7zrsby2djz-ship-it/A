@@ -69,6 +69,21 @@ async function pushCloud() {
   catch (e) { cloud.state = 'err'; if (e && e.code === 'unavailable') setTimeout(() => scheduleCloud(0), 2500 + Math.random() * 2500); }
   finally { cloud.writing = false; if (cloud.dirty) { cloud.dirty = false; scheduleCloud(400); } refreshSync(); }
 }
+/* 口語聽力分頁的進度：和主進度分開，另存一份到帳號 */
+const oralCloud = {doc:null, timer:0, writing:false, pending:null};
+window.ORAL_CLOUD = {
+  ready: () => !!oralCloud.doc,
+  async get() { if (!oralCloud.doc) return null; const s = await oralCloud.doc.get(); if (!s.exists) return null; try { return JSON.parse(s.data().json); } catch (e) { return null; } },
+  put(obj) {
+    if (!oralCloud.doc) return;
+    oralCloud.pending = JSON.stringify(obj); clearTimeout(oralCloud.timer);
+    oralCloud.timer = setTimeout(async function flush() {
+      if (oralCloud.writing) { oralCloud.timer = setTimeout(flush, 600); return; }
+      const json = oralCloud.pending; if (!json) return; oralCloud.pending = null; oralCloud.writing = true;
+      try { await oralCloud.doc.set({json, updatedAt:Date.now()}); } catch (e) {} finally { oralCloud.writing = false; }
+    }, 1500);
+  },
+};
 async function initCloud() {
   try {
     if (!window.claude || !window.claude.use) return;
@@ -79,6 +94,8 @@ async function initCloud() {
     const db = await window.claude.use('db');
     if (!db) return;
     cloud.doc = db.doc('data/users/' + uid + '/state');
+    oralCloud.doc = db.doc('data/users/' + uid + '/oral');
+    if (window.OralModule && window.OralModule.cloudReady) window.OralModule.cloudReady();
     const snap = await cloud.doc.get();
     let remote = null;
     if (snap.exists) { try { remote = JSON.parse(snap.data().json); } catch (e) {} }
