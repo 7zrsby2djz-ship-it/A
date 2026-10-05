@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#102824">
+  <meta name="description" content="從零開始的日文口語聽力。一次兩句，慢慢聽懂。">
+  <title>聽懂一句｜日文口語練習</title>
+  <style>
+:root{color-scheme:light;--bg:#f5f4ee;--paper:#fffefa;--ink:#18352f;--muted:#64756e;--line:#dce2d9;--green:#17634c;--soft:#e7eee6;--lime:#d7eaa4;--red:#a44832;--redsoft:#fff0e8;--shadow:0 14px 46px #15352909;--radius:22px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC",sans-serif}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);line-height:1.65;-webkit-tap-highlight-color:transparent}a{color:inherit}button,input,select{font:inherit}button,a,input,select,summary{touch-action:manipulation}button{cursor:pointer}button:disabled{cursor:default;opacity:.48}button:focus-visible,a:focus-visible,summary:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #8caa44;outline-offset:4px}button{border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:13px;padding:12px 17px;min-height:48px}button:hover:not(:disabled){border-color:var(--green)}button:active:not(:disabled){transform:translateY(1px)}button.primary{background:var(--green);color:white;border-color:var(--green);font-weight:650}button.soft{background:var(--soft)}button.text{border:0;background:transparent;padding:7px 10px;color:var(--green)}.header{max-width:1080px;margin:auto;padding:26px 28px 20px;display:flex;align-items:center;justify-content:space-between;gap:16px}.brand{display:flex;align-items:center;gap:13px;text-decoration:none;font-size:23px;font-weight:750;letter-spacing:.03em}.brand small{display:block;font-weight:450;font-size:11px;letter-spacing:.13em;color:var(--muted);margin-top:2px}.logo{background:var(--ink);color:var(--lime);width:52px;height:52px;border-radius:17px;display:grid;place-items:center;font-size:16px;letter-spacing:0}.header-note{color:var(--muted);font-size:13px}.nav{display:flex;gap:6px;max-width:1024px;margin:0 auto;border-bottom:1px solid var(--line);padding:0 0 12px}.nav a{text-decoration:none;font-size:14px;min-height:44px;padding:10px 27px;border-radius:11px}.nav a.active{background:var(--ink);color:var(--paper);font-weight:650}#app{max-width:1080px;margin:auto;padding:32px 28px 64px;outline:0;min-height:65vh}h1,h2,h3,p{margin-top:0}h1{font-size:clamp(28px,4.3vw,43px);line-height:1.3;letter-spacing:-.035em;margin-bottom:14px}h2{font-size:23px;line-height:1.4;margin-bottom:13px}h3{font-size:17px;margin-bottom:8px}.eyebrow{font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);font-weight:650;margin-bottom:13px}.muted{color:var(--muted)}.small{font-size:13px}.hero{display:grid;grid-template-columns:1.1fr 1fr;gap:28px;margin-bottom:32px}.intro{padding:20px 14px 0 0}.intro p{max-width:36em;color:var(--muted)}.hero-title span{display:block}.badge{display:inline-block;font-size:11px;font-weight:650;border-radius:100px;padding:4px 10px;background:var(--soft);color:var(--green);letter-spacing:.03em}.badge.warn{background:var(--redsoft);color:var(--red)}.card{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:25px;box-shadow:var(--shadow)}.next-card{background:var(--ink);color:#fafff2;border:0;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden;min-height:255px}.next-card .eyebrow,.next-card .muted{color:#bfd2c0}.next-card button{background:var(--lime);color:#203d2d;border:0;margin-top:17px;font-weight:700;width:100%}.next-card .badge{background:#ffffff17;color:#e1efc5}.next-card h2{font-size:28px;margin:16px 0 5px}.stat-row{display:flex;flex-wrap:wrap;gap:17px;margin:23px 0 0}.stat{font-size:12px;color:var(--muted)}.stat strong{font-size:23px;margin-right:5px;color:var(--ink);font-weight:650}.section-line{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:28px 0 16px}.section-line h2{margin:0;font-size:20px}.route-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.route-card{display:block;text-decoration:none;box-shadow:none;padding:19px;min-height:167px;transition:transform .15s}.route-card:hover{transform:translateY(-3px)}.route-num{font-size:12px;color:var(--green);letter-spacing:.1em}.route-card h3{margin:10px 0 7px}.route-card p{font-size:12px;color:var(--muted);margin:0}.progress-track{height:4px;background:var(--soft);border-radius:10px;margin:15px 0 0;overflow:hidden}.progress-fill{height:100%;background:var(--green)}.note-box{border-left:3px solid var(--green);padding:12px 16px;margin-top:21px;background:var(--soft);font-size:13px;color:var(--muted);border-radius:0 12px 12px 0}.unit{margin:22px 0 32px;scroll-margin-top:15px}.unit-head{display:flex;gap:18px;align-items:baseline;margin-bottom:13px}.unit-head .unit-number{font-size:27px;color:#849a84;font-weight:300}.unit-head h2{margin:0;font-size:20px}.lesson-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.lesson-card{text-align:left;display:flex;flex-direction:column;align-items:flex-start;padding:20px;border-radius:18px;gap:5px;min-height:165px}.lesson-card h3{margin:8px 0 2px}.lesson-card .small{color:var(--muted)}.lesson-card .status{margin-top:auto;padding-top:9px;color:var(--green);font-size:12px}.practice{max-width:720px;margin:0 auto}.practice-top{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:12px}.practice-top p{margin:0;font-size:12px;color:var(--muted)}.steps{display:flex;gap:5px;margin:10px 0 25px}.steps span{height:5px;flex:1;border-radius:9px;background:var(--line)}.steps span.done{background:var(--green)}.steps span.now{background:#a4bb6d}.study-card{padding:30px 32px;min-height:360px}.jp{font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans JP",sans-serif;font-size:clamp(27px,5vw,36px);line-height:2.1;overflow-wrap:anywhere;font-weight:500;margin:18px 0 4px}rt{font-size:.4em;font-weight:450;color:var(--muted)}.jp.hide-reading rt{visibility:hidden}.romaji{font-size:16px;color:var(--muted);margin-bottom:14px;overflow-wrap:anywhere}.meaning{font-size:21px;font-weight:650;margin:8px 0 16px}.audio-buttons{display:flex;flex-wrap:wrap;gap:9px;margin:20px 0 8px}.audio-buttons button{flex:1;white-space:nowrap}.audio-status{min-height:25px;margin:8px 0;font-size:12px;color:var(--muted)}.audio-status.error{color:var(--red)}details{border-top:1px solid var(--line);margin-top:21px;padding-top:13px}summary{cursor:pointer;font-size:14px;color:var(--green);min-height:40px;display:list-item;list-style-position:inside}details p{font-size:14px;color:var(--muted);margin:10px 0}.chunks{display:flex;flex-direction:column;gap:7px;margin:13px 0}.chunk{background:var(--soft);border-radius:10px;padding:9px 12px;font-size:14px}.bottom-actions{display:flex;gap:10px;margin-top:19px}.bottom-actions button{flex:1}.wave{display:flex;justify-content:center;align-items:center;gap:7px;height:85px;margin:10px auto;width:160px}.wave i{display:block;width:7px;background:var(--green);border-radius:9px;height:20px}.wave i:nth-child(2n){height:48px}.wave i:nth-child(3n){height:66px}.wave.playing i{animation:wave 1s ease-in-out infinite alternate}.wave.playing i:nth-child(2n){animation-delay:.3s}@keyframes wave{to{transform:scaleY(.45);opacity:.55}}.listen-prompt{text-align:center;color:var(--muted);font-size:14px;margin-bottom:16px}.choices{display:flex;flex-direction:column;gap:10px;margin-top:22px}.choice{text-align:left;display:flex;gap:13px;align-items:center;padding:15px}.choice .letter{color:var(--muted);background:var(--soft);display:grid;place-items:center;border-radius:7px;width:27px;height:27px;flex-shrink:0;font-size:12px}.choice.correct{background:var(--soft);border:2px solid var(--green);opacity:1}.choice.incorrect{background:var(--redsoft);border:2px solid var(--red);opacity:1}.feedback{background:var(--soft);padding:17px;border-radius:14px;margin-top:17px;font-size:14px}.feedback.wrong{background:var(--redsoft)}.feedback p:last-child{margin-bottom:0}.answer-line{font-size:21px;line-height:2}.dialogue-line{padding:10px 0;border-bottom:1px solid var(--line)}.dialogue-line:last-child{border:0}.speaker{font-size:11px;color:var(--green);letter-spacing:.1em}.dialogue-line .jp{font-size:23px;margin:0}.dialogue-line .romaji{font-size:13px;margin:0}.dialogue-line p{font-size:14px;margin:4px 0}.result-icon{width:65px;height:65px;background:var(--lime);border-radius:50%;display:grid;place-items:center;font-size:28px;margin:0 0 20px;color:#18352f}.result-list{padding:0;list-style:none}.result-list li{padding:14px 0;border-bottom:1px solid var(--line)}.result-list .jp{font-size:24px;margin:0}.word-controls{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0}.search{flex:1;min-width:160px;border:1px solid var(--line);border-radius:13px;padding:13px 16px;background:var(--paper);color:var(--ink);font-size:16px}.filters{display:flex;gap:7px;flex-wrap:wrap;margin:12px 0 20px}.filters button{font-size:13px;padding:8px 15px;min-height:42px;border-radius:100px}.filters button.selected{background:var(--ink);color:var(--paper)}.word-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.word-card{padding:20px}.word-card .jp{font-size:26px;margin:5px 0}.word-card .romaji{font-size:13px;margin:0 0 10px}.word-card h3{font-size:17px;line-height:1.65}.word-card p{font-size:13px;color:var(--muted);margin-bottom:12px}.word-card .word-actions{display:flex;gap:7px;justify-content:space-between}.word-actions button{font-size:12px;padding:8px 12px;min-height:42px}.word-head{display:flex;justify-content:space-between;align-items:center;gap:12px}.adult-info{background:var(--redsoft);border-left-color:var(--red);margin:0 0 20px}.settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}.field{padding:12px 0;border-bottom:1px solid var(--line)}.field label{display:block;font-size:14px;margin-bottom:8px}.field select{display:block;width:100%;border:1px solid var(--line);color:var(--ink);border-radius:9px;background:var(--paper);padding:12px;font-size:16px}.field p{margin:7px 0 0;font-size:12px;color:var(--muted)}.backup-actions{display:flex;flex-wrap:wrap;gap:9px;margin:14px 0}.empty{padding:35px;text-align:center;color:var(--muted)}#toast{position:fixed;bottom:25px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--paper);border-radius:13px;padding:12px 20px;box-shadow:var(--shadow);font-size:14px;max-width:90vw;z-index:20;display:none}footer{text-align:center;color:var(--muted);font-size:11px;padding:12px 16px 25px;letter-spacing:.12em}.storage-alert{border:1px solid var(--red);border-radius:12px;padding:12px;margin-bottom:20px;color:var(--red);font-size:13px}.no-motion *{animation:none!important}.visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
+@media(max-width:760px){.header{padding:20px 20px 17px}.header-note{display:none}.brand{font-size:21px}.logo{width:45px;height:45px;border-radius:14px}.nav{margin:0 20px;justify-content:space-between}.nav a{flex:1;text-align:center;padding:10px 12px}#app{padding:23px 20px 42px}.hero{grid-template-columns:1fr;gap:22px}.intro{padding:0}.intro p{margin-bottom:0}.hero-title span{display:inline}.hero-title span+span::before{content:' '}.stat-row{margin-top:15px}.next-card{min-height:235px;padding:23px}.route-grid{grid-template-columns:1fr 1fr}.route-card{min-height:155px;padding:16px}.lesson-grid{grid-template-columns:1fr}.lesson-card{min-height:0;display:grid;grid-template-columns:1fr auto;gap:3px 9px}.lesson-card h3{grid-column:1;margin:0}.lesson-card .badge{grid-column:2;grid-row:1;font-size:10px}.lesson-card .small{grid-column:1/-1}.lesson-card .status{grid-column:1/-1;padding-top:7px}.unit-head{gap:13px}.study-card{padding:22px 20px;min-height:340px}.word-grid,.settings-grid{grid-template-columns:1fr}.jp{font-size:29px}.practice-top p{max-width:65%;text-align:right}.meaning{font-size:20px}.card{border-radius:19px}.word-card{padding:19px}footer{padding-bottom:calc(22px + env(safe-area-inset-bottom))}}
+@media(prefers-color-scheme:dark){:root{color-scheme:dark;--bg:#111d19;--paper:#192923;--ink:#e5eddf;--muted:#a2b4a5;--line:#35463b;--green:#aed092;--soft:#273d2c;--lime:#d7eaa4;--red:#f6b399;--redsoft:#402d25;--shadow:none}.logo{background:#d7eaa4;color:#21372a}.next-card{background:#294638;color:#eff6e8}.next-card button{background:#d7eaa4;color:#203d2d}.nav a.active,.filters button.selected{background:#d7eaa4;color:#203d2d}button.primary{background:#b6d593;color:#1c3427;border-color:#b6d593}.word-card .badge{background:#314a34}.wave i{background:#b6d593}#toast{background:#d7eaa4;color:#21372a}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+
+</style>
+</head>
+<body>
+  <header class="header">
+    <a class="brand" href="#home" aria-label="聽懂一句，回到今日"><span class="logo" aria-hidden="true">きく</span><span>聽懂一句<small>日文口語・從零開始</small></span></a>
+    <span class="header-note">一點點，也算前進。</span>
+  </header>
+  <nav class="nav" aria-label="主要導覽">
+    <a href="#home">今日</a><a href="#course">課程</a><a href="#words">查詞</a><a href="#settings">我的</a>
+  </nav>
+  <main id="app" tabindex="-1"></main>
+  <div id="toast" role="status" aria-live="polite"></div>
+  <footer>先聽懂一句，再多聽懂一句。</footer>
+  <noscript>這個練習需要啟用 JavaScript。</noscript>
+  <script>
+/* 獨立口語聽力教材。內容是原創一般會話；adult 詞條只有中性詞義，沒有影片或劇情。
+ * 日文漢字用 {漢字|かな}；語音讀取讀音。每課兩句：看懂 → 各聽一次 → 兩句串聽。
+ * choices[0] 是正解，顯示順序由程式打散。請勿把未教的新句當成已熟練的證據。
+ */
+const JP_COURSE = (() => {
+  const phrases = {}, lessons = [], units = [];
+  function U(id, name, goal) { units.push({id, name, goal}); }
+  function P(id, jp, ro, zh, note, parts, wrong, register = '一般口語') {
+    phrases[id] = {id, jp, ro, zh, note, parts, choices:[zh, ...wrong], register}; return id;
+  }
+  function L(id, unit, title, setup, a, b, focus = 1) {
+    lessons.push({id, unit, title, setup, phraseIds:[a,b], dialogue:[{who:'A',id:a},{who:'B',id:b}], focus});
+  }
+  U('u1','開場先聽懂','先把一整串聲音，認成一句熟悉的話。');
+  P('p01','はじめまして。','hajimemashite','初次見面。','這是一整塊招呼語，不必先拆每個音。',['はじめまして｜初次見面'],['好久不見。','我要回去了。'],'禮貌');
+  P('p02','よろしくお{願|ねが}いします。','yoroshiku onegai shimasu','請多指教。','初次見面時是「請多指教」；換個場合也可能是在拜託對方。',['よろしく｜請多關照','お願いします｜拜託您'],['不用客氣。','我聽不懂。'],'禮貌');
+  L('l01','u1','初次見面的兩句話','兩位成年人初次見面，互相打招呼。','p01','p02');
+  P('p03','{名前|なまえ}は？','namae wa?','你叫什麼名字？','完整說法可以是「お名前は何ですか」。口語會省掉後半句，語調上揚。',['名前｜名字','は？｜至於……呢？'],['你幾歲？','你住哪裡？'],'隨意；熟悉場合');
+  P('p04','けんです。','Ken desu','我叫健。','「です」接在名字後。這裡沒有說出「我」，意思依然完整。',['けん｜健（人名）','です｜是'],['我叫悠太。','我還不知道。'],'禮貌');
+  L('l02','u1','先抓住名字','A 問對方怎麼稱呼；健是這堂課的虛構人名。','p03','p04');
+  P('p05','{緊張|きんちょう}してる？','kinchō shiteru?','你在緊張嗎？','している → してる。少掉一個「い」，是日常會話的縮略。',['緊張｜緊張','してる？｜正處於這個狀態嗎？'],['你在生氣嗎？','你在等人嗎？'],'隨意');
+  P('p06','ちょっと{緊張|きんちょう}してます。','chotto kinchō shitemasu','我有一點緊張。','ちょっと 是一點點；してます 是 しています 的口語縮略。',['ちょっと｜有一點','緊張してます｜正在緊張'],['我完全不緊張。','我有一點累。'],'較禮貌的口語');
+  L('l03','u1','一點點是什麼聲音','對方注意到你有點拘謹，確認你的感受。','p05','p06');
+
+  U('u2','簡短自我介紹','辨認在問年齡、來處，還是工作。');
+  P('p07','{何歳|なんさい}ですか？','nan-sai desu ka?','你幾歲？','何歳 的讀音是 なんさい。先聽出「さい」，就能知道與年齡有關。',['何歳｜幾歲','ですか｜禮貌問句'],['現在幾點？','你叫什麼？'],'禮貌');
+  P('p08','{二十四歳|にじゅうよんさい}です。','nijū-yon-sai desu','我二十四歲。','分成 にじゅう（20）＋よん（4）＋さい（歲）。這只是練習人物的年齡。',['二十四｜二十四','歳です｜歲'],['我四十二歲。','我二十歲。'],'禮貌');
+  L('l04','u2','年齡先聽數字','訪談中問一位成年人幾歲。','p07','p08');
+  P('p09','どこから{来|き}たの？','doko kara kita no?','你從哪裡來的？','から 是「從」；句尾 の 用來詢問背景，不是每次都翻成「的」。',['どこから｜從哪裡','来たの？｜來的？'],['你要去哪裡？','你什麼時候走？'],'隨意');
+  P('p10','{台湾|たいわん}から{来|き}ました。','Taiwan kara kimashita','我從台灣來。','先抓地名，再抓 から。整句是在說來處。',['台湾から｜從台灣','来ました｜來了'],['我要去台灣。','我從日本來。'],'禮貌');
+  L('l05','u2','哪裡來的','閒聊時，A 問 B 從哪裡來。','p09','p10');
+  P('p11','{普段|ふだん}、{何|なに}してるの？','fudan, nani shiteru no?','你平常在做什麼？','這裡的背景是談工作；換成聊休閒時，也可能是在問平常的活動。',['普段｜平常','何してるの？｜在做什麼？'],['你今天吃了什麼？','你明天去哪裡？'],'隨意');
+  P('p12','{会社員|かいしゃいん}です。','kaishain desu','我是公司職員。','会社＝公司，員＝人員。整個詞一起記成職業。',['会社員｜公司職員','です｜是'],['我是大學生。','我是廚師。'],'禮貌');
+  L('l06','u2','平常做什麼工作','兩人正在聊職業；這個背景能縮小問題的意思。','p11','p12');
+
+  U('u3','喜好與經驗','抓問題裡的「什麼樣」「喜歡」「第一次」。');
+  P('p13','{休|やす}みの{日|ひ}は{何|なに}してる？','yasumi no hi wa nani shiteru?','你休假時都做什麼？','は 前面是話題：休假的日子。後半句跟「平常做什麼」相同。',['休みの日は｜休假時','何してる？｜做什麼？'],['你哪一天休假？','你現在在哪裡？'],'隨意');
+  P('p14','{映画|えいが}を{見|み}てます。','eiga o mitemasu','我會看電影。','在談休假習慣的背景中，這是在說常做的事，不一定正在看。',['映画を｜電影（受詞）','見てます｜看'],['我會打電動。','我會去跑步。'],'較禮貌的口語');
+  L('l07','u3','休假喜歡做什麼','兩人聊休假習慣。','p13','p14');
+  P('p15','どんな{人|ひと}が{好|す}き？','donna hito ga suki?','你喜歡什麼樣的人？','どんな 問類型；だれ 才是問哪個人。',['どんな人が｜什麼樣的人','好き？｜喜歡？'],['你喜歡哪一部電影？','那個人是誰？'],'隨意');
+  P('p16','{優|やさ}しい{人|ひと}が{好|す}きです。','yasashii hito ga suki desu','我喜歡溫柔的人。','優しい 在形容人時可以指溫柔、體貼、待人好。',['優しい人が｜溫柔的人','好きです｜喜歡'],['我喜歡安靜的地方。','我喜歡有趣的電影。'],'禮貌');
+  L('l08','u3','喜歡哪種類型','一般聊天，談自己欣賞的對象。','p15','p16');
+  P('p17','こういうの、{初|はじ}めて？','kō iu no, hajimete?','這種事，你是第一次嗎？','こういうの＝這一類的事。究竟指什麼，要靠前後文，句子本身沒說。',['こういうの｜這一類的事','初めて？｜第一次嗎？'],['你每天都做這個嗎？','這個已經結束了嗎？'],'隨意');
+  P('p18','{初|はじ}めてです。','hajimete desu','是第一次。','不要和「はじめまして」（初次見面的招呼）混在一起。',['初めて｜第一次','です｜是'],['已經很多次了。','我不記得了。'],'禮貌');
+  L('l09','u3','第一次，還是見面招呼','成年人第一次參加錄音訪談，主持人問經驗。','p17','p18');
+
+  U('u4','聽懂簡短反應','先知道對方是在理解、驚訝，還是關心。');
+  P('p19','そうなんだ。','sō nan da','原來是這樣。','常是聽到新資訊的反應，不等於答應對方提出的要求。',['そう｜那樣','なんだ｜原來如此的反應'],['我答應你的要求。','我完全不同意。'],'隨意');
+  P('p20','そうなんです。','sō nan desu','是啊，就是這樣。','與 そうなんだ 相近；在這段裡是回應對方，確認剛才的說明。',['そう｜那樣','なんです｜說明或確認，較禮貌'],['不是那樣。','請再說一次。'],'禮貌');
+  L('l10','u4','原來如此','B 剛說自己從台灣來。A 表示理解，B 再確認。','p19','p20',0);
+  P('p21','{本当|ほんとう}？','hontō?','真的嗎？','語調上揚常是確認或驚訝；語氣仍要配合上下文。',['本当？｜真的嗎？'],['為什麼？','在哪裡？'],'隨意');
+  P('p22','{本当|ほんとう}だよ。','hontō da yo','是真的啦。','よ 是把資訊告訴對方，這裡加強「真的」。',['本当だ｜是真的','よ｜告知、強調'],['我只是開玩笑。','我也不知道。'],'隨意');
+  L('l11','u4','真的假的','A 對一件趣事感到意外，B 確認是真的。','p21','p22');
+  P('p23','{大丈夫|だいじょうぶ}？','daijōbu?','你還好嗎？','這裡是在關心狀態。也可能問事情是否可行，要看情境。',['大丈夫？｜還好嗎／沒問題嗎？'],['你住哪裡？','你叫什麼？'],'隨意');
+  P('p24','{大丈夫|だいじょうぶ}です。','daijōbu desu','我沒事。','在這個情境是「我沒事」。被問需不需要東西時，同一句也可能是婉拒。',['大丈夫｜沒問題','です｜禮貌語尾'],['我想回家。','我不知道。'],'禮貌');
+  L('l12','u4','同一句，看場合','B 剛輕輕撞到桌角，A 關心 B 是否還好。','p23','p24');
+
+  U('u5','否定與意願','優先辨認拒絕、暫緩，以及「還沒懂」。');
+  P('p25','これでいい？','kore de ii?','這樣可以嗎？','で 在這裡標出目前的做法或選擇；いい 是可以、好。',['これで｜用這個／照這樣','いい？｜可以嗎？'],['這是什麼？','這個要多少錢？'],'隨意');
+  P('p26','それはちょっと……。','sore wa chotto…','那個可能不太方便……。','這裡是省略後半句的婉拒。「ちょっと」不一定只是數量上的一點。',['それは｜那個嘛','ちょっと…｜有點……（委婉保留或拒絕）'],['完全沒問題。','我再多要一點。'],'委婉');
+  L('l13','u5','沒有說不，也可能是拒絕','A 提議更改訪談時間，B 對這個安排有保留。','p25','p26');
+  P('p27','もう{少|すこ}し{話|はな}してもいい？','mō sukoshi hanashite mo ii?','可以再聊一下嗎？','動詞的 て 形＋もいい？是在問可不可以。',['もう少し｜再一點','話してもいい？｜可以說話／聊聊嗎？'],['你剛才說了什麼？','你完全不想聊嗎？'],'隨意');
+  P('p28','{今|いま}はやめておこう。','ima wa yamete okō','現在先不要吧。','やめておこう 表示先不做、暫且作罷。不要當成肯定。',['今は｜現在','やめておこう｜先不要做吧'],['現在就開始吧。','再多聊一點吧。'],'隨意');
+  L('l14','u5','先不要，是暫緩','A 想延長聊天，B 決定現在先停下。','p27','p28');
+  P('p29','わかった？','wakatta?','懂了嗎？','わかる＝懂；わかった 在確認對方是否已理解。',['わかった？｜懂了嗎？'],['累了嗎？','餓了嗎？'],'隨意');
+  P('p30','まだよくわからない。','mada yoku wakaranai','我還不太懂。','まだ＝還；ない＝否定。抓住結尾，不要只聽見「わか」。',['まだ｜還','よくわからない｜不太理解'],['我已經完全懂了。','我不想回答。'],'隨意');
+  L('l15','u5','肯定和否定差在後面','A 解釋了遊戲規則，B 還不清楚。','p29','p30');
+
+  U('u6','請求、程度與位置','把「再一次」「再一點」「稍微休息」聽清楚。');
+  P('p31','もう{一回|いっかい}{言|い}って。','mō ikkai itte','再說一次。','言って 的 っ 有短暫停頓。對陌生人可加 ください。',['もう一回｜再一次','言って｜說'],['不要再說了。','請寫下來。'],'隨意的請求');
+  P('p32','ゆっくり{話|はな}すね。','yukkuri hanasu ne','那我慢慢說。','ゆっくり 可以指慢慢地，也可以指從容地；這裡說的是速度。',['ゆっくり｜慢慢地','話すね｜我說喔'],['那我說快一點。','我不想說。'],'隨意');
+  L('l16','u6','需要再聽一次','B 知道 A 沒聽清楚，準備放慢說話。','p31','p32');
+  P('p33','ここでいい？','koko de ii?','在這裡可以嗎？','ここ＝這裡；これ＝這個。只差一點聲音，指的東西不同。',['ここで｜在這裡','いい？｜可以嗎？'],['現在可以嗎？','這個人可以嗎？'],'隨意');
+  P('p34','もう{少|すこ}し{右|みぎ}。','mō sukoshi migi','再往右一點。','動詞被省略了。只要抓住程度和方向，就能知道怎麼調整。',['もう少し｜再一點','右｜右邊'],['再往左一點。','完全不要動。'],'隨意');
+  L('l17','u6','只有短短幾個字','拍團體照前，A 問站的位置，B 請 A 稍微移動。','p33','p34');
+  P('p35','まだ{続|つづ}ける？','mada tsuzukeru?','還要繼續嗎？','まだ 在問句中搭配繼續，表示「還要」。',['まだ｜還','続ける？｜要繼續嗎？'],['已經結束了嗎？','要重新開始嗎？'],'隨意');
+  P('p36','ちょっと{休|やす}もう。','chotto yasumō','稍微休息一下吧。','休もう 是 休む 的意向形，用來提出一起休息的建議。',['ちょっと｜稍微','休もう｜休息吧'],['趕快繼續吧。','完全不要休息。'],'隨意');
+  L('l18','u6','繼續，還是休息','兩位成年人練習一段時間後，討論要不要繼續。','p35','p36');
+
+  U('u7','口語把聲音縮短了','將短說法對回完整句，先理解再加快。');
+  P('p37','{何|なに}してんの？','nani shiten no?','你在幹嘛？','何しているの → 何してるの → 何してんの。不是三個全新的意思。',['何｜什麼','してんの？｜しているの？的口語縮略'],['你是哪裡人？','你要幾個？'],'很隨意');
+  P('p38','テレビ{見|み}てる。','terebi miteru','我在看電視。','テレビを見ている → テレビ見てる。助詞 を 和 いる 的 い 都可能省略。',['テレビ｜電視','見てる｜正在看'],['我在聽音樂。','我在睡覺。'],'隨意');
+  L('l19','u7','してんの 是什麼','朋友問另一位成年人正在做什麼。','p37','p38');
+  P('p39','{見|み}てないの？','mitenai no?','你還沒看嗎？','見ていない → 見てない。注意 ない，這句在問沒有看的情況。',['見てない｜還沒看／沒有看','の？｜詢問背景'],['你已經看了嗎？','你要給誰看？'],'隨意');
+  P('p40','まだ{見|み}てない。','mada mitenai','我還沒看。','まだ＋否定＝還沒有。跟單純拒絕去看不同。',['まだ｜還','見てない｜沒有看'],['我已經看完了。','我再也不看了。'],'隨意');
+  L('l20','u7','ない 不能漏掉','兩人聊一部新電影，其中一人還沒看過。','p39','p40');
+  P('p41','これ、{食|た}べちゃっていい？','kore, tabechatte ii?','這個，我可以吃掉嗎？','食べてしまって → 食べちゃって。這裡表示把它吃掉，不一定有後悔的意思。',['これ｜這個','食べちゃっていい？｜可以吃掉嗎？'],['這個不能吃嗎？','你已經吃了嗎？'],'隨意');
+  P('p42','いいよ。','ii yo','可以啊。','這裡回應對方的請求。短短一句是否表示允許，仍須看對話。',['いい｜可以','よ｜告知對方'],['不可以。','我不知道。'],'隨意');
+  L('l21','u7','ちゃって 怎麼還原','桌上有點心，A 先問 B 能不能吃。','p41','p42');
+
+  U('u8','靠上下文判斷','同一個字在不同場合，意思可能完全不同。');
+  P('p43','この{映画|えいが}、やばいね。','kono eiga, yabai ne','這部電影太猛了吧。','やばい 可指糟糕、危險，也可表示很厲害。這堂課的後一句提供正面線索。',['この映画｜這部電影','やばいね｜太猛了／不妙（依情境）'],['這部電影還沒上映。','這部電影沒有字幕。'],'俚語');
+  P('p44','すごくよかった。','sugoku yokatta','真的很好看。','よかった 是 いい 的過去式。在談電影時可自然翻成「很好看」。',['すごく｜非常','よかった｜很好（過去式）'],['真的很難看。','我完全沒看懂。'],'一般口語');
+  L('l22','u8','やばい 是好還是壞','兩人剛看完電影；要連 B 的反應一起聽，才能判斷 A 的意思。','p43','p44');
+  P('p45','これ、うまいね。','kore, umai ne','這個真好吃。','うまい 可指好吃，也可指擅長。這裡在吃東西，所以是味道好。',['これ｜這個','うまいね｜真好吃（本情境）'],['這個很便宜。','這個太大了。'],'隨意');
+  P('p46','おいしいね。','oishii ne','很好吃呢。','ね 可以表示和對方分享感受、尋求共鳴。',['おいしい｜好吃','ね｜分享感受'],['很難吃呢。','很危險呢。'],'一般口語');
+  L('l23','u8','うまい 不只一種意思','兩位成年人正在試吃點心。','p45','p46',0);
+  P('p47','もう{行|い}く？','mō iku?','你現在就要走了嗎？','もう 在這裡是「現在就／已經要」；行く 本身是去。這段在問是否離開。',['もう｜現在就／已經','行く？｜要去／要走嗎？'],['你還沒來嗎？','你要再待一下嗎？'],'隨意');
+  P('p48','まだここにいる。','mada koko ni iru','我還會待在這裡。','いる 用在人的存在；這裡回答還留在原處。不要只靠單一字猜整句。',['まだ｜還','ここにいる｜在這裡'],['我現在就回去。','我已經到家了。'],'隨意');
+  L('l24','u8','一句話需要前後文','聚會快結束時，A 問 B 是否要離開。','p47','p48');
+
+  // 補充查詞。這些不是統計頻率排行；adult 詞条為成人語境的字典式辨義。
+  const glossary = [
+    ['俺','おれ','ore','我（較粗獷的自稱）','口語','常見於男性說話；正式場合通常不用。'],
+    ['お前','おまえ','omae','你','粗俗','可用於很熟的關係，也可能無禮或挑釁；不建議拿來稱呼陌生人。'],
+    ['こいつ','こいつ','koitsu','這傢伙／這個東西','粗俗','指人時可能親暱，也可能帶輕蔑，取決於關係和語氣。'],
+    ['やつ','やつ','yatsu','傢伙／那個東西','粗俗','人或物都能指；不是固定等於罵人。'],
+    ['マジ','まじ','maji','真的／認真的','口語','「マジ？」常是「真的嗎？」；正式場合可用 本当。'],
+    ['すげえ','すげえ','sugē','好厲害／非常','粗俗','すごい 的粗獷口語變形；主要先練辨認。'],
+    ['うめえ','うめえ','umē','好吃／很厲害','粗俗','うまい 的粗獷變形。究竟指味道還是技巧，需看上下文。'],
+    ['でかい','でかい','dekai','大','口語','比 大きい 更隨意，可形容各種尺寸。'],
+    ['ちっちゃい','ちっちゃい','chicchai','小小的','口語','小さい 的隨意說法，注意中間促音的停頓。'],
+    ['めっちゃ','めっちゃ','meccha','非常／超級','口語','加強程度；不是所有場合都適合用。'],
+    ['ちょい','ちょい','choi','稍微／一點','口語','ちょっと 的簡短隨意說法。'],
+    ['だめ','だめ','dame','不行／不可以／沒用','意願','在表達不行或拒絕時，不應自行解讀成同意。'],
+    ['待って','まって','matte','等一下','意願','待つ 的 て 形；促音 っ 會讓中間有短暫停頓。'],
+    ['やめて','やめて','yamete','停止／不要再做','意願','やめる 的請求形式；字義是要求停止。'],
+    ['もっと','もっと','motto','更多／再……一點','口語','後面常省略動作，具體要更多什麼得看上下文。'],
+    ['そこ','そこ','soko','那裡','口語','靠近對方的位置，或先前提過的地方；與 ここ（這裡）不同。'],
+    ['痛い','いたい','itai','痛','身體感受','也可比喻令人難堪；若說的是身體，表示疼痛。'],
+    ['気持ちいい','きもちいい','kimochi ii','舒服／感覺很好','身體感受','也能說天氣、按摩、洗澡等，不能單靠這個詞認定性含義。'],
+    ['触る','さわる','sawaru','碰／觸摸','口語','一般動詞，可用於任何物品或身體，性含義需由情境判斷。'],
+    ['脱ぐ','ぬぐ','nugu','脫下（衣物等）','口語','脫鞋、外套等也用這個動詞；不是專指成人場景。'],
+    ['抱く','だく','daku','抱；部分成人語境指發生性關係','成人','多義詞。一般用法可以是抱人或抱動物；不要一律翻成性含義。'],
+    ['セックス','せっくす','sekkusu','性行為','成人','外來語；一般旅遊或初次社交不需要主動使用。'],
+    ['ペニス','ぺにす','penisu','陰莖','成人','解剖名稱，較適合中性或醫療語境。'],
+    ['ちんこ','ちんこ','chinko','陰莖（俗稱）','成人','粗俗說法；主要用來理解詞義，不適合正式場合。'],
+    ['ちんぽ','ちんぽ','chinpo','陰莖（粗俗稱呼）','成人','粗俗程度高；與 ペニス 指涉同一器官但語體不同。'],
+    ['尻','しり','shiri','臀部','身體感受','加 お 成為 お尻，通常較委婉。'],
+    ['ケツ','けつ','ketsu','臀部（粗俗稱呼）','成人','粗獷的口語；和 お尻 的語氣不同。'],
+    ['勃起','ぼっき','bokki','勃起','成人','描述生理狀態的詞；字典或醫療說明可中性使用。'],
+    ['射精','しゃせい','shasei','射精','成人','描述生理現象的詞；與高潮並非完全相同的概念。'],
+    ['イく','いく','iku','在特定成人語境表示達到高潮','成人','與 行く（去）同音。字幕可能寫 イく，但只聽聲音仍需上下文。'],
+    ['コンドーム','こんどーむ','kondōmu','保險套','成人','物品名稱；重點是聽清中間的長音。'],
+    ['ゴム','ごむ','gomu','橡膠；成人語境可指保險套','成人','原意是橡膠，也可指橡皮筋等；不能脫離前後文判斷。'],
+    ['タチ','たち','tachi','男同志性角色用語：插入方','成人','是語境相關的角色稱呼，不表示外表、個性或固定身分。'],
+    ['ネコ','ねこ','neko','男同志性角色用語：接受方','成人','一般日文也指貓；只有特定成人語境才是角色名稱。'],
+    ['リバ','りば','riba','男同志性角色用語：兩種角色皆可','成人','角色偏好可能依人和情境而不同，不是人格分類。'],
+    ['エロい','えろい','eroi','色情的／帶性意味的','成人','也可能用來評價性感或挑逗感，並非正式稱讚用語。'],
+  ].map((x,i)=>({id:'g'+(i+1),word:x[0],kana:x[1],ro:x[2],zh:x[3],category:x[4],note:x[5]}));
+  return {version:1, title:'聽懂一句', units, lessons, phrases, glossary};
+})();
+if (typeof module !== 'undefined') module.exports = JP_COURSE;
+
+(() => {
+  'use strict';
+  const C = JP_COURSE, KEY = 'kiku-independent-v1', DAY = 86400000;
+  const $ = s => document.querySelector(s);
+  const esc = s => String(s ?? '').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const plain = s => s.replace(/\{([^|{}]+)\|([^{}]+)\}/g,'$1');
+  const kana = s => s.replace(/\{([^|{}]+)\|([^{}]+)\}/g,'$2');
+  const ruby = s => esc(s).replace(/\{([^|{}]+)\|([^{}]+)\}/g,'<ruby>$1<rt>$2</rt></ruby>');
+  const findLesson = id => C.lessons.find(l=>l.id===id);
+  const defaultState = () => ({version:1,done:{},stars:[],session:null,settings:{reading:'both',rate:0.85,voice:''}});
+  const finite = n => Number.isFinite(n) && n >= 0;
+  let storageError = '', audioError = '', audioBusy = false, speechGen = 0, settleSpeech = null, speechTimer = null;
+  let dictionaryFilter = 'course', query = '', toastTimer, sessionAudioReady = false;
+  const allWords = () => [...Object.values(C.phrases).map(p=>({...p,word:plain(p.jp),kana:kana(p.jp),category:'課程',type:'phrase'})), ...C.glossary.map(g=>({...g,type:'glossary'}))];
+  const WORDS = allWords(), WORDMAP = Object.fromEntries(WORDS.map(w=>[w.id,w]));
+  function cleanState(raw) {
+    if (!raw || raw.version!==1 || typeof raw.done!=='object' || !raw.done) throw Error('不是這套練習的進度檔');
+    const out=defaultState(), settings=raw.settings||{};
+    if (['both','kana','ro','none'].includes(settings.reading)) out.settings.reading=settings.reading;
+    if ([0.7,0.85,1].includes(settings.rate)) out.settings.rate=settings.rate;
+    if (typeof settings.voice==='string') out.settings.voice=settings.voice.slice(0,250);
+    for (const l of C.lessons) {
+      const d=raw.done[l.id]; if(!d||typeof d!=='object')continue;
+      out.done[l.id]={};
+      for (const k of ['text','support','listen','attempts','last','due','streak']) out.done[l.id][k]=finite(d[k])?d[k]:0;
+    }
+    out.stars=Array.isArray(raw.stars)?[...new Set(raw.stars.filter(id=>typeof id==='string'&&WORDMAP[id]))]:[];
+    const s=raw.session;
+    if(s&&findLesson(s.id)&&Number.isInteger(s.stage)&&s.stage>=0&&s.stage<=5&&Array.isArray(s.q)&&s.q.length===3) {
+      const valid=s.q.every(q=>q&&Array.isArray(q.order)&&q.order.length===3&&[...q.order].sort().join(',')==='0,1,2'&&(q.pick===null||[0,1,2].includes(q.pick)));
+      if(valid) out.session={id:s.id,stage:s.stage,recorded:!!s.recorded,result:['text','support','listen'].includes(s.result)?s.result:null,
+        q:s.q.map(q=>({order:q.order,pick:q.pick,assisted:!!q.assisted,slow:!!q.slow,plays:finite(q.plays)?q.plays:0,heard:!!q.heard}))};
+    }
+    return out;
+  }
+  let S;
+  try { const saved=localStorage.getItem(KEY); S=saved?cleanState(JSON.parse(saved)):defaultState(); }
+  catch(e) { S=defaultState(); storageError='無法讀取儲存的進度。你仍可練習；先前資料未被自動刪除。'; }
+  function save() { try {localStorage.setItem(KEY,JSON.stringify(S));storageError='';}catch(e){storageError='這個瀏覽器目前無法保存進度。離開前請到「我的」匯出備份。';} }
+  function notify(message){$('#toast').textContent=message;$('#toast').style.display='block';clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('#toast').style.display='none',3400);}
+  function shuffled(){const a=[0,1,2];for(let i=2;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+  function newSession(id){return {id,stage:0,recorded:false,result:null,q:Array.from({length:3},()=>({order:shuffled(),pick:null,assisted:false,slow:false,plays:0,heard:false}))};}
+  function status(id){const d=S.done[id];return !d?'還沒開始':d.listen?'曾純聽完成':d.support?'曾慢聽／重聽完成':'已看字學過';}
+  function dueLessons(){return C.lessons.filter(l=>S.done[l.id]&&S.done[l.id].due<=Date.now());}
+  function recommended(){return dueLessons()[0]||C.lessons.find(l=>!S.done[l.id])||C.lessons[0];}
+  function go(hash){stopAudio();if(location.hash===hash)render();else location.hash=hash;}
+  function start(id){if(!findLesson(id))return;S.session=newSession(id);save();sessionAudioReady=false;go('#learn');}
+  const btn=(action,label,extra='')=>`<button data-action="${action}" ${extra}>${label}</button>`;
+  function jpLine(p,small=false){const r=S.settings.reading;return `<div class="jp ${r==='ro'||r==='none'?'hide-reading':''}${small?' answer-line':''}" lang="ja">${ruby(p.jp)}</div>${r==='both'||r==='ro'?`<div class="romaji">${esc(p.ro)}</div>`:''}`;}
+  const listeningSymbol = '<div class="wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>';
+  function audioControls(context){return `<div class="audio-buttons">${btn('audio','▶ '+(context==='dialogue'?'聽兩句對話':'聽這一句'),`class="primary" data-context="${context}"`)}${btn('audio','慢一點',`data-context="${context}" data-slow="true"`)}${btn('stop','停止')}</div><p class="audio-status ${audioError?'error':''}" role="status" aria-live="polite">${esc(audioError||'按播放才會出聲；可以重聽，不用搶答。')}</p>`;}
+  function home(){
+    const unfinished=S.session&&S.session.stage<5, l=unfinished?findLesson(S.session.id):recommended();
+    const due=dueLessons().length, seen=Object.keys(S.done).length, heard=Object.values(S.done).filter(d=>d.listen>0).length;
+    return `<section class="hero"><div class="intro"><p class="eyebrow">START WITH ONE LINE</p><h1 class="hero-title"><span>先聽懂一句。</span><span>慢慢，就接起來了。</span></h1><p>不知道從哪裡開始也沒關係。一次兩句，先看懂，再聽聲音，最後聽一小段對話。</p><div class="stat-row"><span class="stat"><strong>${seen}</strong>課看過</span><span class="stat"><strong>${heard}</strong>課曾純聽完成</span><span class="stat"><strong>${due}</strong>課可複習</span></div></div><div class="card next-card"><div><span class="badge">${unfinished?'接著上次繼續':due?'今天，先把熟悉的找回來':'今天只學兩句'} · 約 2–4 分鐘</span><h2>${esc(l.title)}</h2><p class="muted">${esc(l.setup)}</p></div>${btn(unfinished?'resume':'start',unfinished?'繼續練習 →':due?'複習這兩句 →':'從這裡開始 →',`data-id="${l.id}"`)}</div></section>
+      <div class="section-line"><h2>你的聽力路線</h2><a href="#course" class="small">查看全部 24 課 ↗</a></div><div class="route-grid">${C.units.map((u,i)=>{const ls=C.lessons.filter(l=>l.unit===u.id),n=ls.filter(l=>S.done[l.id]).length;return `<a class="card route-card" href="#course/${u.id}"><span class="route-num">${String(i+1).padStart(2,'0')} / ${n}・3</span><h3>${esc(u.name)}</h3><p>${esc(u.goal)}</p><div class="progress-track"><div class="progress-fill" style="width:${n/3*100}%"></div></div></a>`;}).join('')}</div>
+      <div class="note-box">沒有倒數，也不必一次聽懂。看提示、慢一點、先休息，都是學習的一部分。第一次從第 1 課開始就好。</div>`;
+  }
+  function course(){return `<p class="eyebrow">24 SMALL LESSONS</p><h1>把聽不懂，拆小一點。</h1><p class="muted">每課兩個新句子。先看懂 → 單句聽辨 → 兩句串聽。所有課都能直接選。</p>${C.units.map((u,i)=>`<section class="unit" id="${u.id}"><div class="unit-head"><span class="unit-number">${String(i+1).padStart(2,'0')}</span><div><h2>${esc(u.name)}</h2><span class="small muted">${esc(u.goal)}</span></div></div><div class="lesson-grid">${C.lessons.filter(l=>l.unit===u.id).map(l=>`<button class="lesson-card" data-action="start" data-id="${l.id}"><span class="badge">兩句・約 3 分鐘</span><h3>${esc(l.title)}</h3><span class="small">${esc(l.setup)}</span><span class="status">${status(l.id)} →</span></button>`).join('')}</div></section>`).join('')}`;}
+  function currentQ(){return S.session&&S.session.stage>=2&&S.session.stage<5?S.session.q[S.session.stage-2]:null;}
+  function quizPhrase(l,stage){return C.phrases[l.phraseIds[stage===4?l.focus:stage-2]];}
+  function transcript(l){return l.dialogue.map(line=>{const p=C.phrases[line.id];return `<div class="dialogue-line"><span class="speaker">${line.who}</span>${jpLine(p)}<p>${esc(p.zh)}</p></div>`;}).join('');}
+  function learn(){
+    const s=S.session;if(!s)return `<div class="empty">先選一堂課就能開始。<p><a href="#course">查看課程</a></p></div>`;
+    const l=findLesson(s.id),stage=s.stage;
+    if(stage===5)return result(l);
+    const labels=['先認識第一句','再認識第二句','只聽第一句','再聽第二句','把兩句接起來'];
+    let body;
+    if(stage<2){const p=C.phrases[l.phraseIds[stage]];body=`<span class="badge">${labels[stage]} · ${esc(p.register)}</span>${jpLine(p)}<p class="meaning">${esc(p.zh)}</p>${audioControls('teach')}<div class="note-box">${esc(p.note)}</div><details><summary>看看這句怎麼組成</summary><div class="chunks">${p.parts.map(x=>`<div class="chunk">${esc(x)}</div>`).join('')}</div></details><div class="bottom-actions">${btn('next',stage===0?'知道意思了，下一句 →':'來聽聽看 →','class="primary"')}</div>`;}
+    else {
+      const p=quizPhrase(l,stage),q=currentQ(),dialogue=stage===4,canAnswer=sessionAudioReady||q.assisted||q.pick!==null;
+      body=`<span class="badge">${labels[stage]}</span><h2 style="margin-top:17px">${dialogue?`聽完後，${l.dialogue[l.focus].who} 說的是什麼意思？`:'這句話，是什麼意思？'}</h2>${dialogue?`<p class="small muted">${esc(l.setup)}</p>`:''}${listeningSymbol}${audioControls(dialogue?'dialogue':'quiz')}
+        ${q.assisted||q.pick!==null?`<div class="revealed">${dialogue?transcript(l):jpLine(p)}</div>`:`<div class="listen-prompt">這一回先把文字收起來。</div>`}
+        ${q.pick===null?`<div class="small">${btn('reveal','給我文字提示','class="text"')} ${btn('no-audio','沒有聽到聲音','class="text"')}</div>`:''}
+        <div class="choices">${q.order.map((v,i)=>`<button class="choice ${q.pick!==null?(v===0?'correct':v===q.pick?'incorrect':''):''}" data-action="answer" data-value="${v}" ${q.pick!==null||!canAnswer?'disabled':''}><span class="letter">${String.fromCharCode(65+i)}</span><span>${esc(p.choices[v])}</span></button>`).join('')}</div>
+        ${q.pick===null&&!canAnswer?'<p class="small muted">先播放一次，或用文字提示開始。若裝置無法播放，可以直接看字練習。</p>':''}
+        ${q.pick!==null?`<div class="feedback ${q.pick!==0?'wrong':''}" role="status"><strong>${q.pick===0?'這一句，你認出來了。':'先記住這一小塊就好。'}</strong><p>${esc(p.zh)}</p><p>${esc(p.note)}</p>${q.pick!==0?'<p>已記下這課需要再練，不必急著背熟。</p>':''}</div><div class="bottom-actions">${btn('next',stage===4?'完成這次練習 →':'繼續 →','class="primary"')}</div>`:''}`;
+    }
+    return `<section class="practice"><div class="practice-top">${btn('home','← 先休息','class="text"')}<p>${esc(l.title)} · ${stage+1} / 5</p></div><div class="steps" aria-label="第 ${stage+1} 步，共 5 步">${labels.map((_,i)=>`<span class="${i<stage?'done':i===stage?'now':''}"></span>`).join('')}</div><div class="card study-card">${body}</div><p class="small muted" style="margin-top:17px">${stage<2?'先知道意思，再去聽。不要急著把整句背下來。':'這是剛學過的句子；能聽懂它，還不代表能聽懂所有換句話說的版本。'}</p></section>`;
+  }
+  function complete(){
+    const s=S.session;if(s.recorded)return;
+    const correct=s.q.every(q=>q.pick===0),text=s.q.some(q=>q.assisted||!q.heard);
+    s.result=text||!correct?'text':s.q.some(q=>q.slow||q.plays>1)?'support':'listen';
+    const d=S.done[s.id]||{text:0,support:0,listen:0,attempts:0,last:0,due:0,streak:0};
+    d[s.result]++;d.attempts++;d.last=Date.now();d.streak=s.result==='listen'?Math.min(d.streak+1,5):0;
+    d.due=Date.now()+(s.result==='listen'?[1,1,3,7,14,30][d.streak]:correct?1:0.25)*DAY;
+    S.done[s.id]=d;s.recorded=true;save();
+  }
+  function result(l){const s=S.session,next=C.lessons[C.lessons.indexOf(l)+1],mode=s.result==='listen'?'這次，靠聲音認出來了。':s.result==='support'?'慢慢聽，也有聽懂。':'這次，先把意思學起來。';
+    return `<section class="practice"><div class="card study-card"><div class="result-icon" aria-hidden="true">✓</div><p class="eyebrow">TWO LINES, ONE SMALL STEP</p><h1>${mode}</h1><p class="muted">${s.result==='listen'?'這 3 題都在播放完成後，沒有看文字、沒有重聽而答對。之後還會安排複習。':s.result==='support'?'這 3 題沒有看文字，透過慢速或重聽完成。這也是有效的練習。':'看提示或答錯之後認識這些句子，也算有收穫。這次不記成純聽完成。'}</p><ul class="result-list">${l.phraseIds.map(id=>{const p=C.phrases[id];return `<li>${jpLine(p)}<span>${esc(p.zh)}</span></li>`;}).join('')}</ul><div class="bottom-actions">${btn('home','今天先到這裡','class="primary"')}${btn('start','再聽一次',`data-id="${l.id}"`)}</div>${next?`<div style="margin-top:12px">${btn('start','還有精神？下一課：'+esc(next.title),`class="text" data-id="${next.id}"`)}</div>`:''}<p class="small muted" style="margin-top:18px">進度只存在這個瀏覽器；可到「我的」匯出備份。</p></div></section>`;
+  }
+  function filteredWords(){const term=query.trim().toLocaleLowerCase();return WORDS.filter(w=>{
+    const category=dictionaryFilter==='course'?w.type==='phrase':dictionaryFilter==='adult'?w.category==='成人':dictionaryFilter==='star'?S.stars.includes(w.id):w.type==='glossary'&&w.category!=='成人';
+    return category&&(!term||[w.word,w.kana,w.ro,w.zh,w.note].join(' ').toLocaleLowerCase().includes(term));});}
+  function wordResults(){const rows=filteredWords();return `<p class="small muted">${rows.length} 個${dictionaryFilter==='course'?'句子':'詞條'}${dictionaryFilter==='star'?'・你收藏的內容':''}</p><div class="word-grid">${rows.map(w=>`<article class="card word-card"><div class="word-head"><span class="badge ${w.category==='成人'?'warn':''}">${esc(w.type==='phrase'?w.register:w.category)}</span><span class="small muted">${w.type==='phrase'?'課程句子':'詞義辨識'}</span></div>${w.type==='phrase'?jpLine(w):`<div class="jp" lang="ja"><ruby>${esc(w.word)}<rt>${esc(w.kana)}</rt></ruby></div><div class="romaji">${esc(w.ro)}</div>`}<h3>${esc(w.zh)}</h3><p>${esc(w.note)}</p><div class="word-actions">${btn('word-audio','▶ 聽讀音',`data-id="${w.id}"`)}${btn('star',S.stars.includes(w.id)?'★ 已收藏':'☆ 收藏',`data-id="${w.id}" aria-pressed="${S.stars.includes(w.id)}"`)}</div></article>`).join('')}</div>${!rows.length?'<div class="empty">這個分類還沒有符合的內容。換個字，或切換上面的分類試試。</div>':''}`;}
+  function words(){return `<p class="eyebrow">WORDS IN CONTEXT</p><h1>聽到了，就來查。</h1><p class="muted">用日文、羅馬拼音或中文搜尋。每個詞都有語氣和場合說明。</p><div class="word-controls"><label class="visually-hidden" for="word-search">搜尋目前分類的詞句</label><input class="search" id="word-search" type="search" placeholder="搜尋目前分類，例如：chotto、一點" value="${esc(query)}" autocomplete="off"></div><div class="filters" aria-label="詞彙分類">${[['course','課程句子'],['general','口語與粗俗'],['adult','成人詞義'],['star','我的收藏']].map(([id,label])=>btn('filter',label,`data-value="${id}" class="${dictionaryFilter===id?'selected':''}" aria-pressed="${dictionaryFilter===id}"`)).join('')}</div>${dictionaryFilter==='adult'?'<div class="note-box adult-info">這裡是成人語境的中性詞義說明，用來辨認聽到的字。同音詞與多義詞需要前後文；詞義不等於對方的意願。</div>':''}<div id="word-results">${wordResults()}</div>`;}
+  function getVoices(){try{return window.speechSynthesis?window.speechSynthesis.getVoices().filter(v=>/^ja([_-]|$)/i.test(v.lang)):[];}catch(e){return [];}}
+  function settings(){const voices=getVoices();return `<p class="eyebrow">MAKE IT YOUR PACE</p><h1>照你的步調聽。</h1><div class="settings-grid"><section class="card"><h2>聲音與讀音</h2><div class="field"><label for="reading">文字顯示</label><select id="reading" data-setting="reading">${[['both','振假名＋羅馬拼音'],['kana','只有振假名'],['ro','只有羅馬拼音'],['none','只顯示日文原句']].map(([v,l])=>`<option value="${v}" ${S.settings.reading===v?'selected':''}>${l}</option>`).join('')}</select></div><div class="field"><label for="rate">一般播放速度</label><select id="rate" data-setting="rate">${[[.7,'慢慢來 · 0.70'],[.85,'清楚一點 · 0.85'],[1,'一般速度 · 1.00']].map(([v,l])=>`<option value="${v}" ${S.settings.rate===v?'selected':''}>${l}</option>`).join('')}</select><p>課堂裡仍能隨時按「慢一點」。語音的實際速度依裝置不同。</p></div><div class="field"><label for="voice">日文聲音</label><select id="voice" data-setting="voice"><option value="">裝置預設日文聲音</option>${voices.map(v=>`<option value="${esc(v.voiceURI)}" ${S.settings.voice===v.voiceURI?'selected':''}>${esc(v.name)}</option>`).join('')}</select><p>若暫時没有列出聲音，先按下面的試聽。聲線由你的手機或瀏覽器提供。</p></div><div class="backup-actions">${btn('test-audio','▶ 試聽日文')}${btn('stop','停止')}</div><p class="audio-status" role="status">${esc(audioError)}</p></section><section class="card"><h2>你的學習紀錄</h2><p class="small muted">只記錄這套口語課程，與原本的英文、交通教材分開。換裝置或清除瀏覽器資料前，可以先備份。</p><div class="stat-row"><span class="stat"><strong>${Object.keys(S.done).length}</strong>課看過</span><span class="stat"><strong>${S.stars.length}</strong>個收藏</span></div><div class="backup-actions">${btn('export','匯出進度')}${btn('import','匯入進度')}</div><input type="file" id="import-file" accept="application/json,.json" hidden><p class="small muted">匯入只會取代這套課程的進度，會先讓你確認。</p><details><summary>這套練習怎麼安排？</summary><p>先看兩句的意思，再做兩題單句聽辨，最後聽兩句連在一起。每一輪都可以先休息，下次接續。</p><p>看字、慢聽／重聽、純聽會分開記。純聽完成需要實際播完聲音，且三題都第一次答對；朗讀或收藏不會算成聽力通過。</p><p>答錯的課約 6 小時後可複習；看字或慢聽完成，隔天複習。連續純聽完成後，間隔逐漸延長。</p></details><details><summary>聲音的使用範圍</summary><p>使用裝置合成語音，練習辨認詞句。它不能重現真人的口音、含糊發音、情緒與背景噪音，也不代表已聽懂影片。</p><p>請讓畫面亮著並留在這個頁面。鎖屏或切到別的 App 會停止；回來後按播放繼續。若沒有聲音，可以使用文字練習。</p></details></section></div>`;}
+  function render(){
+    const route=(location.hash.slice(1)||'home').split('/')[0];
+    const active=['home','course','words','settings'].includes(route)?route:route==='learn'?'course':'home';
+    document.querySelectorAll('.nav a').forEach(a=>{const yes=a.hash==='#'+active;a.classList.toggle('active',yes);if(yes)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');});
+    const views={home,course,words,settings,learn};$('#app').innerHTML=(storageError?`<div class="storage-alert" role="status">${esc(storageError)}</div>`:'')+(views[route]||home)();
+    if(route==='course'&&/^#course\/u[1-8]$/.test(location.hash)) document.getElementById(location.hash.split('/')[1])?.scrollIntoView();
+  }
+  function audioStatus(text,error=false){audioError=error?text:'';document.querySelectorAll('.audio-status').forEach(el=>{el.textContent=text;el.classList.toggle('error',error);});document.querySelectorAll('.wave').forEach(el=>el.classList.toggle('playing',audioBusy));}
+  function stopAudio(){speechGen++;audioBusy=false;clearTimeout(speechTimer);speechTimer=null;if(settleSpeech){settleSpeech(false);settleSpeech=null;}try{window.speechSynthesis?.cancel();}catch(e){}document.querySelectorAll('.wave').forEach(el=>el.classList.remove('playing'));}
+  function utter(text,rate,gen){return new Promise(resolve=>{
+    if(gen!==speechGen||!window.speechSynthesis||!window.SpeechSynthesisUtterance){resolve(false);return;}
+    let finished=false;
+    const done=ok=>{if(finished)return;finished=true;clearTimeout(speechTimer);settleSpeech=null;resolve(ok);};
+    settleSpeech=done;
+    const u=new SpeechSynthesisUtterance(text);u.lang='ja-JP';u.rate=rate;
+    const voices=getVoices(),voice=voices.find(v=>v.voiceURI===S.settings.voice)||voices[0];if(voice)u.voice=voice;
+    u.onend=()=>done(gen===speechGen);u.onerror=()=>done(false);
+    speechTimer=setTimeout(()=>{done(false);if(gen===speechGen){try{window.speechSynthesis.cancel();}catch(e){}}},Math.max(14000,text.length*650/rate));
+    try{window.speechSynthesis.resume();window.speechSynthesis.speak(u);}catch(e){done(false);}
+  });}
+  async function play(lines,slow=false,onDone=null){
+    stopAudio();const gen=speechGen;audioBusy=true;audioStatus('播放中……');
+    let ok=true;
+    for(let i=0;i<lines.length;i++) {
+      ok=await utter(lines[i],slow?0.6:S.settings.rate,gen);if(!ok||gen!==speechGen)break;
+      if(i<lines.length-1)await new Promise(resolve=>setTimeout(resolve,550));
+      if(gen!==speechGen){ok=false;break;}
+    }
+    if(gen!==speechGen)return;
+    audioBusy=false;audioStatus(ok?'播放完成。沒聽清楚可以再聽。':'沒有成功播放日文。可以再試，或按「沒有聽到聲音」看字練習。',!ok);
+    if(onDone)onDone(ok);
+  }
+  async function practiceAudio(context,slow){const s=S.session;if(!s)return;const stage=s.stage,l=findLesson(s.id),q=currentQ();
+    const lines=context==='dialogue'?l.dialogue.map(x=>kana(C.phrases[x.id].jp)):[kana(C.phrases[l.phraseIds[stage<2?stage:stage-2]].jp)];
+    if(q&&q.pick===null){q.plays++;if(slow)q.slow=true;save();}
+    await play(lines,slow,ok=>{if(S.session!==s||s.stage!==stage)return;if(q&&q.pick===null){if(ok){q.heard=true;sessionAudioReady=true;}else{q.assisted=true;sessionAudioReady=false;}save();const pos=window.scrollY;render();window.scrollTo(0,pos);audioStatus(ok?'播放完成。選一個你聽到的意思。':audioError,!ok);}});
+  }
+  function advance(){const s=S.session;if(!s||s.stage>=5)return;if(s.stage>=2&&currentQ().pick===null)return;stopAudio();s.stage++;sessionAudioReady=false;if(s.stage===5)complete();save();render();window.scrollTo(0,0);}
+  function exportProgress(){const blob=new Blob([JSON.stringify({app:'聽懂一句',...S},null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='kiku-progress-'+new Date().toISOString().slice(0,10)+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);notify('已匯出這套課程的進度。');}
+  document.addEventListener('click',e=>{
+    const b=e.target.closest('button[data-action]');if(!b||b.disabled)return;const a=b.dataset.action,id=b.dataset.id;
+    if(a==='start')start(id);
+    else if(a==='resume'){sessionAudioReady=false;go('#learn');}
+    else if(a==='home')go('#home');
+    else if(a==='next')advance();
+    else if(a==='audio')practiceAudio(b.dataset.context,b.dataset.slow==='true');
+    else if(a==='stop'){stopAudio();audioStatus('已停止。需要時可以重新播放。');}
+    else if(a==='reveal'||a==='no-audio'){const q=currentQ();if(q&&q.pick===null){stopAudio();q.assisted=true;save();render();if(a==='no-audio')audioStatus('這題改用文字練習，進度會記為看字學過。');}}
+    else if(a==='answer'){const q=currentQ();if(!q||q.pick!==null||(!sessionAudioReady&&!q.assisted))return;stopAudio();q.pick=+b.dataset.value;save();render();}
+    else if(a==='filter'){stopAudio();dictionaryFilter=b.dataset.value;query='';render();}
+    else if(a==='star'){if(!WORDMAP[id])return;S.stars=S.stars.includes(id)?S.stars.filter(x=>x!==id):[...S.stars,id];save();$('#word-results').innerHTML=wordResults();}
+    else if(a==='word-audio'){const w=WORDMAP[id];if(w)play([w.type==='phrase'?kana(w.jp):w.kana],false,ok=>{if(!ok)notify('沒有成功播放。請到「我的」檢查日文聲音。');});}
+    else if(a==='test-audio')play(['こんにちは。ゆっくり、はなします。']);
+    else if(a==='export')exportProgress();
+    else if(a==='import')$('#import-file').click();
+  });
+  document.addEventListener('input',e=>{if(e.target.id==='word-search'){query=e.target.value;$('#word-results').innerHTML=wordResults();}});
+  document.addEventListener('change',async e=>{
+    const key=e.target.dataset.setting;if(key){S.settings[key]=key==='rate'?Number(e.target.value):e.target.value;save();return;}
+    if(e.target.id!=='import-file')return;
+    const f=e.target.files[0];e.target.value='';if(!f)return;
+    if(f.size>1024*1024){notify('檔案太大，請選這套練習匯出的 JSON 進度檔。');return;}
+    try{const candidate=cleanState(JSON.parse(await f.text()));if(!confirm(`這份備份有 ${Object.keys(candidate.done).length} 課紀錄。要取代目前「聽懂一句」的進度嗎？原本交通、英文教材不受影響。`))return;stopAudio();S=candidate;save();sessionAudioReady=false;render();notify('進度已匯入。');}
+    catch(err){notify('無法讀取：'+err.message);}
+  });
+  window.addEventListener('hashchange',()=>{stopAudio();audioError='';sessionAudioReady=false;render();if(!/^#course\/u/.test(location.hash))window.scrollTo(0,0);});
+  document.addEventListener('visibilitychange',()=>{if(document.hidden){stopAudio();audioStatus('已暫停。回來後請按播放。');}});
+  window.addEventListener('pagehide',()=>{stopAudio();save();});
+  window.speechSynthesis?.addEventListener('voiceschanged',()=>{if(location.hash==='#settings'&&!audioBusy)render();});
+  render();
+})();
+
+</script>
+</body>
+</html>
