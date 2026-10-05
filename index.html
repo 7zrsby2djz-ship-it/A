@@ -264,6 +264,56 @@ textarea{min-height:120px;resize:vertical;font-family:var(--f-en)}
 @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}
 @keyframes pop{0%{transform:scale(.6);opacity:0}70%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
 .pop{animation:pop .45s ease-out}
+
+/* ---------- 把對話走完（新版） ---------- */
+.jl{display:flex;flex-direction:column;gap:2px;min-width:0}
+.jl .xro{font-family:var(--f-en);font-size:13px;color:var(--muted);line-height:1.3;display:none}
+.jl .jp{font-family:var(--f-jp);font-size:20px;font-weight:700;line-height:1.9;word-break:break-word}
+.jl .jp.big{font-size:26px}
+.rd-ro .jl .xro,.rd-both .jl .xro{display:block}
+.xro{display:none}
+.rd-ro .xro,.rd-both .xro{display:inline}
+.rd-ro .jl .xro,.rd-both .jl .xro{display:block}
+.rd-ro rt,.rd-none rt{display:none}
+rt{font-size:.5em;font-weight:500;color:var(--muted);font-family:var(--f-body)}
+.ck,.ckb{display:inline}
+.ckb{font:inherit;color:inherit;background:none;border:0;padding:0 1px;border-bottom:2px dotted var(--line);cursor:pointer}
+.ckb:hover{background:var(--jp-soft)}
+.mask{display:inline-block;font-family:var(--f-body);font-size:14px;font-weight:700;color:var(--jp-ink);background:var(--jp-soft);border:1.5px dashed var(--jp);border-radius:8px;padding:0 8px;margin:0 2px;line-height:1.8;vertical-align:middle}
+.board{display:grid;grid-template-columns:1fr;gap:4px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px 12px;font-size:14px}
+.board>div{display:flex;gap:10px;align-items:baseline;min-width:0}
+.board>div>span:last-child{min-width:0;overflow-wrap:anywhere}
+.bk{flex:none;font-size:12px;font-weight:700;color:var(--jp-ink);background:var(--jp-soft);border-radius:6px;padding:1px 6px}
+.point{display:flex;gap:10px;align-items:baseline;background:var(--warn-soft);border-radius:14px;padding:10px 12px;font-size:15px}
+.point .bk{background:var(--surface);color:var(--warn)}
+.newck{display:flex;flex-direction:column;gap:8px;background:var(--surface2);border:1px solid var(--line);border-radius:16px;padding:12px}
+.repair3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.repair3 .rep{min-height:64px;padding:8px 10px}
+.repair3 .rep .jpf{font-size:13.5px;line-height:1.35}
+@media (max-width:380px){.repair3{grid-template-columns:1fr}}
+.qfb{border-radius:12px;padding:10px 12px;font-size:15px}
+.qfb.ok{background:var(--ok-soft)}
+.qfb.no{background:var(--bad-soft)}
+.qfb details{margin-top:6px}
+.fb.mid{background:var(--warn-soft)}
+.fb.mid h3{color:var(--warn)}
+.opt.partial{border-color:var(--warn);background:var(--warn-soft)}
+.opt .jl .jp{font-size:18px;line-height:1.8}
+.fig{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:12px}
+.fig.steps{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.stp{display:flex;flex-direction:column;align-items:center;gap:2px;background:var(--surface2);border:1px solid var(--line);border-radius:12px;padding:8px 10px;min-width:72px;text-align:center;font-size:13px;font-weight:700}
+.stp .g{font-size:22px;line-height:1;color:var(--jp-ink)}
+.fig .arr{color:var(--muted);font-size:20px}
+.lvdots i.tried{background:transparent;box-shadow:inset 0 0 0 2px var(--jp)}
+.lvdots i.tr{background:var(--jp);box-shadow:0 0 0 2px var(--jp-soft)}
+.legend2{display:flex;gap:14px;flex-wrap:wrap}
+.legend2 i{display:inline-block;width:16px;height:8px;border-radius:4px;background:var(--line);margin-right:4px;vertical-align:middle}
+.legend2 i.tried{background:transparent;box-shadow:inset 0 0 0 2px var(--jp)}
+.legend2 i.pass{background:var(--jp)}
+.legend2 i.tr{background:var(--jp);box-shadow:0 0 0 2px var(--jp-soft)}
+.sdots{display:inline-flex;gap:2px;vertical-align:middle}
+.sdots i{width:7px;height:7px;border-radius:50%;background:var(--line)}
+.sdots i.on{background:var(--jp)}
 @media (prefers-reduced-motion: reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 </style>
 <div class="app"><main id="view" aria-live="polite"></main></div>
@@ -633,237 +683,1459 @@ const SCENES = [
     {who:'對方', jp:'日本は好きですか？', ro:'Nihon wa suki desu ka?', zh:'喜歡日本嗎？', task:'回答：我喜歡日本的音樂', ans:[['ongaku','ga','suki']], tray:['ongaku','ga','suki','wo','ramen'], pat:'suki'},
   ]},
 ];
-/* ===== 「把對話走完」：你開口 → 對方自然回答 → 聽懂 → 決定怎麼接 =====
-   Each situation has 5 levels. Each level = one full 2-round script.
-   r = reply: jp / ro / zh / ch (chunks [jp, 意思]) / easy (simpler restatement used when you say ゆっくり) / q (questions)
-   q: {q, o:[correct first, ...], tag, k: chunk index that holds the answer}
-   fu = your follow-up: o:[{jp, ro, zh, ok, why}]  */
-const LV_NAME = ['', '簡單回答', '自然一點', '多一點資訊', '快速口語', '抓重點'];
-const LV_RATE = [0, 0.85, 0.9, 0.95, 1.1, 1.0];
-const TAG = {yes:'結論', dir:'方向・路線', place:'地點', num:'數字・時間', reason:'理由', advice:'建議', extra:'多餘的話', fu:'接話'};
-const REPAIR = {
-  again:{jp:'もう一度お願いします', ro:'Mō ichido onegai shimasu', zh:'請再說一次'},
-  slow:{jp:'ゆっくりお願いします', ro:'Yukkuri onegai shimasu', zh:'請說慢一點'},
+/* ============================================================
+   交通任務教材（把對話走完）
+   ------------------------------------------------------------
+   格式說明（新增情境時照這個寫）：
+   - 句塊 K(id, 日文, 羅馬拼音, 中文, 類別, 補充說明?)
+       日文裡的漢字用 {漢字|かな} 標讀音，App 會顯示成振假名。
+       類別：concl 結論 / neg 否定 / dir 方向 / place 地點 / time 時間 / num 號碼數字
+             cond 條件 / advice 建議 / next 下一步 / reason 理由 / topic 主題 / filler 語氣開場
+             ask 問句 / polite 回應
+   - 一句話 = 句塊 id 的陣列（c），加上整句中文（zh）。日文、拼音由句塊自動組成。
+   - 節點（node）：
+       say  你先開口：intent 要說的意思、skel 骨架、c 參考答案
+       hear 對方回答：c、zh、easy（簡單說法，關鍵資訊必須保留）、q 題目、learn 已確認、todo 下一步、fig 圖卡、point 手勢線索
+       act  你怎麼接：o 選項，g = ok 能繼續 / part 需要補充 / bad 會造成錯誤行動；沒有 next 的選項會讓使用者重選
+       end  結果：res = ok / slow（到了但慢）/ late（走錯後補救）
+   - 題目 Q：o 第一個是正確答案；k = 答案所在句塊；ke = 簡單說法裡對應的句塊（沒有就代表簡單說法不考這題）
+   - 變體 tr:true = 遷移檢查（換了沒聽過的說法），練過同級其他變體後才會出現。
+   - 每一級主要只增加一個面向（axis）。
+   ============================================================ */
+const CK = {};
+function K(id, jp, ro, zh, cat, note) {
+  if (CK[id]) throw new Error('duplicate chunk ' + id);
+  CK[id] = {id, jp, ro, zh, cat, note:note || ''};
+  return id;
+}
+const CAT = {concl:'結論', neg:'否定', dir:'方向', place:'地點', time:'時間', num:'號碼・數字', cond:'條件', advice:'建議', next:'下一步', reason:'理由', topic:'主題', filler:'語氣・開場', ask:'問句', polite:'回應'};
+const CRIT = new Set(['concl', 'neg', 'dir', 'place', 'time', 'num', 'advice', 'next']);
+const SKEL = {
+  iku_ka:{f:'この［車］は［目的地］に行きますか', zh:'這台［車］會到［目的地］嗎？'},
+  ne:{f:'［重點］ですね', zh:'確認：是［重點］對吧？'},
+  mae_ka:{f:'［地標］の前ですか', zh:'在［地標］前面嗎？'},
+  nanban:{f:'何番の［車］ですか／何番線ですか', zh:'是幾號［車］？／幾號月台？'},
+  doko:{f:'［地方］はどこですか', zh:'［地方］在哪裡？'},
+  made:{f:'［目的地］まで何分くらいですか', zh:'到［目的地］大約幾分鐘？'},
+  again:{f:'もう一度お願いします／ゆっくりお願いします', zh:'請再說一次／請說慢一點'},
 };
+const TASKS = [];
+const TASK = {};
+function T(def) { def.v = {1:[], 2:[], 3:[], 4:[], 5:[]}; TASKS.push(def); TASK[def.id] = def; return def; }
+function V(tid, lv, id, meta, nodes) {
+  const n = {}; nodes.forEach(x => { if (n[x.id]) throw new Error('dup node ' + id + x.id); n[x.id] = x; });
+  const v = Object.assign({id, tid, lv, start:nodes[0].id, nodes:n}, meta);
+  TASK[tid].v[lv].push(v);
+  return v;
+}
+const Q = (q, o, k, ke) => ({q, o, k, ke});
+const O = (c, zh, g, why, next, extra) => Object.assign({c, zh, g, why, next}, extra || {});
 
-const DLG = [
-{id:'train', name:'電車・這班對嗎', place:'JR 大阪站・月台', setup:'你要去京都，眼前停著一班電車。',
- me:{jp:'すみません、この電車は京都に行きますか。', ro:'Sumimasen, kono densha wa Kyōto ni ikimasu ka.', zh:'不好意思，這班電車會到京都嗎？'},
- lv:[null,
- {who:'站務員',
-  r1:{jp:'はい、行きます。', ro:'Hai, ikimasu.', zh:'是的，會到。', ch:[['はい','是'],['行きます','會去（會到）']],
-    q:[{q:'這班電車會到京都嗎？', o:['會','不會','會，但要換車'], tag:'yes', k:1}]},
-  fu:{o:[
-    {jp:'京都まで何分くらいですか。', ro:'Kyōto made nanpun kurai desu ka.', zh:'到京都大約幾分鐘？', ok:true, why:'確認了會到，接著問要多久，很自然。'},
-    {jp:'京都はどこですか。', ro:'Kyōto wa doko desu ka.', zh:'京都在哪裡？', ok:false, why:'他已經說會到京都了，問「京都在哪裡」對方會聽不懂你想知道什麼。'},
-    {jp:'この電車をください。', ro:'Kono densha o kudasai.', zh:'請給我這班電車。', ok:false, why:'ください 是買東西、要東西用的。電車不能「給你」。'}]},
-  r2:{jp:'30分くらいです。', ro:'Sanjuppun kurai desu.', zh:'大約 30 分鐘。', ch:[['30分','30 分鐘'],['くらい','大約'],['です','是']],
-    q:[{q:'到京都大約要多久？', o:['30 分鐘','13 分鐘','3 分鐘'], tag:'num', k:0}]},
-  end:'你搭上這班車，大約 30 分鐘到京都。'},
- {who:'站務員',
-  r1:{jp:'はい、行きますよ。京都は四つ目です。', ro:'Hai, ikimasu yo. Kyōto wa yottsu-me desu.', zh:'會喔。京都是第四站。',
-    ch:[['はい、行きますよ','會喔（よ＝告訴你一件你不知道的事）'],['京都は','京都呢'],['四つ目です','是第四個（第四站）']],
-    q:[{q:'這班電車會到京都嗎？', o:['會','不會','不知道'], tag:'yes', k:0},{q:'京都是第幾站？', o:['第 4 站','第 2 站','第 8 站'], tag:'num', k:2}]},
-  fu:{o:[
-    {jp:'四つ目ですね。ありがとうございます。', ro:'Yottsu-me desu ne. Arigatō gozaimasu.', zh:'第四站對吧，謝謝。', ok:true, why:'把聽到的重點重複一次＋ね，是最好用的確認方法。'},
-    {jp:'京都に行きますか。', ro:'Kyōto ni ikimasu ka.', zh:'會到京都嗎？', ok:false, why:'他剛剛已經回答了，再問一次同樣的問題，對方會以為你沒聽懂。'},
-    {jp:'四つですか。いくらですか。', ro:'Yottsu desu ka. Ikura desu ka.', zh:'四個嗎？多少錢？', ok:false, why:'四つ目 是「第四個」，不是「四個東西」；也還沒到問價錢的時候。'}]},
-  r2:{jp:'はい、そうです。降りる時は、アナウンスがありますよ。', ro:'Hai, sō desu. Oriru toki wa, anaunsu ga arimasu yo.', zh:'對，沒錯。要下車時會有廣播喔。',
-    ch:[['はい、そうです','對，沒錯'],['降りる時は','下車的時候'],['アナウンスがありますよ','會有廣播喔']],
-    q:[{q:'他最後多告訴你什麼？', o:['下車時會有廣播','要先買新的票','到下一站要換車'], tag:'extra', k:2}]},
-  end:'你搭上了。數到第四站就是京都，車上也會廣播。'},
- {who:'站務員',
-  r1:{jp:'はい、行きます。でも、これは各駅停車なので、ちょっと時間がかかりますよ。', ro:'Hai, ikimasu. Demo, kore wa kakueki-teisha na node, chotto jikan ga kakarimasu yo.', zh:'會到。不過這班每站都停，會花一點時間喔。',
-    ch:[['はい、行きます','會到'],['でも','不過（後面通常才是重點）'],['これは各駅停車なので','因為這班每站都停（なので＝因為）'],['ちょっと時間がかかりますよ','會花一點時間喔']],
-    q:[{q:'這班會到京都嗎？', o:['會，但比較慢','不會','會，而且最快'], tag:'yes', k:1},{q:'為什麼會慢？', o:['每一站都停','路上在施工','要在中途換車'], tag:'reason', k:2}]},
-  fu:{o:[
-    {jp:'速い電車はありますか。', ro:'Hayai densha wa arimasu ka.', zh:'有比較快的車嗎？', ok:true, why:'聽懂「這班慢」，接著問有沒有快的，對話就往下走了。'},
-    {jp:'時間はありますか。', ro:'Jikan wa arimasu ka.', zh:'你有時間嗎？', ok:false, why:'時間がかかる 是「花時間」。時間はありますか 是問對方有沒有空。'},
-    {jp:'各駅停車はどこですか。', ro:'Kakueki-teisha wa doko desu ka.', zh:'每站停的車在哪裡？', ok:false, why:'你眼前這班就是各駅停車，不用再找它。'}]},
-  r2:{jp:'快速がありますよ。隣の5番線から、10分後に出ます。', ro:'Kaisoku ga arimasu yo. Tonari no go-bansen kara, juppun-go ni demasu.', zh:'有快速車喔。從隔壁的 5 號月台，10 分鐘後發車。',
-    ch:[['快速がありますよ','有快速車喔'],['隣の5番線から','從隔壁的 5 號月台（番線＝月台號碼）'],['10分後に出ます','10 分鐘後發車']],
-    q:[{q:'快速車在幾號月台？', o:['5 號','9 號','10 號'], tag:'num', k:1},{q:'幾分鐘後發車？', o:['10 分鐘後','5 分鐘後','15 分鐘後'], tag:'num', k:2}]},
-  end:'你走到隔壁 5 號月台，搭 10 分鐘後的快速。'},
- {who:'站務員',
-  r1:{jp:'あ、京都ですか？これ各駅なんで、次の快速のほうが早いですよ。', ro:'A, Kyōto desu ka? Kore kakueki nan de, tsugi no kaisoku no hō ga hayai desu yo.', zh:'啊，京都嗎？這班是每站停的，下一班快速比較快喔。',
-    easy:{jp:'この電車は遅いです。次の快速に乗ってください。', ro:'Kono densha wa osoi desu. Tsugi no kaisoku ni notte kudasai.', zh:'這班車很慢。請搭下一班快速。'},
-    ch:[['あ、京都ですか？','啊，京都嗎？（重複你的目的地＝他在確認）'],['これ各駅なんで','這班每站停，所以…（なんで＝なので 的口語，不是「為什麼」）'],['次の快速のほうが','下一班快速比較…（〜のほうが＝比較）'],['早いですよ','快喔']],
-    q:[{q:'他建議你怎麼做？', o:['等下一班快速','就搭這班','去別的車站'], tag:'advice', k:2},{q:'這班車怎麼了？', o:['每站停，比較慢','不會到京都','已經客滿'], tag:'reason', k:1}]},
-  fu:{o:[
-    {jp:'次の快速は何番線ですか。', ro:'Tsugi no kaisoku wa nan-bansen desu ka.', zh:'下一班快速在幾號月台？', ok:true, why:'知道要換快速，下一個要知道的就是在哪裡搭。'},
-    {jp:'快速はいくらですか。', ro:'Kaisoku wa ikura desu ka.', zh:'快速要多少錢？', ok:false, why:'JR 的快速通常不用加錢。現在最要緊的是在哪裡搭。'},
-    {jp:'各駅はどこですか。', ro:'Kakueki wa doko desu ka.', zh:'每站停的在哪裡？', ok:false, why:'他是叫你「不要搭」各駅，不是叫你去找它。'}]},
-  r2:{jp:'同じホームです。この電車が出たら、すぐ来ますよ。', ro:'Onaji hōmu desu. Kono densha ga detara, sugu kimasu yo.', zh:'同一個月台。這班車開走之後，馬上就來了。',
-    ch:[['同じホームです','同一個月台'],['この電車が出たら','這班車開走之後（〜たら＝之後）'],['すぐ来ますよ','馬上就來喔']],
-    q:[{q:'快速在哪裡搭？', o:['同一個月台','對面的月台','樓下的月台'], tag:'place', k:0},{q:'快速什麼時候來？', o:['這班開走後馬上來','30 分鐘後','1 小時後'], tag:'num', k:1}]},
-  end:'你留在同一個月台，等這班開走，搭接著來的快速。'},
- {who:'站務員',
-  r1:{jp:'京都でしたら、次の快速に乗ったほうが早いですよ。これは各駅停車なので、京都まで1時間近くかかっちゃいます。快速は5番線から、10時20分発です。', ro:'Kyōto deshitara, tsugi no kaisoku ni notta hō ga hayai desu yo. Kore wa kakueki-teisha na node, Kyōto made ichi-jikan chikaku kakatchaimasu. Kaisoku wa go-bansen kara, jū-ji nijuppun hatsu desu.', zh:'如果是去京都，搭下一班快速比較快喔。這班每站停，到京都要將近一小時。快速是 5 號月台，10 點 20 分發車。',
-    easy:{jp:'快速に乗ってください。5番線です。10時20分です。', ro:'Kaisoku ni notte kudasai. Go-bansen desu. Jū-ji nijuppun desu.', zh:'請搭快速。5 號月台。10 點 20 分。'},
-    ch:[['京都でしたら','如果是京都的話（でしたら＝如果是）'],['次の快速に乗ったほうが早いですよ','搭下一班快速比較快（〜たほうが＝…比較好）'],['これは各駅停車なので','因為這班每站停'],['京都まで1時間近くかかっちゃいます','到京都要將近一小時（〜ちゃう＝口語，帶「可惜」的語氣）'],['快速は5番線から','快速從 5 號月台'],['10時20分発です','10:20 發車（〜発＝幾點出發）']],
-    q:[{q:'你該搭眼前這班嗎？', o:['不要，改搭快速','要，搭這班','不要，去別的車站'], tag:'advice', k:1},{q:'快速在幾號月台？', o:['5 號','2 號','10 號'], tag:'num', k:4},{q:'快速幾點發車？', o:['10:20','10:02','12:20'], tag:'num', k:5}]},
-  fu:{o:[
-    {jp:'5番線の10時20分ですね。', ro:'Go-bansen no jū-ji nijuppun desu ne.', zh:'5 號月台的 10 點 20 分，對吧？', ok:true, why:'長回答裡只挑「你要行動的資訊」確認一次，最實用。'},
-    {jp:'1時間ですか。ありがとうございます。', ro:'Ichi-jikan desu ka. Arigatō gozaimasu.', zh:'一小時嗎？謝謝。', ok:false, why:'一小時是「這班慢車」要花的時間，不是你接下來要做的事。'},
-    {jp:'京都でしたら？', ro:'Kyōto deshitara?', zh:'如果是京都的話？', ok:false, why:'でしたら 只是開場的「如果是…」，重複它沒有意義。'}]},
-  r2:{jp:'はい、そうです。階段を使って、向かいのホームに行ってください。', ro:'Hai, sō desu. Kaidan o tsukatte, mukai no hōmu ni itte kudasai.', zh:'對。請走樓梯到對面的月台。',
-    ch:[['はい、そうです','對'],['階段を使って','走樓梯（使って＝使用）'],['向かいのホームに行ってください','請到對面的月台']],
-    q:[{q:'5 號月台怎麼去？', o:['走樓梯到對面月台','就在這個月台','搭電梯到 1 樓'], tag:'dir', k:2}]},
-  end:'你走樓梯到對面的 5 號月台，搭 10:20 的快速，比原本快很多。'},
- ]},
+/* ---------- 共用句塊 ---------- */
+K('sumimasen', 'すみません、', 'sumimasen', '不好意思', 'polite');
+K('arigatou', 'ありがとうございます。', 'arigatō gozaimasu', '謝謝', 'polite');
+K('hai', 'はい、', 'hai', '是', 'concl');
+K('iie', 'いいえ、', 'iie', '不', 'neg');
+K('ikimasu', '{行|い}きます。', 'ikimasu', '會去（會到）', 'concl');
+K('ikimasu_yo', '{行|い}きますよ。', 'ikimasu yo', '會去喔（よ＝告訴你新資訊）', 'concl');
+K('ikimasuka', '{行|い}きますか。', 'ikimasu ka', '會去嗎？', 'ask');
+K('hai_sou', 'はい、そうです。', 'hai, sō desu', '對，沒錯', 'concl');
+K('mouichido', 'もう{一度|いちど}お{願|ねが}いします。', 'mō ichido onegai shimasu', '請再說一次', 'ask');
+K('yukkuri', 'ゆっくりお{願|ねが}いします。', 'yukkuri onegai shimasu', '請說慢一點', 'ask');
+K('jaa_norimasu', 'じゃあ、{乗|の}ります。', 'jā, norimasu', '那我上車', 'ask');
+K('kore_ni_norimasu', 'これに{乗|の}ります。', 'kore ni norimasu', '我搭這班', 'ask');
+K('sousou', 'そうそう。', 'sō sō', '對對', 'concl');
 
-{id:'bus', name:'巴士・方向對嗎', place:'京都・巴士站', setup:'你要去金閣寺。站牌前剛好停著一台巴士。',
- me:{jp:'すみません、このバスは金閣寺に行きますか。', ro:'Sumimasen, kono basu wa Kinkakuji ni ikimasu ka.', zh:'不好意思，這台巴士會到金閣寺嗎？'},
- lv:[null,
- {who:'司機',
-  r1:{jp:'いいえ、行きません。', ro:'Iie, ikimasen.', zh:'不，不會到。', ch:[['いいえ','不'],['行きません','不會去']],
-    q:[{q:'這台會到金閣寺嗎？', o:['不會','會','會，但要換車'], tag:'yes', k:1}]},
-  fu:{o:[
-    {jp:'金閣寺に行くバスはどこですか。', ro:'Kinkakuji ni iku basu wa doko desu ka.', zh:'去金閣寺的巴士在哪裡？', ok:true, why:'這台不到，就問到的那台在哪裡。'},
-    {jp:'じゃあ、乗ります。', ro:'Jā, norimasu.', zh:'那我上車了。', ok:false, why:'他說不會到，上車就坐錯了。'},
-    {jp:'金閣寺は好きですか。', ro:'Kinkakuji wa suki desu ka.', zh:'你喜歡金閣寺嗎？', ok:false, why:'這是在聊天，不是在問路。'}]},
-  r2:{jp:'向こうのバス停です。', ro:'Mukō no basutei desu.', zh:'在對面的公車站。', ch:[['向こうの','對面的（向こう＝另一邊）'],['バス停です','公車站']],
-    q:[{q:'去金閣寺的巴士在哪裡搭？', o:['對面的公車站','這個公車站','車站裡面'], tag:'place', k:0}]},
-  end:'你走到對面的公車站。方向對了！'},
- {who:'司機',
-  r1:{jp:'いいえ、これは反対方向です。向こう側から乗ってください。', ro:'Iie, kore wa hantai-hōkō desu. Mukō-gawa kara notte kudasai.', zh:'不，這台是反方向。請從對面那一側搭。',
-    ch:[['いいえ','不'],['これは反対方向です','這台是反方向（反対＝相反）'],['向こう側から','從對面那一側'],['乗ってください','請搭乘']],
-    q:[{q:'這台車怎麼了？', o:['方向相反','已經客滿','今天停駛'], tag:'dir', k:1},{q:'你該去哪裡搭？', o:['對面那一側','同一站等下一班','車站裡面'], tag:'place', k:2}]},
-  fu:{o:[
-    {jp:'何番のバスですか。', ro:'Nan-ban no basu desu ka.', zh:'是幾號巴士？', ok:true, why:'對面會停很多台，知道號碼才不會又搭錯。'},
-    {jp:'反対ですか。じゃあ、乗ります。', ro:'Hantai desu ka. Jā, norimasu.', zh:'反方向嗎？那我上車了。', ok:false, why:'知道是反方向還上車，就會越坐越遠。'},
-    {jp:'いくらですか。', ro:'Ikura desu ka.', zh:'多少錢？', ok:false, why:'先確認要搭幾號，價錢之後再問。'}]},
-  r2:{jp:'205番か12番ですね。', ro:'Nihyaku-go-ban ka jūni-ban desu ne.', zh:'205 號或 12 號喔。', ch:[['205番か','205 號或…（か＝或）'],['12番ですね','12 號喔']],
-    q:[{q:'要搭幾號？', o:['205 或 12','25 或 102','2 或 5'], tag:'num', k:0}]},
-  end:'你過馬路到對面，等 205 或 12 號巴士。'},
- {who:'司機',
-  r1:{jp:'あ、これは逆方向ですね。金閣寺なら、道を渡って、向こうのバス停から乗ってください。205番です。', ro:'A, kore wa gyaku-hōkō desu ne. Kinkakuji nara, michi o watatte, mukō no basutei kara notte kudasai. Nihyaku-go-ban desu.', zh:'啊，這台是反方向喔。去金閣寺的話，請過馬路，從對面的公車站搭。205 號。',
-    ch:[['あ、これは逆方向ですね','啊，這台是反方向（逆＝相反）'],['金閣寺なら','去金閣寺的話（なら＝如果是）'],['道を渡って','過馬路（渡る＝橫越）'],['向こうのバス停から乗ってください','請從對面的公車站搭'],['205番です','205 號']],
-    q:[{q:'這台方向對嗎？', o:['反方向','方向對','他沒說'], tag:'dir', k:0},{q:'你要先做什麼？', o:['過馬路','上這台車','走回車站'], tag:'dir', k:2},{q:'要搭幾號？', o:['205','25','250'], tag:'num', k:4}]},
-  fu:{o:[
-    {jp:'道を渡って、205番ですね。', ro:'Michi o watatte, nihyaku-go-ban desu ne.', zh:'過馬路，205 號，對吧？', ok:true, why:'把「要做的事＋號碼」確認一次，就不會搭錯。'},
-    {jp:'この道はどこですか。', ro:'Kono michi wa doko desu ka.', zh:'這條路在哪裡？', ok:false, why:'道を渡って 是「過馬路」，不是要你去找一條路。'},
-    {jp:'逆方向に乗ります。', ro:'Gyaku-hōkō ni norimasu.', zh:'我要搭反方向的。', ok:false, why:'逆方向 是他告訴你「這台不對」，不是叫你搭它。'}]},
-  r2:{jp:'そうそう。降りる時に、230円払ってくださいね。', ro:'Sō sō. Oriru toki ni, nihyaku-sanjū-en haratte kudasai ne.', zh:'對對。下車時請付 230 圓喔。',
-    ch:[['そうそう','對對（口語的「沒錯」）'],['降りる時に','下車的時候'],['230円払ってくださいね','請付 230 圓喔']],
-    q:[{q:'什麼時候付錢？付多少？', o:['下車時付 230 圓','上車時付 230 圓','下車時付 320 圓'], tag:'num', k:2}]},
-  end:'你過馬路搭 205 號，下車時付 230 圓。'},
- {who:'路人（年輕人）',
-  r1:{jp:'え、金閣寺？これ逆っすよ。あっちっす、あっち。道渡ったとこのバス停。', ro:'E, Kinkakuji? Kore gyaku ssu yo. Atchi ssu, atchi. Michi watatta toko no basutei.', zh:'欸，金閣寺？這台是反的啦。那邊、那邊。過了馬路那裡的公車站。',
-    easy:{jp:'このバスは反対です。道を渡って、向こうのバス停です。', ro:'Kono basu wa hantai desu. Michi o watatte, mukō no basutei desu.', zh:'這台巴士是反方向。過馬路，在對面的公車站。'},
-    ch:[['え、金閣寺？','欸，金閣寺？（重複你的目的地＝在確認）'],['これ逆っすよ','這台是反的啦（っす＝です 的年輕人說法）'],['あっちっす、あっち','那邊、那邊（あっち＝あちら 的口語）'],['道渡ったとこの','過了馬路那裡的（とこ＝ところ）'],['バス停','公車站']],
-    q:[{q:'結論是？', o:['這台方向相反','這台會到','金閣寺今天沒開'], tag:'dir', k:1},{q:'他叫你去哪？', o:['過馬路後的公車站','走回車站','就在這裡等'], tag:'place', k:3}]},
-  fu:{o:[
-    {jp:'すみません、何番のバスに乗ればいいですか。', ro:'Sumimasen, nan-ban no basu ni noreba ii desu ka.', zh:'請問我該搭幾號巴士？', ok:true, why:'對方講得很快，你用自己會的禮貌說法問下一步就好，不用學他的口氣。'},
-    {jp:'逆ですか。じゃあ、このバスで大丈夫ですね。', ro:'Gyaku desu ka. Jā, kono basu de daijōbu desu ne.', zh:'反的嗎？那這台就沒問題吧。', ok:false, why:'逆＝相反。他是說這台「不行」。'},
-    {jp:'道はどこですか。', ro:'Michi wa doko desu ka.', zh:'路在哪裡？', ok:false, why:'道渡った 是「過了馬路」，路就在你面前。'}]},
-  r2:{jp:'えーと、205か、12かな。どっちでも行けますよ。', ro:'Ēto, nihyaku-go ka, jūni ka na. Dotchi demo ikemasu yo.', zh:'嗯…205 或 12 吧。哪一台都可以到喔。',
-    ch:[['えーと','嗯…（在想的聲音，不用理它）'],['205か、12かな','205 或 12 吧（かな＝…吧，不太確定的語氣）'],['どっちでも行けますよ','哪一台都能到喔']],
-    q:[{q:'要搭哪一號？', o:['205 或 12 都可以','只有 205','只有 12'], tag:'num', k:2}]},
-  end:'你過馬路，205 或 12 號哪台先來就搭哪台。'},
- {who:'排隊的阿姨',
-  r1:{jp:'金閣寺ですか？このバスも行くことは行くんですけど、すごく遠回りなんですよ。道の向こうから205番に乗ったほうが、20分くらい早く着きます。', ro:'Kinkakuji desu ka? Kono basu mo iku koto wa iku n desu kedo, sugoku tōmawari nan desu yo. Michi no mukō kara nihyaku-go-ban ni notta hō ga, nijuppun kurai hayaku tsukimasu.', zh:'金閣寺嗎？這台到是會到，可是繞很遠的路喔。從馬路對面搭 205 號，大概會早 20 分鐘到。',
-    easy:{jp:'このバスは遅いです。向こうで205番に乗ってください。', ro:'Kono basu wa osoi desu. Mukō de nihyaku-go-ban ni notte kudasai.', zh:'這台巴士很慢。請到對面搭 205 號。'},
-    ch:[['金閣寺ですか？','金閣寺嗎？（確認你的目的地）'],['このバスも行くことは行くんですけど','這台「到是會到」，但是…（〜ことは〜けど＝雖然是…但）'],['すごく遠回りなんですよ','繞很遠的路（遠回り＝繞遠路）'],['道の向こうから205番に乗ったほうが','從馬路對面搭 205 號的話（〜たほうが＝比較好）'],['20分くらい早く着きます','大約早 20 分鐘到']],
-    q:[{q:'這台會到金閣寺嗎？', o:['會，但繞很遠','不會','會，而且最快'], tag:'yes', k:1},{q:'她建議你怎麼做？', o:['到對面搭 205','就搭這台','搭計程車'], tag:'advice', k:3},{q:'可以早多少？', o:['大約 20 分鐘','大約 2 分鐘','大約 2 小時'], tag:'num', k:4}]},
-  fu:{o:[
-    {jp:'向こうの205番ですね。ありがとうございます。', ro:'Mukō no nihyaku-go-ban desu ne. Arigatō gozaimasu.', zh:'對面的 205 號對吧，謝謝。', ok:true, why:'聽到「行く」不要馬上上車。這題的重點是後面那句建議。'},
-    {jp:'行きますね。じゃあ、乗ります。', ro:'Ikimasu ne. Jā, norimasu.', zh:'會到對吧，那我上車。', ok:false, why:'會到，但多花 20 分鐘。けど（但是）後面才是重點。'},
-    {jp:'20分ですか。何番ですか。', ro:'Nijuppun desu ka. Nan-ban desu ka.', zh:'20 分鐘嗎？是幾號？', ok:false, why:'她已經說了 205 號，再問一次會讓人覺得你沒在聽。'}]},
-  r2:{jp:'はい。信号がすぐそこにあるので、そこで渡ってくださいね。', ro:'Hai. Shingō ga sugu soko ni aru node, soko de watatte kudasai ne.', zh:'對。紅綠燈就在那邊，請在那裡過馬路喔。',
-    ch:[['はい','對'],['信号がすぐそこにあるので','紅綠燈就在那邊，所以…（信号＝紅綠燈）'],['そこで渡ってくださいね','請在那裡過馬路喔']],
-    q:[{q:'她要你在哪裡過馬路？', o:['旁邊的紅綠燈','地下道','哪裡都可以'], tag:'dir', k:1}]},
-  end:'你從旁邊的紅綠燈過馬路，搭 205 號，早 20 分鐘到金閣寺。'},
- ]},
+/* ============================================================
+   任務一：巴士・方向對嗎（公車方向優先完成）
+   查核：京都市巴士 205 系統由京都駅前開往金閣寺（京都市交通局時刻表）；
+        市巴士後門上車、前門下車、下車時付錢（京都市交通局「市バスの乗り方」）。
+   其他車號、班距、乘車處位置為模擬。票價正在調整，對話不放金額。
+   ============================================================ */
+T({id:'bus', name:'巴士・方向對嗎', place:'京都・巴士站', dest:'金閣寺', setup:'你要去金閣寺。站牌前剛好停著一台巴士，你問司機或旁邊的人。',
+  sim:'模擬情境：205 系統往金閣寺、後門上前門下、下車付錢已查核；其他車號、班距、位置是練習用。',
+  axis:{1:'短的禮貌回答', 2:'句子變長：多一個資訊', 3:'新詞：條件和建議', 4:'口語縮略、說得比較快', 5:'資訊量大：長回答抓重點、多輪補問'}});
+K('b_kono', 'このバスは', 'kono basu wa', '這台巴士（主題）', 'topic');
+K('b_kinkaku_ni', '{金閣寺|きんかくじ}に', 'Kinkakuji ni', '到金閣寺', 'place');
+const B_OPEN = {id:'n1', t:'say', intent:'問：這台巴士會到金閣寺嗎？', skel:'iku_ka', c:['sumimasen', 'b_kono', 'b_kinkaku_ni', 'ikimasuka'], zh:'不好意思，這台巴士會到金閣寺嗎？', next:'n2'};
+const bOpen = () => Object.assign({}, B_OPEN);
 
-{id:'way', name:'問路・找巴士搭乘處', place:'京都站・出口附近', setup:'你要搭往金閣寺的巴士，但找不到巴士搭乘處。',
- me:{jp:'すみません、バス乗り場はどこですか。', ro:'Sumimasen, basu noriba wa doko desu ka.', zh:'不好意思，巴士搭乘處在哪裡？'},
- lv:[null,
- {who:'站務員',
-  r1:{jp:'あそこです。', ro:'Asoko desu.', zh:'在那裡。', ch:[['あそこ','那裡（離你們兩個都遠）'],['です','是']],
-    q:[{q:'他怎麼回答？', o:['在那裡（會用手指給你看）','沒有巴士','他不知道'], tag:'place', k:0}]},
-  fu:{o:[
-    {jp:'あの白い建物ですか。', ro:'Ano shiroi tatemono desu ka.', zh:'是那棟白色的建築嗎？', ok:true, why:'「那裡」太模糊，用看得到的東西確認一次。'},
-    {jp:'あそこはどこですか。', ro:'Asoko wa doko desu ka.', zh:'那裡是哪裡？', ok:false, why:'對方會覺得很奇怪。用一個看得到的東西來確認比較好。'},
-    {jp:'ありがとうございます。タクシーで行きます。', ro:'Arigatō gozaimasu. Takushī de ikimasu.', zh:'謝謝，我搭計程車去。', ok:false, why:'你是要搭巴士，搭乘處就在那裡，不用放棄。'}]},
-  r2:{jp:'はい、あの建物の前です。', ro:'Hai, ano tatemono no mae desu.', zh:'對，在那棟建築前面。', ch:[['はい','對'],['あの建物の','那棟建築的'],['前です','前面']],
-    q:[{q:'搭乘處在哪？', o:['那棟建築前面','那棟建築後面','那棟建築裡面'], tag:'place', k:2}]},
-  end:'你走到那棟白色建築前面，找到巴士搭乘處。'},
- {who:'站務員',
-  r1:{jp:'まっすぐ行って、右です。', ro:'Massugu itte, migi desu.', zh:'直走，然後在右邊。', ch:[['まっすぐ行って','直走'],['右です','在右邊']],
-    q:[{q:'怎麼走？', o:['直走，在右邊','直走，在左邊','先右轉再直走'], tag:'dir', k:1}]},
-  fu:{o:[
-    {jp:'まっすぐ、右ですね。', ro:'Massugu, migi desu ne.', zh:'直走、右邊，對吧？', ok:true, why:'方向最容易聽反，重複一次最保險。'},
-    {jp:'左ですか。ありがとうございます。', ro:'Hidari desu ka. Arigatō gozaimasu.', zh:'左邊嗎？謝謝。', ok:false, why:'他說的是 右（みぎ）。左是 ひだり。'},
-    {jp:'右はどこですか。', ro:'Migi wa doko desu ka.', zh:'右邊在哪裡？', ok:false, why:'右邊就是右邊，這樣問對方會聽不懂。'}]},
-  r2:{jp:'はい。歩いて2分くらいですよ。', ro:'Hai. Aruite ni-fun kurai desu yo.', zh:'對。走路大約 2 分鐘喔。', ch:[['はい','對'],['歩いて','走路'],['2分くらいですよ','大約 2 分鐘喔']],
-    q:[{q:'走路多久？', o:['大約 2 分鐘','大約 12 分鐘','大約 20 分鐘'], tag:'num', k:2}]},
-  end:'你直走，在右邊找到搭乘處，走 2 分鐘就到了。'},
- {who:'站務員',
-  r1:{jp:'この道をまっすぐ行って、二つ目の信号を左に曲がってください。郵便局の隣です。', ro:'Kono michi o massugu itte, futatsu-me no shingō o hidari ni magatte kudasai. Yūbinkyoku no tonari desu.', zh:'這條路直走，在第二個紅綠燈左轉。在郵局隔壁。',
-    ch:[['この道をまっすぐ行って','這條路直走'],['二つ目の信号を','在第二個紅綠燈（信号＝紅綠燈）'],['左に曲がってください','請左轉（曲がる＝轉彎）'],['郵便局の隣です','在郵局隔壁']],
-    q:[{q:'在哪裡轉？往哪轉？', o:['第二個紅綠燈左轉','第一個紅綠燈右轉','第二個紅綠燈右轉'], tag:'dir', k:2},{q:'旁邊有什麼？', o:['郵局','便利商店','銀行'], tag:'place', k:3}]},
-  fu:{o:[
-    {jp:'二つ目の信号を左ですね。', ro:'Futatsu-me no shingō o hidari desu ne.', zh:'第二個紅綠燈左轉，對吧？', ok:true, why:'「第幾個＋左右」是最容易聽錯的，確認這兩個就夠了。'},
-    {jp:'郵便局はどこですか。', ro:'Yūbinkyoku wa doko desu ka.', zh:'郵局在哪裡？', ok:false, why:'郵局只是用來認路的地標，你不用找它。'},
-    {jp:'一つ目ですか。右ですか。', ro:'Hitotsu-me desu ka. Migi desu ka.', zh:'第一個嗎？右轉嗎？', ok:false, why:'兩個都聽反了：是 二つ目（第二個）、左（ひだり）。'}]},
-  r2:{jp:'そうです。郵便局の前に、バスの看板が見えますよ。', ro:'Sō desu. Yūbinkyoku no mae ni, basu no kanban ga miemasu yo.', zh:'對。郵局前面可以看到巴士的招牌喔。',
-    ch:[['そうです','對'],['郵便局の前に','在郵局前面'],['バスの看板が見えますよ','可以看到巴士的招牌喔（看板＝招牌）']],
-    q:[{q:'看到什麼就知道到了？', o:['郵局前的巴士招牌','紅色的大門','車站的時鐘'], tag:'place', k:2}]},
-  end:'你在第二個紅綠燈左轉，看到郵局前的巴士招牌就到了。'},
- {who:'站務員',
-  r1:{jp:'あー、バス乗り場ですね。そこの階段降りて、地下通って、反対側に出たらすぐですよ。', ro:'Ā, basu noriba desu ne. Soko no kaidan orite, chika tōtte, hantai-gawa ni detara sugu desu yo.', zh:'啊，巴士搭乘處啊。從那邊的樓梯下去，走地下道，到另一側出來就到了喔。',
-    easy:{jp:'階段を降りてください。地下を通って、反対側に出てください。', ro:'Kaidan o orite kudasai. Chika o tōtte, hantai-gawa ni dete kudasai.', zh:'請下樓梯。走地下道，從另一側出去。'},
-    ch:[['あー、バス乗り場ですね','啊，巴士搭乘處啊（重複＝確認）'],['そこの階段降りて','從那邊的樓梯下去（口語省略了 を）'],['地下通って','走地下道（通る＝經過）'],['反対側に出たら','從另一側出去之後（〜たら＝之後）'],['すぐですよ','馬上就到了喔']],
-    q:[{q:'路線順序？', o:['下樓梯→走地下→另一側出去','上樓梯→過天橋→右轉','直走→過馬路→左轉'], tag:'dir', k:1},{q:'出去之後還要走多遠？', o:['馬上就到','10 分鐘','要再搭車'], tag:'place', k:4}]},
-  fu:{o:[
-    {jp:'反対側の出口は何番ですか。', ro:'Hantai-gawa no deguchi wa nan-ban desu ka.', zh:'另一側的出口是幾號？', ok:true, why:'日本車站出口很多，問出口名稱或號碼最實際。'},
-    {jp:'地下鉄に乗りますか。', ro:'Chikatetsu ni norimasu ka.', zh:'要搭地下鐵嗎？', ok:false, why:'地下 是「地下（通道）」，地下鉄 才是地下鐵。他只叫你走過去。'},
-    {jp:'階段はいくらですか。', ro:'Kaidan wa ikura desu ka.', zh:'樓梯多少錢？', ok:false, why:'樓梯不用錢。'}]},
-  r2:{jp:'出口の番号はないんですけど、「バスのりば」って書いてあるので、それを見ていけば大丈夫です。', ro:'Deguchi no bangō wa nai n desu kedo, "basu noriba" tte kaite aru node, sore o mite ikeba daijōbu desu.', zh:'出口沒有編號，不過有寫「巴士搭乘處」，跟著它走就沒問題。',
-    easy:{jp:'「バスのりば」を見てください。', ro:'"Basu noriba" o mite kudasai.', zh:'請看「巴士搭乘處」的標示。'},
-    ch:[['出口の番号はないんですけど','出口沒有編號，不過…（けど＝但是，後面才是重點）'],['「バスのりば」って書いてあるので','有寫著「バスのりば」，所以…'],['それを見ていけば大丈夫です','跟著它走就沒問題']],
-    q:[{q:'怎麼找到出口？', o:['跟著「バスのりば」的標示','找 3 號出口','再問下一個人'], tag:'place', k:1}]},
-  end:'你下樓梯走地下道，跟著「バスのりば」標示，從另一側出來就到了。'},
- {who:'站務員',
-  r1:{jp:'バス乗り場は、ここからだとちょっと分かりにくいんですよ。この先の改札を出て、左にずっと行くと、大きいエスカレーターがあるので、それで1階まで降りてください。降りたら目の前です。', ro:'Basu noriba wa, koko kara da to chotto wakarinikui n desu yo. Kono saki no kaisatsu o dete, hidari ni zutto iku to, ōkii esukarētā ga aru node, sore de ikkai made orite kudasai. Oritara me no mae desu.', zh:'巴士搭乘處從這裡過去有點難找喔。從前面的剪票口出去，往左一直走，會有一個大手扶梯，請搭它下到 1 樓。下來就在眼前。',
-    easy:{jp:'改札を出て、左です。エスカレーターで1階に降りてください。', ro:'Kaisatsu o dete, hidari desu. Esukarētā de ikkai ni orite kudasai.', zh:'出剪票口，往左。搭手扶梯下到 1 樓。'},
-    ch:[['ここからだとちょっと分かりにくいんですよ','從這裡過去有點難找（開場白，不是指路）'],['この先の改札を出て','從前面的剪票口出去（改札＝剪票口）'],['左にずっと行くと','往左一直走的話'],['大きいエスカレーターがあるので','會有大手扶梯，所以…'],['それで1階まで降りてください','搭它下到 1 樓'],['降りたら目の前です','下來就在眼前']],
-    q:[{q:'第一句「分かりにくい」是什麼意思？', o:['只是說有點難找','搭乘處今天關閉','要另外付錢'], tag:'extra', k:0},{q:'路線是？', o:['出剪票口→往左→手扶梯下到 1 樓','出剪票口→往右→樓梯上 2 樓','不出剪票口→往左→電梯'], tag:'dir', k:2}]},
-  fu:{o:[
-    {jp:'改札を出て、左、エスカレーターで1階ですね。', ro:'Kaisatsu o dete, hidari, esukarētā de ikkai desu ne.', zh:'出剪票口、往左、搭手扶梯到 1 樓，對吧？', ok:true, why:'長的指路只挑「動作」確認：出去、往左、往下。'},
-    {jp:'分かりにくいですか。じゃあ、いいです。', ro:'Wakarinikui desu ka. Jā, ii desu.', zh:'很難找嗎？那算了。', ok:false, why:'「有點難找」只是開場白，他後面就告訴你怎麼走了。'},
-    {jp:'2階ですか。', ro:'Nikai desu ka.', zh:'2 樓嗎？', ok:false, why:'他說的是 1階（いっかい），下到 1 樓。'}]},
-  r2:{jp:'そうです、そうです。分からなかったら、また駅員に聞いてくださいね。', ro:'Sō desu, sō desu. Wakaranakattara, mata ekiin ni kiite kudasai ne.', zh:'對對。如果找不到，再問站務員喔。',
-    ch:[['そうです、そうです','對對'],['分からなかったら','如果不知道的話'],['また駅員に聞いてくださいね','再問站務員喔（駅員＝站務員）']],
-    q:[{q:'他最後說什麼？', o:['找不到就再問站務員','搭計程車比較好','今天沒有巴士'], tag:'extra', k:2}]},
-  end:'你出剪票口往左，搭大手扶梯到 1 樓，巴士搭乘處就在眼前。'},
- ]},
-];
+K('oriru_toki_ni', '{降|お}りる{時|とき}に', 'oriru toki ni', '下車的時候', 'time');
+K('haratte', '{払|はら}ってください。', 'haratte kudasai', '請付錢', 'next');
+K('okane_wa', 'お{金|かね}は', 'okane wa', '錢呢（主題）', 'topic');
+K('oriru_toki_desu', '{降|お}りる{時|とき}です。', 'oriru toki desu', '是下車的時候', 'time');
+K('kinkaku_iku_basu', '{金閣寺|きんかくじ}に{行|い}くバスは', 'Kinkakuji ni iku basu wa', '去金閣寺的巴士', 'topic');
+K('doko_desuka', 'どこですか。', 'doko desu ka', '在哪裡？', 'ask');
+K('nanban_basu', '{何番|なんばん}のバスですか。', 'nan-ban no basu desu ka', '是幾號巴士？', 'ask');
+K('b205_desu', '205{番|ばん}です。', 'nihyaku-go-ban desu', '是 205 號', 'num');
+K('mukou_no', '{向|む}こうの', 'mukō no', '對面的', 'place');
+K('basutei_desu', 'バス{停|てい}です。', 'basutei desu', '公車站', 'place');
+K('hai_kinkaku', 'はい、{金閣寺|きんかくじ}に{行|い}きます。', 'hai, Kinkakuji ni ikimasu', '是，會到金閣寺', 'concl');
 
-const DLG_MAP = Object.fromEntries(DLG.map(d => [d.id, d]));
+V('bus', 1, 'b1a', {who:'司機', note:'這台會到'}, [bOpen(),
+  {id:'n2', t:'hear', c:['hai', 'ikimasu_yo'], zh:'是，會到喔。', q:[Q('這台會到金閣寺嗎？', ['會', '不會', '要換車'], 'ikimasu_yo')], learn:['這台巴士會到金閣寺'], todo:'上車', next:'n3'},
+  {id:'n3', t:'act', q:'你要怎麼做？', o:[
+    O(['arigatou'], '謝謝。（上車）', 'ok', '確認會到就上車。', 'n4', {do:'上車'}),
+    O(['sumimasen', 'mouichido'], '不好意思，請再說一次。', 'ok', '不確定就請他再說一次，完全沒問題。', 'n2r', {fix:true}),
+    O(['jaa_norimasu'], '那我上車。', 'ok', '也可以，直接表示要搭。', 'n4', {do:'上車'})]},
+  {id:'n2r', t:'hear', c:['hai_kinkaku'], zh:'是，會到金閣寺。', q:[], next:'n3'},
+  {id:'n4', t:'hear', c:['oriru_toki_ni', 'haratte'], zh:'下車的時候請付錢。', q:[Q('什麼時候付錢？', ['下車的時候', '上車的時候', '不用付'], 'oriru_toki_ni')], learn:['下車時付錢'], todo:'坐到金閣寺附近下車', next:'n5'},
+  {id:'n5', t:'end', res:'ok', text:'你上了車，也知道下車時再付錢。'}]);
 
-/* Key words to learn BEFORE listening: [日文, 羅馬拼音, 中文] */
-const DLG_W = {
-  train:[null,
-    [['電車','densha','電車'],['行きます','ikimasu','去、會到'],['〜くらい','kurai','大約']],
-    [['四つ目','yottsu-me','第四個（第四站）'],['降りる','oriru','下車'],['アナウンス','anaunsu','廣播']],
-    [['各駅停車','kakueki-teisha','每站都停的車'],['時間がかかる','jikan ga kakaru','要花時間'],['快速','kaisoku','快速車'],['〜番線','bansen','幾號月台']],
-    [['次の','tsugi no','下一個'],['〜のほうが早い','no hō ga hayai','…比較快'],['同じ','onaji','一樣的、同一個'],['ホーム','hōmu','月台']],
-    [['〜でしたら','deshitara','如果是…的話'],['〜発','hatsu','幾點發車'],['階段','kaidan','樓梯'],['向かい','mukai','對面']]],
-  bus:[null,
-    [['バス停','basutei','公車站'],['向こう','mukō','對面、另一邊'],['いいえ','iie','不、不是']],
-    [['反対方向','hantai-hōkō','反方向'],['向こう側','mukō-gawa','對面那一側'],['乗ってください','notte kudasai','請搭乘'],['何番','nan-ban','幾號']],
-    [['逆方向','gyaku-hōkō','反方向'],['道を渡る','michi o wataru','過馬路'],['払う','harau','付錢'],['降りる時','oriru toki','下車的時候']],
-    [['逆','gyaku','相反'],['あっち','atchi','那邊（口語）'],['とこ','toko','地方（ところ 的口語）'],['どっちでも','dotchi demo','哪個都可以']],
-    [['遠回り','tōmawari','繞遠路'],['〜けど','kedo','但是（後面才是重點）'],['着きます','tsukimasu','抵達'],['信号','shingō','紅綠燈']]],
-  way:[null,
-    [['乗り場','noriba','搭乘處'],['あそこ','asoko','那裡'],['建物','tatemono','建築物'],['前','mae','前面']],
-    [['まっすぐ','massugu','直走'],['右','migi','右'],['左','hidari','左'],['歩いて','aruite','走路']],
-    [['信号','shingō','紅綠燈'],['曲がる','magaru','轉彎'],['二つ目','futatsu-me','第二個'],['郵便局','yūbinkyoku','郵局'],['隣','tonari','隔壁']],
-    [['地下','chika','地下（通道）'],['通る','tōru','經過、穿過'],['反対側','hantai-gawa','另一側'],['すぐ','sugu','馬上、很近']],
-    [['改札','kaisatsu','剪票口'],['分かりにくい','wakarinikui','不好懂、難找'],['エスカレーター','esukarētā','手扶梯'],['1階','ikkai','一樓'],['目の前','me no mae','眼前'],['駅員','ekiin','站務員']]],
+K('ikimasen2', '{行|い}きません。', 'ikimasen', '不會去', 'neg');
+V('bus', 1, 'b1b', {who:'司機', note:'這台不到'}, [bOpen(),
+  {id:'n2', t:'hear', c:['iie', 'ikimasen2'], zh:'不，不會到。', q:[Q('這台會到金閣寺嗎？', ['不會', '會', '會，但要換車'], 'ikimasen2')], learn:['這台不會到'], todo:'找會到的巴士', next:'n3'},
+  {id:'n3', t:'act', q:'你要怎麼接？', o:[
+    O(['kinkaku_iku_basu', 'doko_desuka'], '去金閣寺的巴士在哪裡？', 'ok', '這台不到，就問會到的那台在哪裡搭。', 'n4', {skel:'doko'}),
+    O(['nanban_basu'], '是幾號巴士？', 'part', '問號碼很好，但還不知道去哪裡搭，等一下要再補問。', 'n4b', {skel:'nanban'}),
+    O(['jaa_norimasu'], '那我上車。', 'bad', '他說「行きません」，上車就會坐錯方向。', null)]},
+  {id:'n4b', t:'hear', c:['b205_desu'], zh:'205 號。', q:[Q('要搭幾號？', ['205 號', '25 號', '250 號'], 'b205_desu')], learn:['要搭 205 號'], todo:'問在哪裡搭', next:'n3b'},
+  {id:'n3b', t:'act', q:'還差什麼？', o:[
+    O(['kinkaku_iku_basu', 'doko_desuka'], '去金閣寺的巴士在哪裡？', 'ok', '號碼知道了，再問在哪裡搭。', 'n4', {skel:'doko'}),
+    O(['arigatou'], '謝謝。（在這裡等）', 'part', '這裡不一定有停 205，先問清楚在哪裡搭比較保險。', null)]},
+  {id:'n4', t:'hear', c:['mukou_no', 'basutei_desu'], zh:'在對面的公車站。', q:[Q('要去哪裡搭？', ['對面的公車站', '這個公車站', '車站裡面'], 'mukou_no')], learn:['在對面的公車站搭'], todo:'過馬路到對面', fig:{type:'cross', a:'你在這一側', b:'對面的公車站'}, next:'n5'},
+  {id:'n5', t:'end', res:'ok', text:'你走到對面的公車站，方向對了。'}]);
+
+K('ee_ikimasu_yo', 'ええ、{行|い}きますよ。', 'ee, ikimasu yo', '嗯，會到喔', 'concl');
+V('bus', 1, 'b1t', {who:'司機', tr:true, note:'換說法：ええ／お金は'}, [bOpen(),
+  {id:'n2', t:'hear', c:['ee_ikimasu_yo'], zh:'嗯，會到喔。', q:[Q('這台會到金閣寺嗎？', ['會', '不會', '他不確定'], 'ee_ikimasu_yo')], learn:['這台巴士會到金閣寺'], todo:'上車', next:'n3'},
+  {id:'n3', t:'act', q:'你要怎麼做？', o:[
+    O(['arigatou'], '謝謝。（上車）', 'ok', '確認會到就上車。', 'n4', {do:'上車'}),
+    O(['kinkaku_iku_basu', 'doko_desuka'], '去金閣寺的巴士在哪裡？', 'bad', '他已經說這台就會到，再去找別台就錯過了。', null)]},
+  {id:'n4', t:'hear', c:['okane_wa', 'oriru_toki_desu'], zh:'錢是下車的時候付。', q:[Q('什麼時候付錢？', ['下車的時候', '上車的時候', '不用付'], 'oriru_toki_desu')], learn:['下車時付錢'], todo:'坐到金閣寺附近下車', next:'n5'},
+  {id:'n5', t:'end', res:'ok', text:'你上了車，知道下車時再付錢。'}]);
+
+/* L2 句子變長 */
+K('kore_wa', 'これは', 'kore wa', '這台（主題）', 'topic');
+K('hantai_houkou', '{反対方向|はんたいほうこう}です。', 'hantai-hōkō desu', '是反方向', 'dir');
+K('mukougawa_kara', '{向|む}こう{側|がわ}から', 'mukō-gawa kara', '從對面那一側', 'place');
+K('notte_kudasai', '{乗|の}ってください。', 'notte kudasai', '請搭乘', 'next');
+K('mukougawa_desune', '{向|む}こう{側|がわ}ですね。', 'mukō-gawa desu ne', '是對面那一側對吧？', 'ask');
+K('mukougawa_desu', '{向|む}こう{側|がわ}です。', 'mukō-gawa desu', '是對面那一側', 'place');
+K('b205_no_basu', '205{番|ばん}のバスです。', 'nihyaku-go-ban no basu desu', '是 205 號巴士', 'num');
+K('hantai_jaa', '{反対|はんたい}ですか。じゃあ、{乗|の}ります。', 'hantai desu ka. jā, norimasu', '反方向嗎？那我上車', 'ask');
+K('okyakusan', 'お{客|きゃく}さん、', 'okyaku-san', '這位客人（司機在叫你）', 'filler');
+K('kinkaku_niwa', '{金閣寺|きんかくじ}には', 'Kinkakuji ni wa', '金閣寺的話（は＝強調）', 'place');
+K('ikimasen_yo', '{行|い}きませんよ。', 'ikimasen yo', '不會去喔', 'neg');
+K('tsugi_de_orite', '{次|つぎ}で{降|お}りて、', 'tsugi de orite', '在下一站下車，', 'next');
+K('hantaigawa_kara_notte', '{反対側|はんたいがわ}から{乗|の}ってください。', 'hantai-gawa kara notte kudasai', '請從反方向那一側搭', 'dir');
+V('bus', 2, 'b2a', {who:'司機', note:'反方向'}, [bOpen(),
+  {id:'n2', t:'hear', c:['iie', 'kore_wa', 'hantai_houkou', 'mukougawa_kara', 'notte_kudasai'], zh:'不，這台是反方向。請從對面那一側搭。',
+    q:[Q('這台車怎麼了？', ['方向相反', '已經客滿', '今天停駛'], 'hantai_houkou'), Q('你該去哪裡搭？', ['對面那一側', '同一站等下一班', '車站裡面'], 'mukougawa_kara')],
+    learn:['這台是反方向', '要到對面那一側搭'], todo:'確認車號', next:'n3'},
+  {id:'n3', t:'act', q:'你要怎麼接？', o:[
+    O(['nanban_basu'], '是幾號巴士？', 'ok', '對面會停很多台，知道號碼才不會又搭錯。', 'n4', {skel:'nanban'}),
+    O(['mukougawa_desune'], '是對面那一側對吧？', 'ok', '先確認方向也很好，他會再補一句號碼。', 'n4c', {skel:'ne', fix:true}),
+    O(['hantai_jaa'], '反方向嗎？那我上車。', 'bad', '知道是反方向還上車，會越坐越遠。', 'nx')]},
+  {id:'n4c', t:'hear', c:['hai', 'mukougawa_desu', 'b205_no_basu'], zh:'對，是對面那一側。205 號巴士。', q:[Q('要搭幾號？', ['205 號', '25 號', '205 分鐘後'], 'b205_no_basu')], learn:['要搭 205 號'], todo:'過馬路到對面搭 205', next:'n5'},
+  {id:'n4', t:'hear', c:['b205_no_basu'], zh:'是 205 號巴士。', q:[Q('要搭幾號？', ['205 號', '25 號', '250 號'], 'b205_no_basu')], learn:['要搭 205 號'], todo:'過馬路到對面搭 205', next:'n5'},
+  {id:'nx', t:'hear', who:'司機（車開了一站後）', c:['okyakusan', 'b_kono', 'kinkaku_niwa', 'ikimasen_yo', 'tsugi_de_orite', 'hantaigawa_kara_notte'], zh:'這位客人，這台不會到金閣寺喔。請在下一站下車，從反方向那一側搭。',
+    q:[Q('司機要你怎麼做？', ['下一站下車，到反方向搭', '坐到終點', '留在車上付錢'], 'tsugi_de_orite')], learn:['坐錯了：下一站下車', '到反方向那一側搭'], todo:'下車後到對面搭', next:'n6'},
+  {id:'n5', t:'end', res:'ok', text:'你過馬路到對面，等 205 號。'},
+  {id:'n6', t:'end', res:'late', text:'雖然先搭錯，但你聽懂司機的話，下一站下車，從反方向重新搭。'}]);
+
+K('kinkakujimichi_de', '{金閣寺道|きんかくじみち}で', 'Kinkakuji-michi de', '在「金閣寺道」站', 'place', '站名是「金閣寺道」（きんかくじみち），不是「金閣寺」。');
+K('orite_kudasai', '{降|お}りてください。', 'orite kudasai', '請下車', 'next');
+K('kinkakujimichi_desune', '{金閣寺道|きんかくじみち}ですね。', 'Kinkakuji-michi desu ne', '是金閣寺道對吧？', 'ask');
+K('anaunsu_ga', 'アナウンスがありますよ。', 'anaunsu ga arimasu yo', '會有廣播喔', 'next');
+K('kinkaku_de_orimasu', '{金閣寺|きんかくじ}で{降|お}ります。', 'Kinkakuji de orimasu', '我在金閣寺下車', 'ask');
+K('kinkakujimichi_desuyo', '{金閣寺道|きんかくじみち}ですよ。', 'Kinkakuji-michi desu yo', '是金閣寺道喔', 'place');
+K('kinkaku_no_chikaku', '{金閣寺|きんかくじ}の{近|ちか}くです。', 'Kinkakuji no chikaku desu', '在金閣寺附近', 'place');
+V('bus', 2, 'b2b', {who:'司機', note:'會到，但站名不同'}, [bOpen(),
+  {id:'n2', t:'hear', c:['hai', 'ikimasu_yo', 'kinkakujimichi_de', 'orite_kudasai'], zh:'是，會到喔。請在「金閣寺道」下車。',
+    q:[Q('這台會到嗎？', ['會', '不會', '要換車'], 'ikimasu_yo'), Q('要在哪一站下車？', ['金閣寺道', '金閣寺前', '終點站'], 'kinkakujimichi_de')],
+    learn:['這台會到', '在「金閣寺道」下車'], todo:'上車，聽廣播', next:'n3'},
+  {id:'n3', t:'act', q:'你要怎麼接？', o:[
+    O(['kinkakujimichi_desune'], '是金閣寺道對吧？', 'ok', '站名跟景點名不一樣，確認一次最保險。', 'n4', {skel:'ne', fix:true}),
+    O(['arigatou'], '謝謝。（上車）', 'ok', '也可以直接上車，記住站名「金閣寺道」就好。', 'n5', {do:'上車'}),
+    O(['kinkaku_de_orimasu'], '我在金閣寺下車。', 'part', '站名是「金閣寺道」，不是「金閣寺」。他會再糾正你一次。', 'n4x')]},
+  {id:'n4', t:'hear', c:['hai_sou', 'anaunsu_ga'], zh:'對，沒錯。會有廣播喔。', q:[Q('怎麼知道要下車了？', ['會有廣播', '司機會叫你', '看不到站名'], 'anaunsu_ga')], learn:['到站會有廣播'], next:'n5'},
+  {id:'n4x', t:'hear', c:['kinkakujimichi_desuyo', 'kinkaku_no_chikaku'], zh:'是金閣寺道喔。在金閣寺附近。', q:[Q('要在哪一站下？', ['金閣寺道', '金閣寺', '終點站'], 'kinkakujimichi_desuyo')], learn:['站名是金閣寺道，在金閣寺附近'], next:'n5'},
+  {id:'n5', t:'end', res:'ok', text:'你上了車，在「金閣寺道」下車就到了。'}]);
+
+K('kore_ikanai', 'これは{行|い}かないですね。', 'kore wa ikanai desu ne', '這台不會去喔', 'neg');
+K('hantaigawa_basutei_kara', '{反対側|はんたいがわ}のバス{停|てい}から', 'hantai-gawa no basutei kara', '從另一側的公車站', 'place');
+K('b205_ni_notte', '205{番|ばん}に{乗|の}ってください。', 'nihyaku-go-ban ni notte kudasai', '請搭 205 號', 'num');
+V('bus', 2, 'b2t', {who:'司機', tr:true, note:'換說法：行かないですね／反対側のバス停'}, [bOpen(),
+  {id:'n2', t:'hear', c:['kore_ikanai', 'hantaigawa_basutei_kara', 'notte_kudasai'], zh:'這台不會去喔。請從另一側的公車站搭。',
+    q:[Q('這台會到嗎？', ['不會', '會', '會，但很慢'], 'kore_ikanai'), Q('要去哪裡搭？', ['另一側的公車站', '同一個公車站', '車站裡面'], 'hantaigawa_basutei_kara')],
+    learn:['這台不會到', '要到另一側的公車站搭'], todo:'確認車號', next:'n3'},
+  {id:'n3', t:'act', q:'你要怎麼接？', o:[
+    O(['nanban_basu'], '是幾號巴士？', 'ok', '知道號碼才不會搭錯。', 'n4', {skel:'nanban'}),
+    O(['jaa_norimasu'], '那我上車。', 'bad', '他說這台不會去。', null)]},
+  {id:'n4', t:'hear', c:['b205_ni_notte'], zh:'請搭 205 號。', q:[Q('要搭幾號？', ['205 號', '25 號', '205 分鐘後'], 'b205_ni_notte')], learn:['要搭 205 號'], next:'n5'},
+  {id:'n5', t:'end', res:'ok', text:'你到另一側的公車站等 205 號。'}]);
+
+/* L3 新詞：條件、建議 */
+K('tomarimasen', '{止|と}まりません。', 'tomarimasen', '不停靠', 'neg', '止まる＝（車）停下來。止まりません：這台不停那一站。');
+K('tsugi_no_205', '{次|つぎ}の205{番|ばん}に', 'tsugi no nihyaku-go-ban ni', '下一班 205 號', 'num');
+K('onaji_basutei', '{同|おな}じバス{停|てい}です。', 'onaji basutei desu', '同一個公車站', 'place');
+K('tsugi_205_nanpungo', '{次|つぎ}の205{番|ばん}は{何分後|なんぷんご}ですか。', 'tsugi no nihyaku-go-ban wa nanpun-go desu ka', '下一班 205 是幾分鐘後？', 'ask');
+K('juppungo_kimasu', '10{分後|ぷんご}に{来|き}ますよ。', 'juppun-go ni kimasu yo', '10 分鐘後會來', 'time');
+K('koko_de_mateba', 'ここで{待|ま}てばいいですか。', 'koko de mateba ii desu ka', '在這裡等就可以嗎？', 'ask');
+K('koko_de_daijoubu', 'ここで{大丈夫|だいじょうぶ}です。', 'koko de daijōbu desu', '在這裡就可以', 'place');
+K('jaa_kono_basu', 'じゃあ、このバスに{乗|の}ります。', 'jā, kono basu ni norimasu', '那我搭這台', 'ask');
+K('kinkaku_nara', '{金閣寺|きんかくじ}なら、', 'Kinkakuji nara', '去金閣寺的話', 'cond', 'なら＝如果是…的話，後面是建議。');
+K('koko_de_orite', 'ここで{降|お}りて、', 'koko de orite', '在這裡下車，', 'next');
+K('norikaete', '205{番|ばん}に{乗|の}り{換|か}えてください。', 'nihyaku-go-ban ni norikaete kudasai', '請換搭 205 號', 'num', '乗り換える＝換車。');
+V('bus', 3, 'b3a', {who:'司機', note:'這台不停金閣寺'}, [bOpen(),
+  {id:'n2', t:'hear', c:['b_kono', 'kinkaku_niwa', 'tomarimasen', 'tsugi_no_205', 'notte_kudasai', 'onaji_basutei'], zh:'這台巴士不停金閣寺。請搭下一班 205 號，在同一個公車站。',
+    q:[Q('這台怎麼了？', ['不停金閣寺', '方向相反', '已經客滿'], 'tomarimasen'), Q('他建議你怎麼做？', ['在同一站等下一班 205', '到對面搭', '搭計程車'], 'tsugi_no_205')],
+    learn:['這台不停金閣寺', '在同一站等下一班 205'], todo:'確認下一班什麼時候來', next:'n3'},
+  {id:'n3', t:'act', q:'你要怎麼接？', o:[
+    O(['tsugi_205_nanpungo'], '下一班 205 是幾分鐘後？', 'ok', '知道要等多久，就能決定要不要等。', 'n4'),
+    O(['koko_de_mateba'], '在這裡等就可以嗎？', 'ok', '確認等車的位置也很實用。', 'n4b', {fix:true}),
+    O(['jaa_kono_basu'], '那我搭這台。', 'bad', '他說這台「止まりません」，搭了會錯過金閣寺。', 'nx')]},
+  {id:'n4', t:'hear', c:['juppungo_kimasu'], zh:'10 分鐘後會來。', q:[Q('下一班 205 什麼時候來？', ['10 分鐘後', '10 點整', '要坐 10 分鐘'], 'juppungo_kimasu')], learn:['205 大約 10 分鐘後來'], next:'n5'},
+  {id:'n4b', t:'hear', c:['hai', 'koko_de_daijoubu'], zh:'對，在這裡就可以。', q:[Q('要在哪裡等？', ['這個公車站', '對面', '車站裡面'], 'koko_de_daijoubu')], learn:['在這裡等 205'], next:'n5'},
+  {id:'nx', t:'hear', who:'司機（車開了一站後）', c:['okyakusan', 'kinkaku_nara', 'koko_de_orite', 'norikaete'], zh:'這位客人，去金閣寺的話，請在這裡下車，換搭 205 號。',
+    q:[Q('司機要你怎麼做？', ['在這裡下車，換搭 205', '坐到終點', '付錢後留在車上'], 'koko_de_orite')], learn:['在這站下車換 205'], next:'n6'},
+  {id:'n5', t:'end', res:'ok', text:'你在同一個公車站等下一班 205 號。'},
+  {id:'n6', t:'end', res:'late', text:'雖然先搭了不停的車，但你聽懂司機的話，下車換搭 205。'}]);
+
+K('a_gyaku', 'あ、これは{逆方向|ぎゃくほうこう}ですね。', 'a, kore wa gyaku-hōkō desu ne', '啊，這台是反方向', 'dir', '逆方向＝反方向（和 反対方向 意思一樣）。');
+K('michi_wo_watatte', '{道|みち}を{渡|わた}って、', 'michi o watatte', '過馬路，', 'dir');
+K('mukou_basutei_kara_notte', '{向|む}こうのバス{停|てい}から{乗|の}ってください。', 'mukō no basutei kara notte kudasai', '請從對面的公車站搭', 'place');
+K('michi_205_ne', '{道|みち}を{渡|わた}って、205{番|ばん}ですね。', 'michi o watatte, nihyaku-go-ban desu ne', '過馬路，205 號對吧？', 'ask');
+K('ushiro_kara', '{後|うし}ろから{乗|の}って、', 'ushiro kara notte', '從後門上車，', 'dir');
+K('mae_kara', '{前|まえ}から{降|お}りてくださいね。', 'mae kara orite kudasai ne', '從前門下車喔', 'dir');
+K('michi_no_mukou_desu', '{道|みち}の{向|む}こうです。', 'michi no mukō desu', '在馬路對面', 'place');
+K('b205_short', '205{番|ばん}。', 'nihyaku-go-ban', '205 號', 'num');
+K('gyaku_ni_norimasu', '{逆方向|ぎゃくほうこう}に{乗|の}ります。', 'gyaku-hōkō ni norimasu', '我要搭反方向的', 'ask');
+V('bus', 3, 'b3b', {who:'司機', note:'反方向＋怎麼上下車'}, [bOpen(),
+  {id:'n2', t:'hear', c:['a_gyaku', 'kinkaku_nara', 'michi_wo_watatte', 'mukou_basutei_kara_notte', 'b205_desu'], zh:'啊，這台是反方向喔。去金閣寺的話，請過馬路，從對面的公車站搭。205 號。',
+    easy:{c:['a_gyaku', 'michi_wo_watatte', 'mukou_basutei_kara_notte', 'b205_desu'], zh:'這台是反方向。過馬路，從對面的公車站搭。205 號。'},
+    q:[Q('這台方向對嗎？', ['反方向', '方向對', '他沒說'], 'a_gyaku'), Q('你要先做什麼？', ['過馬路', '上這台車', '走回車站'], 'michi_wo_watatte')],
+    learn:['這台是反方向', '過馬路到對面'], todo:'確認車號', next:'n3'},
+  {id:'n3', t:'act', q:'你要怎麼接？', o:[
+    O(['michi_205_ne'], '過馬路，205 號對吧？', 'ok', '把「要做的事＋號碼」確認一次，就不會搭錯。', 'n4', {skel:'ne', fix:true}),
+    O(['sumimasen', 'mouichido'], '不好意思，請再說一次。', 'ok', '沒聽清楚就請他再說，他會說得更短。', 'n2r', {fix:true}),
+    O(['gyaku_ni_norimasu'], '我要搭反方向的。', 'bad', '逆方向 是他告訴你「這台不對」，不是叫你搭它。', null)]},
+  {id:'n2r', t:'hear', c:['michi_no_mukou_desu', 'b205_short'], zh:'在馬路對面。205 號。', q:[Q('要搭幾號？在哪？', ['205，馬路對面', '205，這裡', '25，馬路對面'], 'b205_short')], learn:['馬路對面搭 205'], next:'n3'},
+  {id:'n4', t:'hear', c:['sousou', 'ushiro_kara', 'mae_kara'], zh:'對對。從後門上車，從前門下車喔。',
+    q:[Q('怎麼上下車？', ['後門上車、前門下車', '前門上車、後門下車', '都從前門'], 'ushiro_kara')], learn:['後門上、前門下'], fig:{type:'steps', s:[['↑', '過馬路'], ['■', '對面公車站：205'], ['↗', '後門上車'], ['↙', '前門下車']]}, next:'n5'},
+  {id:'n5', t:'end', res:'ok', text:'你過馬路搭 205 號，後門上車，下車時從前門下。'}]);
+
+K('toranai', 'これ、{金閣寺|きんかくじ}は{通|とお}らないんですよ。', 'kore, Kinkakuji wa tōranai n desu yo', '這台不經過金閣寺', 'neg', '通る＝經過。通らない＝不經過。');
+K('b205_wo_matte', '205{番|ばん}を{待|ま}ってください。', 'nihyaku-go-ban o matte kudasai', '請等 205 號', 'num');
+K('b205_yoku', '205{番|ばん}はよく{来|き}ますか。', 'nihyaku-go-ban wa yoku kimasu ka', '205 號常來嗎？', 'ask');
+K('juppun_oki', 'だいたい10{分|ぷん}おきに{来|き}ます。', 'daitai juppun-oki ni kimasu', '大約每 10 分鐘來一班', 'time', '〜おきに＝每隔…。和「10分後」（10 分鐘後）不同。');
+V('bus', 3, 'b3t', {who:'司機', tr:true, note:'換說法：通らない／おきに'}, [bOpen(),
+  {id:'n2', t:'hear', c:['toranai', 'b205_wo_matte'], zh:'這台不經過金閣寺喔。請等 205 號。',
+    q:[Q('這台會到嗎？', ['不經過金閣寺', '會到', '要在中途換車'], 'toranai'), Q('他要你怎麼做？', ['等 205 號', '搭這台', '到對面搭'], 'b205_wo_matte')],
+    learn:['這台不經過金閣寺', '等 205 號'], todo:'確認多久來一班', next:'n3'},
+  {id:'n3', t:'act', q:'你要怎麼接？', o:[
+    O(['b205_yoku'], '205 號常來嗎？', 'ok', '知道多久一班，就知道要不要等。', 'n4'),
+    O(['jaa_kono_basu'], '那我搭這台。', 'bad', '他說這台「通らない」（不經過）。', null)]},
+  {id:'n4', t:'hear', c:['juppun_oki'], zh:'大約每 10 分鐘來一班。', q:[Q('205 號多久來一班？', ['大約每 10 分鐘', '10 分鐘後只有一班', '要坐 10 分鐘'], 'juppun_oki')], learn:['205 大約每 10 分鐘一班'], next:'n5'},
+  {id:'n5', t:'end', res:'ok', text:'你在站牌等 205 號，大約 10 分鐘就有一班。'}]);
+
+/* L4 口語縮略、比較快 */
+K('e_kinkaku', 'え、{金閣寺|きんかくじ}？', 'e, Kinkakuji?', '欸，金閣寺？（重複你的目的地＝在確認）', 'filler');
+K('gyaku_ssu', 'これ{逆|ぎゃく}っすよ。', 'kore gyaku ssu yo', '這台是反的啦', 'dir', 'っす＝です 的年輕人說法。逆＝相反。');
+K('acchi_ssu', 'あっちっす、あっち。', 'atchi ssu, atchi', '那邊、那邊', 'place', 'あっち＝あちら 的口語。對方通常會用手指。');
+K('watatta_toko', '{道|みち}{渡|わた}ったとこのバス{停|てい}。', 'michi watatta toko no basutei', '過了馬路那裡的公車站', 'place', 'とこ＝ところ。口語常省略「を」。');
+K('kono_basu_hantai', 'このバスは{反対方向|はんたいほうこう}です。', 'kono basu wa hantai-hōkō desu', '這台巴士是反方向', 'dir');
+K('mukou_no_basutei', '{向|む}こうのバス{停|てい}です。', 'mukō no basutei desu', '是對面的公車站', 'place');
+K('nanban_noreba', '{何番|なんばん}のバスに{乗|の}ればいいですか。', 'nan-ban no basu ni noreba ii desu ka', '我該搭幾號巴士？', 'ask');
+K('gyaku_daijoubu', '{逆|ぎゃく}ですか。じゃあ、このバスで{大丈夫|だいじょうぶ}ですね。', 'gyaku desu ka. jā, kono basu de daijōbu desu ne', '反的嗎？那這台沒問題吧', 'ask');
+K('acchi_mukou_ka', 'あっちって、{道|みち}の{向|む}こうですか。', 'atchi tte, michi no mukō desu ka', '你說那邊，是馬路對面嗎？', 'ask');
+K('sousou_michi', 'そうそう、{道|みち}の{向|む}こう。', 'sō sō, michi no mukō', '對對，馬路對面', 'place');
+K('eeto', 'えーと、', 'ēto', '嗯…（在想）', 'filler');
+K('b205_ka_iya', '205か…いや、', 'nihyaku-go ka… iya', '205 吧…不對，', 'num');
+K('wakannai', 'ちょっと{分|わ}かんないっす。', 'chotto wakannai ssu', '我不太確定', 'concl', '分かんない＝分からない（不知道）。他不確定，資訊不能直接當真。');
+K('kaite_aru_to', 'バス{停|てい}に{書|か}いてあると{思|おも}いますよ。', 'basutei ni kaite aru to omoimasu yo', '公車站牌上應該有寫', 'next');
+K('b205_ni_norimasu', 'じゃあ、205{番|ばん}に{乗|の}ります。', 'jā, nihyaku-go-ban ni norimasu', '那我搭 205 號', 'ask');
+V('bus', 4, 'b4a', {who:'路人（年輕人）', note:'口語＋對方不確定'}, [bOpen(),
+  {id:'n2', t:'hear', c:['e_kinkaku', 'gyaku_ssu', 'acchi_ssu', 'watatta_toko'], zh:'欸，金閣寺？這台是反的啦。那邊、那邊。過了馬路那裡的公車站。',
+    easy:{c:['kono_basu_hantai', 'michi_wo_watatte', 'mukou_no_basutei'], zh:'這台巴士是反方向。過馬路，是對面的公車站。'},
+    point:'他一邊說一邊用手指著馬路對面的公車站。',
+    q:[Q('結論是？', ['這台方向相反', '這台會到', '金閣寺今天沒開'], 'gyaku_ssu', 'kono_basu_hantai'), Q('他叫你去哪？', ['過馬路後的公車站', '走回車站', '就在這裡等'], 'watatta_toko', 'mukou_no_basutei')],
+    learn:['這台是反方向', '過馬路到對面的公車站'], todo:'確認車號', next:'n3'},
+  {id:'n3', t:'act', q:'你要怎麼接？', o:[
+    O(['sumimasen', 'nanban_noreba'], '請問我該搭幾號巴士？', 'ok', '對方講得很快，你用自己會的禮貌說法問下一步就好。', 'n4', {skel:'nanban'}),
+    O(['acchi_mukou_ka'], '你說那邊，是馬路對面嗎？', 'ok', '「あっち」很模糊，用看得到的東西確認，非常好。', 'n3b', {fix:true}),
+    O(['gyaku_daijoubu'], '反的嗎？那這台沒問題吧。', 'bad', '逆＝相反，他是說這台「不行」。', null)]},
+  {id:'n3b', t:'hear', c:['sousou_michi'], zh:'對對，馬路對面。', q:[], learn:['確認：是馬路對面'], next:'n3'},
+  {id:'n4', t:'hear', c:['eeto', 'b205_ka_iya', 'wakannai', 'kaite_aru_to'], zh:'嗯…205 吧…不對，我不太確定。公車站牌上應該有寫。',
+    q:[Q('他確定車號嗎？', ['不確定，叫你看站牌', '確定是 205', '確定是 25'], 'wakannai')], learn:['他不確定車號，要看站牌或問司機'], todo:'上車前跟司機確認', next:'n5'},
+  {id:'n5', t:'act', q:'你走到對面的公車站，一台巴士進站。你要怎麼做？', o:[
+    O(['sumimasen', 'b_kono', 'b_kinkaku_ni', 'ikimasuka'], '（問司機）這台巴士會到金閣寺嗎？', 'ok', '對方不確定時，上車前再問一次最保險。', 'n6', {skel:'iku_ka', fix:true}),
+    O(['b205_ni_norimasu'], '那我搭 205 號。（直接上車）', 'part', '他說「205か…分かんない」，不確定。可以上車前再問一句。', 'n6b'),
+    O(['arigatou'], '謝謝。（隨便上一台）', 'bad', '還不知道這台到不到，可能又搭錯。', null)]},
+  {id:'n6', t:'hear', who:'司機', c:['hai', 'ikimasu_yo'], zh:'是，會到喔。', q:[Q('這台會到嗎？', ['會', '不會', '要換車'], 'ikimasu_yo')], learn:['司機確認：這台會到'], next:'n7'},
+  {id:'n6b', t:'hear', who:'司機（你上車時順便問了一句）', c:['hai', 'ikimasu_yo'], zh:'是，會到喔。', q:[], learn:['司機確認：這台會到'], next:'n7'},
+  {id:'n7', t:'end', res:'ok', text:'路人不太確定，你上車前跟司機確認，搭上會到金閣寺的巴士。'}]);
+
+K('aa_kinkaku_ne', 'あー、{金閣寺|きんかくじ}ね。', 'ā, Kinkakuji ne', '啊，金閣寺啊', 'filler');
+K('kore_de_ikemasu', 'これで{行|い}けますよ。', 'kore de ikemasu yo', '搭這台就能到', 'concl');
+K('kedo_konderu', 'けど、{混|こ}んでるんで、', 'kedo, konderu n de', '不過很擠，所以…', 'reason', 'けど＝不過；〜んで＝〜ので（因為）的口語。');
+K('tsugi_demo', '{次|つぎ}のでもいいかも。', 'tsugi no de mo ii kamo', '搭下一班也可以吧', 'advice');
+K('sugu_kurunde', 'すぐ{来|く}るんで。', 'sugu kuru n de', '因為馬上就來', 'time');
+K('tsugi_sugu', '{次|つぎ}のはすぐ{来|き}ますか。', 'tsugi no wa sugu kimasu ka', '下一班馬上會來嗎？', 'ask');
+K('go_fun_kana', 'うん、5{分|ふん}ぐらいかな。', 'un, go-fun gurai ka na', '嗯，大概 5 分鐘吧', 'time', 'かな＝「…吧」，表示不太確定。');
+K('konderu_q', '{混|こ}んでるんですか。', 'konderu n desu ka', '很擠嗎？', 'ask');
+K('ima_ippai', 'はい、{今|いま}はいっぱいです。', 'hai, ima wa ippai desu', '對，現在很滿', 'reason');
+V('bus', 4, 'b4b', {who:'站務人員', note:'這台會到，但建議等下一班'}, [bOpen(),
+  {id:'n2', t:'hear', c:['aa_kinkaku_ne', 'kore_de_ikemasu', 'kedo_konderu', 'tsugi_demo', 'sugu_kurunde'], zh:'啊，金閣寺啊。搭這台就能到喔。不過很擠，搭下一班也可以吧，因為馬上就來。',
+    easy:{c:['kore_de_ikemasu', 'tsugi_demo', 'sugu_kurunde'], zh:'搭這台就能到。下一班也可以，馬上就來。'},
+    q:[Q('這台會到嗎？', ['會到', '不會到', '要換車'], 'kore_de_ikemasu'), Q('他建議什麼？', ['可以等下一班，很快就來', '一定要搭這班', '下一班要很久'], 'tsugi_demo')],
+    learn:['這台會到，但很擠', '下一班很快來'], todo:'決定搭這班還是等', next:'n3'},
+  {id:'n3', t:'act', q:'你要怎麼做？', o:[
+    O(['tsugi_sugu'], '下一班馬上會來嗎？', 'ok', '想等的話，先確認要等多久。', 'n4'),
+    O(['kore_ni_norimasu'], '我搭這班。', 'ok', '擠一點也能到，這也是合理的決定。', 'n5b', {do:'上車'}),
+    O(['konderu_q'], '很擠嗎？', 'part', '可以，他會再說明一次；之後還是要決定搭哪班。', 'n3c')]},
+  {id:'n3c', t:'hear', c:['ima_ippai'], zh:'對，現在很滿。', q:[], learn:['這班現在很滿'], next:'n3'},
+  {id:'n4', t:'hear', c:['go_fun_kana'], zh:'嗯，大概 5 分鐘吧。', q:[Q('下一班多久來？', ['大約 5 分鐘（他不太確定）', '一定 5 分鐘後', '要坐 5 分鐘'], 'go_fun_kana')], learn:['下一班大約 5 分鐘（他說「かな」，不太確定）'], todo:'看站牌時刻表確認', next:'n5'},
+  {id:'n5', t:'end', res:'ok', text:'你等下一班。他說「5分ぐらいかな」只是大概，站牌上的時刻表可以再確認。'},
+  {id:'n5b', t:'end', res:'ok', text:'你擠上這班，也會到金閣寺。'}]);
+
+K('aa_sore_hantai', 'ああ、それは{反対|はんたい}。', 'ā, sore wa hantai', '啊，那台是反的', 'dir');
+K('kocchi_janakute', 'こっちじゃなくて、{向|む}こう。', 'kotchi ja nakute, mukō', '不是這邊，是對面', 'place', '〜じゃなくて＝不是…而是…');
+K('shingou_watatte_sugu', '{信号|しんごう}{渡|わた}ってすぐ。', 'shingō watatte sugu', '過了紅綠燈就到', 'dir');
+K('shingou_mukou', '{信号|しんごう}を{渡|わた}って、{向|む}こうのバス{停|てい}です。', 'shingō o watatte, mukō no basutei desu', '過紅綠燈，在對面的公車站', 'place');
+K('yuki_noreba', '「{金閣寺行|きんかくじゆ}き」って{書|か}いてあるのに{乗|の}ればいいよ。', '“Kinkakuji-yuki” tte kaite aru no ni noreba ii yo', '搭寫著「金閣寺行き」的就好', 'advice', '〜行き＝開往…。車頭和車側會寫終點或主要方向。');
+V('bus', 4, 'b4t', {who:'路人（阿伯）', tr:true, note:'換說法：こっちじゃなくて／〜行き'}, [bOpen(),
+  {id:'n2', t:'hear', c:['aa_sore_hantai', 'kocchi_janakute', 'shingou_watatte_sugu'], zh:'啊，那台是反的。不是這邊，是對面。過了紅綠燈就到。',
+    easy:{c:['kono_basu_hantai', 'shingou_mukou'], zh:'這台巴士是反方向。過紅綠燈，在對面的公車站。'},
+    q:[Q('這台方向對嗎？', ['反方向', '方向對', '他不知道'], 'aa_sore_hantai', 'kono_basu_hantai'), Q('要去哪裡？', ['過紅綠燈到對面', '這邊等', '往回走'], 'shingou_watatte_sugu', 'shingou_mukou')],
+    learn:['這台是反方向', '過紅綠燈到對面'], todo:'確認要搭哪台', next:'n3'},
+  {id:'n3', t:'act', q:'你要怎麼接？', o:[
+    O(['mukougawa_desune'], '是對面那一側對吧？', 'ok', '確認方向，他會再補充要搭哪台。', 'n4', {skel:'ne', fix:true}),
+    O(['sumimasen', 'yukkuri'], '不好意思，請說慢一點。', 'ok', '聽不清楚就請他慢一點。', 'n2s', {fix:true}),
+    O(['gyaku_daijoubu'], '反的嗎？那這台沒問題吧。', 'bad', '反＝相反，這台不行。', null)]},
+  {id:'n2s', t:'hear', c:['kono_basu_hantai', 'shingou_mukou'], zh:'這台巴士是反方向。過紅綠燈，在對面的公車站。', q:[], learn:['過紅綠燈，到對面的公車站'], next:'n3'},
+  {id:'n4', t:'hear', c:['sousou', 'yuki_noreba'], zh:'對對。搭寫著「金閣寺行き」的就好。', q:[Q('該搭哪台？', ['車上寫「金閣寺行き」的', '寫「京都駅」的', '任何一台'], 'yuki_noreba')], learn:['找寫著「金閣寺行き」的車'], next:'n5'},
+  {id:'n5', t:'end', res:'ok', text:'你過紅綠燈到對面，找寫著「金閣寺行き」的巴士。'}]);
+
+/* L5 資訊量大、多輪 */
+K('kinkaku_desuka', '{金閣寺|きんかくじ}ですか？', 'Kinkakuji desu ka?', '金閣寺嗎？（確認目的地）', 'filler');
+K('iku_koto_wa', 'このバスも{行|い}くことは{行|い}くんですけど、', 'kono basu mo iku koto wa iku n desu kedo', '這台到是會到，但是…', 'concl', '〜ことは〜けど：「…是…沒錯，但是」，後面才是重點。');
+K('toomawari', 'すごく{遠回|とおまわ}りなんですよ。', 'sugoku tōmawari nan desu yo', '繞很遠的路', 'reason');
+K('mukou_205_hou', '{道|みち}の{向|む}こうから205{番|ばん}に{乗|の}ったほうが、', 'michi no mukō kara nihyaku-go-ban ni notta hō ga', '從馬路對面搭 205 號的話', 'advice', '〜たほうが＝…比較好。');
+K('nijuppun_hayaku', '20{分|ぷん}くらい{早|はや}く{着|つ}きます。', 'nijuppun kurai hayaku tsukimasu', '大約早 20 分鐘到', 'time');
+K('toomawari_desu', '{遠回|とおまわ}りです。', 'tōmawari desu', '是繞遠路', 'reason');
+K('mukou_de_205', '{向|む}こうで205{番|ばん}に{乗|の}ると、', 'mukō de nihyaku-go-ban ni noru to', '在對面搭 205 號的話', 'advice');
+K('mukou_205_ne', '{向|む}こうの205{番|ばん}ですね。', 'mukō no nihyaku-go-ban desu ne', '對面的 205 號對吧？', 'ask');
+K('shingou_sugu', '{信号|しんごう}がすぐそこにあるので、', 'shingō ga sugu soko ni aru node', '紅綠燈就在那邊，所以…', 'place');
+K('soko_de_watatte', 'そこで{渡|わた}ってくださいね。', 'soko de watatte kudasai ne', '請在那裡過馬路喔', 'dir');
+K('ikimasu_ne_norimasu', '{行|い}きますね。じゃあ、{乗|の}ります。', 'ikimasu ne. jā, norimasu', '會到對吧，那我上車', 'ask');
+K('nanban_desuka', 'すみません、{何番|なんばん}ですか。', 'sumimasen, nan-ban desu ka', '不好意思，是幾號？', 'ask');
+K('b205_michi', '205{番|ばん}です。{道|みち}の{向|む}こうから。', 'nihyaku-go-ban desu. michi no mukō kara', '205 號，從馬路對面', 'num');
+V('bus', 5, 'b5a', {who:'排隊的阿姨', note:'「會到，但是…」'}, [bOpen(),
+  {id:'n2', t:'hear', c:['kinkaku_desuka', 'iku_koto_wa', 'toomawari', 'mukou_205_hou', 'nijuppun_hayaku'], zh:'金閣寺嗎？這台到是會到，可是繞很遠的路喔。從馬路對面搭 205 號，大概會早 20 分鐘到。',
+    easy:{c:['b_kono', 'toomawari_desu', 'mukou_de_205', 'nijuppun_hayaku'], zh:'這台巴士是繞遠路。在對面搭 205 號的話，大約早 20 分鐘到。'},
+    q:[Q('這台會到金閣寺嗎？', ['會，但繞很遠', '不會', '會，而且最快'], 'iku_koto_wa', 'toomawari_desu'), Q('她建議你怎麼做？', ['到對面搭 205', '就搭這台', '搭計程車'], 'mukou_205_hou', 'mukou_de_205'), Q('可以早多少？', ['大約 20 分鐘', '大約 2 分鐘', '20 分鐘後發車'], 'nijuppun_hayaku', 'nijuppun_hayaku')],
+    learn:['這台會到，但繞很遠', '對面的 205 大約早 20 分鐘'], todo:'決定要不要過馬路搭 205', next:'n3'},
+  {id:'n3', t:'act', q:'你要怎麼做？', o:[
+    O(['mukou_205_ne'], '對面的 205 號對吧？', 'ok', '聽到「行く」不要馬上上車，けど 後面的建議才是重點。', 'n4', {skel:'ne', fix:true}),
+    O(['ikimasu_ne_norimasu'], '會到對吧，那我上車。', 'part', '會到，但大約多花 20 分鐘。不是錯，只是比較慢。', 'n5s', {do:'上車'}),
+    O(['nanban_desuka'], '不好意思，是幾號？', 'ok', '再問一次沒問題，她會再說一次。', 'n2r', {fix:true})]},
+  {id:'n2r', t:'hear', c:['b205_michi'], zh:'205 號，從馬路對面。', q:[], learn:['205 號，在馬路對面'], next:'n3'},
+  {id:'n4', t:'hear', c:['hai', 'shingou_sugu', 'soko_de_watatte'], zh:'對。紅綠燈就在那邊，請在那裡過馬路喔。',
+    q:[Q('她要你在哪裡過馬路？', ['旁邊的紅綠燈', '地下道', '哪裡都可以'], 'shingou_sugu')], learn:['在旁邊的紅綠燈過馬路'], fig:{type:'cross', a:'你（紅綠燈旁）', b:'對面公車站：205'}, next:'n5'},
+  {id:'n5', t:'end', res:'ok', text:'你從旁邊的紅綠燈過馬路，搭 205 號，早 20 分鐘到金閣寺。'},
+  {id:'n5s', t:'end', res:'slow', text:'你搭了這台，會到金閣寺，但繞路大約多花 20 分鐘。'}]);
+
+K('ikanain_desu', '{行|い}かないんです。', 'ikanai n desu', '不會去', 'neg');
+K('demo', 'でも、', 'demo', '不過（後面是辦法）', 'cond');
+K('tsugi_teiryuujo', '{次|つぎ}の{停留所|ていりゅうじょ}で{降|お}りて、', 'tsugi no teiryūjo de orite', '在下一個站牌下車，', 'next', '停留所＝公車站牌。');
+K('norikaereba', '205{番|ばん}に{乗|の}り{換|か}えれば{行|い}けますよ。', 'nihyaku-go-ban ni norikaereba ikemasu yo', '換搭 205 號就能到', 'advice');
+K('norikae_no_basutei', '{乗|の}り{換|か}えのバス{停|てい}は、', 'norikae no basutei wa', '轉乘的公車站呢', 'topic');
+K('orita_tokoro', '{降|お}りたところと{同|おな}じです。', 'orita tokoro to onaji desu', '跟下車的地方一樣', 'place');
+K('kono_basu_ikimasen', 'このバスは{行|い}きません。', 'kono basu wa ikimasen', '這台巴士不會去', 'neg');
+K('tsugi_205_ne', '{次|つぎ}で{降|お}りて、205{番|ばん}ですね。', 'tsugi de orite, nihyaku-go-ban desu ne', '下一站下車，205 號對吧？', 'ask');
+K('norikae_tte', '「{乗|の}り{換|か}え」って{何|なん}ですか。', '“norikae” tte nan desu ka', '「乗り換え」是什麼？', 'ask');
+K('basu_kaeru', 'バスを{変|か}えることです。', 'basu o kaeru koto desu', '就是換一台巴士', 'concl');
+K('shuuten_made', 'じゃあ、{終点|しゅうてん}まで{乗|の}ります。', 'jā, shūten made norimasu', '那我坐到終點', 'ask');
+K('shuuten_desu', '{終点|しゅうてん}ですよ。', 'shūten desu yo', '終點站到了', 'place');
+K('tooi_desu', '{金閣寺|きんかくじ}は、ここからだと{遠|とお}いですね。', 'Kinkakuji wa, koko kara da to tōi desu ne', '金閣寺從這裡過去很遠', 'place');
+K('modotte', '{反対方向|はんたいほうこう}のバスで{戻|もど}ってください。', 'hantai-hōkō no basu de modotte kudasai', '請搭反方向的巴士回去', 'next');
+V('bus', 5, 'b5b', {who:'司機', note:'不到，但可以轉乘'}, [bOpen(),
+  {id:'n2', t:'hear', c:['b_kono', 'kinkaku_niwa', 'ikanain_desu', 'demo', 'tsugi_teiryuujo', 'norikaereba', 'norikae_no_basutei', 'orita_tokoro'], zh:'這台巴士不會到金閣寺。不過，在下一個站牌下車，換搭 205 號就能到。轉乘的公車站跟下車的地方一樣。',
+    easy:{c:['kono_basu_ikimasen', 'demo', 'tsugi_teiryuujo', 'b205_ni_notte', 'onaji_basutei'], zh:'這台巴士不會去。不過，在下一個站牌下車，請搭 205 號。同一個公車站。'},
+    q:[Q('這台會到金閣寺嗎？', ['不會，但可以轉乘', '會直接到', '完全到不了'], 'ikanain_desu', 'kono_basu_ikimasen'), Q('要在哪裡下車？', ['下一個站牌', '終點站', '金閣寺道'], 'tsugi_teiryuujo', 'tsugi_teiryuujo'), Q('轉乘的公車站在哪？', ['下車的同一個地方', '馬路對面', '車站裡面'], 'orita_tokoro', 'onaji_basutei')],
+    learn:['這台不到，但下一站可以換 205', '在下車的同一個站牌換車'], todo:'上車，下一站下車', next:'n3'},
+  {id:'n3', t:'act', q:'你要怎麼做？', o:[
+    O(['tsugi_205_ne'], '下一站下車，205 號對吧？', 'ok', '長回答只挑「要做的事」確認一次。', 'n5', {skel:'ne', fix:true}),
+    O(['norikae_tte'], '「乗り換え」是什麼？', 'ok', '聽不懂的關鍵詞直接問，是很好的求助。', 'n3b', {fix:true}),
+    O(['shuuten_made'], '那我坐到終點。', 'bad', '他說的是「次の停留所で降りて」（下一站下車）。', 'nx')]},
+  {id:'n3b', t:'hear', c:['basu_kaeru'], zh:'就是換一台巴士。', q:[], learn:['乗り換え＝換車'], next:'n3'},
+  {id:'nx', t:'hear', who:'司機（到了終點）', c:['shuuten_desu', 'tooi_desu', 'modotte'], zh:'終點站到了。金閣寺從這裡過去很遠，請搭反方向的巴士回去。',
+    q:[Q('現在該怎麼辦？', ['搭反方向的巴士回去', '在這裡等 205', '走路過去'], 'modotte')], learn:['坐過頭了，要搭反方向回去'], next:'n6'},
+  {id:'n5', t:'end', res:'ok', text:'你上車，下一站下車，在同一個站牌換搭 205 號。'},
+  {id:'n6', t:'end', res:'late', text:'你坐到終點，只好搭反方向回去。下次聽到「次の停留所で降りて」就要準備下車。'}]);
+
+K('kinkaku_deshitara', '{金閣寺|きんかくじ}でしたら、', 'Kinkakuji deshitara', '如果是去金閣寺', 'cond', 'でしたら＝なら 的客氣說法。');
+K('b205_desune', '205{番|ばん}ですね。', 'nihyaku-go-ban desu ne', '是 205 號', 'num');
+K('noriba_wa', 'のりばは、', 'noriba wa', '乘車處呢', 'topic');
+K('oudan_saki', '{向|む}こうの{横断歩道|おうだんほどう}を{渡|わた}った{先|さき}になります。', 'mukō no ōdan-hodō o watatta saki ni narimasu', '在過了那邊斑馬線之後的地方', 'place', '横断歩道＝斑馬線。');
+K('chodo_dechatta', '{今|いま}ちょうど{出|で}ちゃったんで、', 'ima chōdo dechatta n de', '剛好剛開走，所以…', 'reason');
+K('jugofungo', '{次|つぎ}は15{分後|ふんご}ですね。', 'tsugi wa jūgo-fun-go desu ne', '下一班是 15 分鐘後', 'time');
+K('oudan_watatte', '{横断歩道|おうだんほどう}を{渡|わた}ってください。', 'ōdan-hodō o watatte kudasai', '請過斑馬線', 'dir');
+K('oudan_mukou_ne', '{横断歩道|おうだんほどう}の{向|む}こうですね。', 'ōdan-hodō no mukō desu ne', '斑馬線對面對吧？', 'ask');
+K('jugoban_ka', '15{番|ばん}のバスですか。', 'jūgo-ban no basu desu ka', '是 15 號巴士嗎？', 'ask');
+K('ie_205_15fungo', 'いえ、205{番|ばん}です。15{分後|ふんご}に{来|き}ます。', 'ie, nihyaku-go-ban desu. jūgo-fun-go ni kimasu', '不，是 205 號。15 分鐘後來', 'num');
+K('taxi', 'じゃあ、タクシーで{行|い}きます。', 'jā, takushī de ikimasu', '那我搭計程車去', 'ask');
+V('bus', 5, 'b5t', {who:'巴士總站的服務人員', tr:true, note:'換說法：でしたら／〜分後', setup:'你在京都車站的巴士總站附近，要去金閣寺，問了服務人員。'}, [
+  {id:'n1', t:'say', intent:'問：去金閣寺的巴士在哪裡？', skel:'doko', c:['sumimasen', 'kinkaku_iku_basu', 'doko_desuka'], zh:'不好意思，去金閣寺的巴士在哪裡？', next:'n2'},
+  {id:'n2', t:'hear', c:['kinkaku_deshitara', 'b205_desune', 'noriba_wa', 'oudan_saki', 'chodo_dechatta', 'jugofungo'], zh:'如果是去金閣寺，是 205 號。乘車處在過了那邊斑馬線之後的地方。剛好剛開走，下一班是 15 分鐘後。',
+    easy:{c:['b205_desune', 'oudan_watatte', 'jugofungo'], zh:'是 205 號。請過斑馬線。下一班是 15 分鐘後。'},
+    q:[Q('要搭幾號？', ['205 號', '15 號', '25 號'], 'b205_desune', 'b205_desune'), Q('要去哪裡搭？', ['過了斑馬線那邊', '就在這裡', '地下道裡'], 'oudan_saki', 'oudan_watatte'), Q('下一班什麼時候？', ['15 分鐘後', '15 點', '要坐 15 分鐘'], 'jugofungo', 'jugofungo')],
+    learn:['搭 205 號', '過斑馬線那邊搭', '下一班 15 分鐘後'], todo:'過斑馬線去等', next:'n3'},
+  {id:'n3', t:'act', q:'你要怎麼接？', o:[
+    O(['oudan_mukou_ne'], '斑馬線對面對吧？', 'ok', '確認位置就可以出發了。', 'n5', {skel:'ne', fix:true}),
+    O(['jugoban_ka'], '是 15 號巴士嗎？', 'part', '把「15分後」聽成「15番」很常見。用問句確認，對方會糾正你。', 'n3b', {fix:true}),
+    O(['taxi'], '那我搭計程車去。', 'ok', '不想等 15 分鐘，搭計程車也是辦法，只是比較貴。', 'n5t', {do:'搭計程車'})]},
+  {id:'n3b', t:'hear', c:['ie_205_15fungo'], zh:'不，是 205 號。15 分鐘後來。', q:[Q('他糾正了什麼？', ['是 205 號，15 分鐘後來', '是 15 號', '是 205 號，15 點來'], 'ie_205_15fungo')], learn:['糾正：205 號，15 分鐘後來'], next:'n3'},
+  {id:'n5', t:'end', res:'ok', text:'你過斑馬線，在乘車處等 15 分鐘後的 205 號。'},
+  {id:'n5t', t:'end', res:'ok', text:'你決定搭計程車去金閣寺，不用等車。'}]);
+
+/* ============================================================
+   任務二：電車・這班對嗎（模擬情境：月台號碼、時間、所需時間為練習用）
+   ============================================================ */
+T({id:'train', name:'電車・這班對嗎', place:'JR 新大阪站・月台', dest:'京都', setup:'你在新大阪站要去京都，眼前停著一班電車。你問站務員。',
+  sim:'模擬情境：月台號碼、發車時間、所需時間都是練習用，不是實際時刻。',
+  axis:{1:'短的禮貌回答', 2:'句子變長：多一個資訊', 3:'新詞：各站停和快速', 4:'口語縮略、說得比較快', 5:'資訊量大：長回答抓重點'}});
+K('t_kono', 'この{電車|でんしゃ}は', 'kono densha wa', '這班電車（主題）', 'topic');
+K('kyoto_ni', '{京都|きょうと}に', 'Kyōto ni', '到京都', 'place');
+const tOpen = () => ({id:'n1', t:'say', intent:'問：這班電車會到京都嗎？', skel:'iku_ka', c:['sumimasen', 't_kono', 'kyoto_ni', 'ikimasuka'], zh:'不好意思，這班電車會到京都嗎？', next:'n2'});
+K('kyoto_made_nanpun', '{京都|きょうと}まで{何分|なんぷん}くらいですか。', 'Kyōto made nanpun kurai desu ka', '到京都大約幾分鐘？', 'ask');
+K('yonjuppun_kurai', '40{分|ぷん}くらいです。', 'yonjuppun kurai desu', '大約 40 分鐘', 'time', 'くらい＝大約（時間長度）。');
+K('kyoto_doko', '{京都|きょうと}はどこですか。', 'Kyōto wa doko desu ka', '京都在哪裡？', 'ask');
+V('train', 1, 'tr1a', {who:'站務員', note:'會到'}, [tOpen(),
+  {id:'n2', t:'hear', c:['hai', 'ikimasu'], zh:'是，會到。', q:[Q('這班會到京都嗎？', ['會', '不會', '要換車'], 'ikimasu')], learn:['這班會到京都'], todo:'上車', next:'n3'},
+  {id:'n3', t:'act', q:'你要怎麼接？', o:[
+    O(['kyoto_made_nanpun'], '到京都大約幾分鐘？', 'ok', '確認了會到，再問要多久，很自然。', 'n4', {skel:'made'}),
+    O(['arigatou'], '謝謝。（上車）', 'ok', '確認會到就上車。', 'n5', {do:'上車'}),
+    O(['kyoto_doko'], '京都在哪裡？', 'part', '他已經說會到了。想知道第幾站下車，可以問「京都はいくつ目ですか」。', null)]},
+  {id:'n4', t:'hear', c:['yonjuppun_kurai'], zh:'大約 40 分鐘。', q:[Q('到京都要多久？', ['大約 40 分鐘', '40 分鐘後發車', '4 點 10 分'], 'yonjuppun_kurai')], learn:['到京都大約 40 分鐘'], next:'n5'},
+  {id:'n5', t:'end', res:'ok', text:'你搭上這班，往京都出發。'}]);
+
+K('kyoto_yuki_nanbansen', '{京都行|きょうとゆ}きは{何番線|なんばんせん}ですか。', 'Kyōto-yuki wa nan-bansen desu ka', '往京都的在幾號月台？', 'ask', '番線＝月台號碼。〜行き＝開往…');
+K('go_bansen', '5{番線|ばんせん}です。', 'go-bansen desu', '5 號月台', 'num');
+V('train', 1, 'tr1b', {who:'站務員', note:'不到'}, [tOpen(),
+  {id:'n2', t:'hear', c:['iie', 'ikimasen2'], zh:'不，不會到。', q:[Q('這班會到京都嗎？', ['不會', '會', '會，但要換車'], 'ikimasen2')], learn:['這班不到京都'], todo:'問往京都的月台', next:'n3'},
+  {id:'n3', t:'act', q:'你要怎麼接？', o:[
+    O(['kyoto_yuki_nanbansen'], '往京都的在幾號月台？', 'ok', '不到就問該去哪個月台。', 'n4', {skel:'nanban'}),
+    O(['sumimasen', 'mouichido'], '不好意思，請再說一次。', 'ok', '沒把握就請他再說一次。', 'n2r', {fix:true}),
+    O(['jaa_norimasu'], '那我上車。', 'bad', '他說「行きません」，上車就搭錯了。', null)]},
+  {id:'n2r', t:'hear', c:['iie', 'ikimasen2'], zh:'不，不會到。', q:[], learn:['確認：這班不到'], next:'n3'},
+  {id:'n4', t:'hear', c:['go_bansen'], zh:'5 號月台。', q:[Q('往京都在哪裡搭？', ['5 號月台', '5 分鐘後', '第 5 站'], 'go_bansen')], learn:['往京都在 5 號月台'], next:'n5'},
+  {id:'n5', t:'end', res:'ok', text:'你走到 5 號月台搭往京都的車。'}]);
+
+K('daitai_40', 'だいたい40{分|ぷん}です。', 'daitai yonjuppun desu', '大約 40 分鐘', 'time');
+V('train', 1, 'tr1t', {who:'站務員', tr:true, note:'換說法：ええ／だいたい'}, [tOpen(),
+  {id:'n2', t:'hear', c:['ee_ikimasu_yo'], zh:'嗯，會到喔。', q:[Q('這班會到京都嗎？', ['會', '不會', '他不確定'], 'ee_ikimasu_yo')], learn:['這班會到京都'], next:'n3'},
+  {id:'n3', t:'act', q:'你要怎麼接？', o:[
+    O(['kyoto_made_nanpun'], '到京都大約幾分鐘？', 'ok', '確認要多久。', 'n4', {skel:'made'}),
+    O(['kyoto_yuki_nanbansen'], '往京都的在幾號月台？', 'bad', '他已經說這班就會到，不用再找別的月台。', null)]},
+  {id:'n4', t:'hear', c:['daitai_40'], zh:'大約 40 分鐘。', q:[Q('到京都要多久？', ['大約 40 分鐘', '40 分鐘後發車', '4 點'], 'daitai_40')], learn:['大約 40 分鐘'], next:'n5'},
+  {id:'n5', t:'end', res:'ok', text:'你搭上這班，大約 40 分鐘到京都。'}]);
+
+K('kyoto_yottsume', '{京都|きょうと}は{四|よ}つ{目|め}です。', 'Kyōto wa yottsu-me desu', '京都是第四站', 'num', '四つ目＝第四個；四つ＝四個。');
+K('yottsume_ne', '{四|よ}つ{目|め}ですね。', 'yottsu-me desu ne', '第四站對吧？', 'ask');
+K('oriru_toki_anaunsu', '{降|お}りる{時|とき}は、アナウンスがありますよ。', 'oriru toki wa, anaunsu ga arimasu yo', '要下車時會有廣播', 'next');
+K('yottsu_desuka', '{四|よっ}つですか。', 'yottsu desu ka', '四個嗎？', 'ask');
+K('yottsume_no_eki', '{四|よ}つ{目|め}の{駅|えき}です。', 'yottsu-me no eki desu', '是第四個站', 'num');
+V('train', 2, 'tr2a', {who:'站務員', note:'第幾站'}, [tOpen(),
+  {id:'n2', t:'hear', c:['hai', 'ikimasu_yo', 'kyoto_yottsume'], zh:'是，會到喔。京都是第四站。',
+    q:[Q('這班會到嗎？', ['會', '不會', '不知道'], 'ikimasu_yo'), Q('京都是第幾站？', ['第 4 站', '4 號月台', '4 分鐘後'], 'kyoto_yottsume')], learn:['會到', '京都是第四站'], next:'n3'},
+  {id:'n3', t:'act', q:'你要怎麼接？', o:[
+    O(['yottsume_ne'], '第四站對吧？', 'ok', '把重點重複一次＋ね，是最好用的確認。', 'n4', {skel:'ne', fix:true}),
+    O(['sumimasen', 'mouichido'], '不好意思，請再說一次。', 'ok', '他會換個說法再說一次。', 'n2r', {fix:true}),
+    O(['yottsu_desuka'], '四個嗎？', 'part', '四つ目＝第四個，四つ＝四個。用問句確認沒關係，他會糾正你。', 'n2r')]},
+  {id:'n2r', t:'hear', c:['hai', 'yottsume_no_eki'], zh:'是，是第四個站。', q:[], learn:['第四個站'], next:'n3'},
+  {id:'n4', t:'hear', c:['hai_sou', 'oriru_toki_anaunsu'], zh:'對，沒錯。要下車時會有廣播喔。', q:[Q('怎麼知道到了？', ['會有廣播', '站務員會叫你', '要自己數不到'], 'oriru_toki_anaunsu')], learn:['到站會有廣播'], next:'n5'},
+  {id:'n5', t:'end', res:'ok', text:'你搭上車，數到第四站就是京都，也會有廣播。'}]);
+
+K('mittsu_saki', '{三|みっ}つ{先|さき}が{京都|きょうと}です。', 'mittsu saki ga Kyōto desu', '再過三站就是京都', 'num', '三つ先＝往前數第三個。');
+K('mittsu_saki_ne', '{三|みっ}つ{先|さき}ですね。', 'mittsu saki desu ne', '再過三站對吧？', 'ask');
+V('train', 2, 'tr2t', {who:'站務員', tr:true, note:'換說法：三つ先'}, [tOpen(),
+  {id:'n2', t:'hear', c:['ikimasu_yo', 'mittsu_saki'], zh:'會到喔。再過三站就是京都。', q:[Q('京都是哪一站？', ['再過 3 站', '3 號月台', '3 分鐘後'], 'mittsu_saki')], learn:['再過三站是京都'], next:'n3'},
+  {id:'n3', t:'act', q:'你要怎麼接？', o:[
+    O(['mittsu_saki_ne'], '再過三站對吧？', 'ok', '確認站數。', 'n5', {skel:'ne', fix:true}),
+    O(['arigatou'], '謝謝。（上車）', 'ok', '記住「三つ先」就好。', 'n5', {do:'上車'})]},
+  {id:'n5', t:'end', res:'ok', text:'你搭上車，再過三站在京都下車。'}]);
+
+K('kakueki_nanode', 'これは{各駅停車|かくえきていしゃ}なので、', 'kore wa kakueki-teisha na node', '因為這班每站都停', 'reason', '各駅停車＝每站都停的車。なので＝因為。');
+K('jikan_kakaru', '{時間|じかん}がかかりますよ。', 'jikan ga kakarimasu yo', '會花比較多時間', 'time', '時間がかかる＝要花時間。');
+K('hayai_densha', '{速|はや}い{電車|でんしゃ}はありますか。', 'hayai densha wa arimasu ka', '有比較快的車嗎？', 'ask');
+K('kaisoku_arimasu', '{快速|かいそく}がありますよ。', 'kaisoku ga arimasu yo', '有快速車', 'concl');
+K('tonari_5', '{隣|となり}の5{番線|ばんせん}から、', 'tonari no go-bansen kara', '從隔壁的 5 號月台', 'num');
+K('juppungo_demasu', '10{分後|ぷんご}に{出|で}ます。', 'juppun-go ni demasu', '10 分鐘後發車', 'time', '〜分後＝…分鐘之後。和「10時」（10 點）、「10分かかる」（要 10 分鐘）不同。');
+K('jikan_arimasuka', '{時間|じかん}はありますか。', 'jikan wa arimasu ka', '你有時間嗎？', 'ask');
+V('train', 3, 'tr3a', {who:'站務員', note:'各站停，快速比較快'}, [tOpen(),
+  {id:'n2', t:'hear', c:['hai', 'ikimasu', 'demo', 'kakueki_nanode', 'jikan_kakaru'], zh:'會到。不過這班每站都停，會花比較多時間喔。',
+    q:[Q('這班會到京都嗎？', ['會，但比較慢', '不會', '會，而且最快'], 'jikan_kakaru')], learn:['這班會到，但每站停比較慢'], todo:'問有沒有快的車', next:'n3'},
+  {id:'n3', t:'act', q:'你要怎麼接？', o:[
+    O(['hayai_densha'], '有比較快的車嗎？', 'ok', '聽懂「這班慢」，接著問快的車，對話就往下走了。', 'n4'),
+    O(['kore_ni_norimasu'], '我搭這班。', 'ok', '慢一點也會到，這也是合理的決定。', 'n5s', {do:'上車'}),
+    O(['jikan_arimasuka'], '你有時間嗎？', 'part', '時間がかかる＝要花時間；時間はありますか 是問對方有沒有空。再選一次。', null)]},
+  {id:'n4', t:'hear', c:['kaisoku_arimasu', 'tonari_5', 'juppungo_demasu'], zh:'有快速車喔。從隔壁的 5 號月台，10 分鐘後發車。',
+    q:[Q('快速在幾號月台？', ['5 號', '10 號', '15 號'], 'tonari_5'), Q('快速什麼時候發車？', ['10 分鐘後', '10 點整', '要坐 10 分鐘'], 'juppungo_demasu')],
+    learn:['快速在隔壁 5 號月台', '10 分鐘後發車'], fig:{type:'steps', s:[['■', '你在這個月台'], ['→', '走到隔壁'], ['■', '5 號月台：快速'], ['⏱', '10 分鐘後發車']]}, next:'n5'},
+  {id:'n5', t:'end', res:'ok', text:'你走到隔壁 5 號月台，搭 10 分鐘後的快速。'},
+  {id:'n5s', t:'end', res:'slow', text:'你搭了各站停，會到京都，只是比較慢。'}]);
+
+K('kaisoku_nanode', 'これは{快速|かいそく}なので、', 'kore wa kaisoku na node', '這班是快速車，所以…', 'reason');
+K('kyoto_hayai', '{京都|きょうと}まで{早|はや}いですよ。', 'Kyōto made hayai desu yo', '到京都很快', 'concl');
+K('kakueki_doko', '{各駅停車|かくえきていしゃ}はどこですか。', 'kakueki-teisha wa doko desu ka', '每站停的車在哪？', 'ask');
+V('train', 3, 'tr3t', {who:'站務員', tr:true, note:'這次快速就是對的'}, [tOpen(),
+  {id:'n2', t:'hear', c:['hai', 'kaisoku_nanode', 'kyoto_hayai'], zh:'是。這班是快速，到京都很快喔。', q:[Q('這班怎麼樣？', ['就是快的，搭它', '太慢要換車', '不會到京都'], 'kyoto_hayai')], learn:['這班是快速，會到京都'], next:'n3'},
+  {id:'n3', t:'act', q:'你要怎麼做？', o:[
+    O(['kore_ni_norimasu'], '我搭這班。', 'ok', '快速會到，直接搭。', 'n5', {do:'上車'}),
+    O(['kakueki_doko'], '每站停的車在哪？', 'bad', '他說這班就是快的，去找各站停反而更慢。', null)]},
+  {id:'n5', t:'end', res:'ok', text:'你搭上快速，很快就到京都。'}]);
+
+K('a_kyoto', 'あ、{京都|きょうと}ですか？', 'a, Kyōto desu ka?', '啊，京都嗎？（確認目的地）', 'filler');
+K('kakueki_nande', 'これ{各駅|かくえき}なんで、', 'kore kakueki nan de', '這班每站停，所以…', 'reason', 'なんで＝なので 的口語（因為），這裡不是「為什麼」。');
+K('tsugi_kaisoku_hou', '{次|つぎ}の{快速|かいそく}のほうが', 'tsugi no kaisoku no hō ga', '下一班快速比較…', 'advice', '〜のほうが＝…比較。');
+K('hayai_desu_yo', '{早|はや}いですよ。', 'hayai desu yo', '快喔', 'advice');
+K('densha_osoi', 'この{電車|でんしゃ}は{遅|おそ}いです。', 'kono densha wa osoi desu', '這班電車很慢', 'reason');
+K('hayai_desu', '{早|はや}いです。', 'hayai desu', '比較快', 'advice');
+K('tsugi_kaisoku_nanbansen', '{次|つぎ}の{快速|かいそく}は{何番線|なんばんせん}ですか。', 'tsugi no kaisoku wa nan-bansen desu ka', '下一班快速在幾號月台？', 'ask');
+K('onaji_home', '{同|おな}じホームです。', 'onaji hōmu desu', '同一個月台', 'place');
+K('densha_detara', 'この{電車|でんしゃ}が{出|で}たら、', 'kono densha ga detara', '這班開走之後', 'time', '〜たら＝…之後。');
+K('sugu_kimasu', 'すぐ{来|き}ますよ。', 'sugu kimasu yo', '馬上就來', 'time');
+K('kaisoku_ikura', '{快速|かいそく}はいくらですか。', 'kaisoku wa ikura desu ka', '快速要多少錢？', 'ask');
+K('tsuika_iranai', '{快速|かいそく}は{追加料金|ついかりょうきん}はいりませんよ。', 'kaisoku wa tsuika-ryōkin wa irimasen yo', '快速不用另外加錢', 'concl');
+K('kakueki_doko2', '{各駅|かくえき}はどこですか。', 'kakueki wa doko desu ka', '每站停的在哪？', 'ask');
+V('train', 4, 'tr4a', {who:'站務員', note:'口語：各駅なんで'}, [tOpen(),
+  {id:'n2', t:'hear', c:['a_kyoto', 'kakueki_nande', 'tsugi_kaisoku_hou', 'hayai_desu_yo'], zh:'啊，京都嗎？這班每站停，下一班快速比較快喔。',
+    easy:{c:['densha_osoi', 'tsugi_kaisoku_hou', 'hayai_desu'], zh:'這班電車很慢。下一班快速比較快。'},
+    q:[Q('他建議你怎麼做？', ['等下一班快速', '就搭這班', '去別的車站'], 'tsugi_kaisoku_hou', 'tsugi_kaisoku_hou'), Q('這班怎麼了？', ['每站停，比較慢', '不會到京都', '已經客滿'], 'kakueki_nande', 'densha_osoi')],
+    learn:['這班每站停', '下一班快速比較快'], todo:'問快速在哪裡搭', next:'n3'},
+  {id:'n3', t:'act', q:'你要怎麼接？', o:[
+    O(['tsugi_kaisoku_nanbansen'], '下一班快速在幾號月台？', 'ok', '知道要換快速，下一個要知道的就是在哪裡搭。', 'n4', {skel:'nanban'}),
+    O(['kaisoku_ikura'], '快速要多少錢？', 'part', '可以問，他會回答；不過接下來還是要知道在哪裡搭。', 'n3b'),
+    O(['kakueki_doko2'], '每站停的在哪？', 'bad', '他是叫你「不要搭」各駅，不是叫你去找它。', null)]},
+  {id:'n3b', t:'hear', c:['tsuika_iranai'], zh:'快速不用另外加錢。', q:[], learn:['快速不用加錢'], next:'n3'},
+  {id:'n4', t:'hear', c:['onaji_home', 'densha_detara', 'sugu_kimasu'], zh:'同一個月台。這班開走之後，馬上就來了。',
+    q:[Q('快速在哪裡搭？', ['同一個月台', '對面的月台', '樓下的月台'], 'onaji_home'), Q('什麼時候來？', ['這班開走後馬上來', '30 分鐘後', '1 小時後'], 'densha_detara')], learn:['同一個月台', '這班開走後馬上來'], next:'n5'},
+  {id:'n5', t:'end', res:'ok', text:'你留在同一個月台，等這班開走，搭接著來的快速。'}]);
+
+K('koredemo_ikeru', '{京都|きょうと}？あー、これでも{行|い}けるけど、', 'Kyōto? ā, kore demo ikeru kedo', '京都？這班也能到啦，不過…', 'concl');
+K('osoi_ssu', '{遅|おそ}いっすよ。', 'osoi ssu yo', '很慢喔', 'reason', 'っす＝です 的年輕人說法。');
+K('shinkaisoku_3', '{次|つぎ}の{新快速|しんかいそく}、3{分後|ぷんご}なんで、', 'tsugi no shin-kaisoku, sanpun-go nan de', '下一班新快速 3 分鐘後來，所以…', 'time');
+K('matta_hou', 'それ{待|ま}ったほうがいいっす。', 'sore matta hō ga ii ssu', '等那班比較好', 'advice');
+K('shinkaisoku_3e', '{次|つぎ}の{新快速|しんかいそく}は3{分後|ぷんご}です。', 'tsugi no shin-kaisoku wa sanpun-go desu', '下一班新快速 3 分鐘後', 'time');
+K('sore_matte', 'それを{待|ま}ってください。', 'sore o matte kudasai', '請等那班', 'advice');
+K('onaji_home_ka', '{同|おな}じホームですか。', 'onaji hōmu desu ka', '同一個月台嗎？', 'ask');
+K('sou_ssu_koko', 'そうっす。ここで{待|ま}ってれば{来|き}ますよ。', 'sō ssu. koko de mattereba kimasu yo', '對，在這裡等就會來', 'place');
+K('kore_de_ikemasu_ne', 'これで{行|い}けますね。{乗|の}ります。', 'kore de ikemasu ne. norimasu', '這班也能到吧，我上車', 'ask');
+V('train', 4, 'tr4t', {who:'站務員（年輕人）', tr:true, note:'換說法：これでも行けるけど／っす'}, [tOpen(),
+  {id:'n2', t:'hear', c:['koredemo_ikeru', 'osoi_ssu', 'shinkaisoku_3', 'matta_hou'], zh:'京都？這班也能到啦，不過很慢喔。下一班新快速 3 分鐘後來，等那班比較好。',
+    easy:{c:['densha_osoi', 'shinkaisoku_3e', 'sore_matte'], zh:'這班電車很慢。下一班新快速 3 分鐘後。請等那班。'},
+    q:[Q('這班會到京都嗎？', ['會到，但很慢', '不會到', '這班最快'], 'koredemo_ikeru', 'densha_osoi'), Q('新快速什麼時候來？', ['3 分鐘後', '3 點', '要坐 3 分鐘'], 'shinkaisoku_3', 'shinkaisoku_3e')],
+    learn:['這班會到但很慢', '新快速 3 分鐘後來'], todo:'確認在哪裡等新快速', next:'n3'},
+  {id:'n3', t:'act', q:'你要怎麼接？', o:[
+    O(['onaji_home_ka'], '同一個月台嗎？', 'ok', '確認要在哪裡等。', 'n4'),
+    O(['kore_de_ikemasu_ne'], '這班也能到吧，我上車。', 'part', '會到，但比 3 分鐘後的新快速慢很多。', 'n5s', {do:'上車'})]},
+  {id:'n4', t:'hear', c:['sou_ssu_koko'], zh:'對，在這裡等就會來。', q:[Q('要在哪裡等？', ['同一個月台', '對面月台', '樓下'], 'sou_ssu_koko')], learn:['在同一個月台等'], next:'n5'},
+  {id:'n5', t:'end', res:'ok', text:'你在同一個月台等 3 分鐘後的新快速。'},
+  {id:'n5s', t:'end', res:'slow', text:'你搭了這班，會到，但比新快速慢很多。'}]);
+
+K('kyoto_deshitara', '{京都|きょうと}でしたら、', 'Kyōto deshitara', '如果是去京都', 'cond', 'でしたら＝なら 的客氣說法。');
+K('notta_hou_hayai', '{次|つぎ}の{快速|かいそく}に{乗|の}ったほうが{早|はや}いですよ。', 'tsugi no kaisoku ni notta hō ga hayai desu yo', '搭下一班快速比較快', 'advice', '〜たほうが＝…比較好。');
+K('yonjuppun_kakaru', '{京都|きょうと}まで40{分|ぷん}かかっちゃいます。', 'Kyōto made yonjuppun kakatchaimasu', '到京都要花 40 分鐘', 'time', '〜かかる＝要花（時間）。〜ちゃう 帶有「可惜」的語氣。');
+K('kaisoku_5', '{快速|かいそく}は5{番線|ばんせん}から、', 'kaisoku wa go-bansen kara', '快速從 5 號月台', 'num');
+K('h1020', '10{時|じ}20{分発|ぷんはつ}です。', 'jū-ji nijuppun hatsu desu', '10:20 發車', 'time', '〜発＝幾點出發。和「20分後」（20 分鐘後）、「20分かかる」（要花 20 分鐘）不同。');
+K('kaisoku_notte', '{快速|かいそく}に{乗|の}ってください。', 'kaisoku ni notte kudasai', '請搭快速', 'advice');
+K('go_1020_ne', '5{番線|ばんせん}の10{時|じ}20{分|ぷん}ですね。', 'go-bansen no jū-ji nijuppun desu ne', '5 號月台 10:20 對吧？', 'ask');
+K('kaidan_mukai', '{階段|かいだん}で{向|む}かいのホームに{行|い}ってください。', 'kaidan de mukai no hōmu ni itte kudasai', '請走樓梯到對面月台', 'dir');
+K('yonjuppun_ka', '40{分|ぷん}ですか。ありがとうございます。', 'yonjuppun desu ka. arigatō gozaimasu', '40 分鐘嗎？謝謝', 'ask');
+V('train', 5, 'tr5a', {who:'站務員', note:'長回答：建議＋月台＋時間'}, [tOpen(),
+  {id:'n2', t:'hear', c:['kyoto_deshitara', 'notta_hou_hayai', 'kakueki_nanode', 'yonjuppun_kakaru', 'kaisoku_5', 'h1020'], zh:'如果是去京都，搭下一班快速比較快喔。這班每站停，到京都要花 40 分鐘。快速從 5 號月台，10:20 發車。',
+    easy:{c:['kaisoku_notte', 'kaisoku_5', 'h1020'], zh:'請搭快速。快速從 5 號月台，10:20 發車。'},
+    q:[Q('你該搭眼前這班嗎？', ['不要，改搭快速', '要，搭這班', '不要，去別的車站'], 'notta_hou_hayai', 'kaisoku_notte'), Q('快速在幾號月台？', ['5 號', '4 號', '10 號'], 'kaisoku_5', 'kaisoku_5'), Q('快速什麼時候發車？', ['10:20 發車', '20 分鐘後發車', '要花 20 分鐘'], 'h1020', 'h1020')],
+    learn:['改搭快速', '快速：5 號月台，10:20 發車'], todo:'去 5 號月台', next:'n3'},
+  {id:'n3', t:'act', q:'你要怎麼接？', o:[
+    O(['go_1020_ne'], '5 號月台 10:20 對吧？', 'ok', '長回答裡只挑「你要行動的資訊」確認一次。', 'n4', {skel:'ne', fix:true}),
+    O(['yonjuppun_ka'], '40 分鐘嗎？謝謝。（搭眼前這班）', 'part', '40 分鐘是這班慢車的時間。你搭了會到，但比較慢。', 'n5s', {do:'搭眼前這班'}),
+    O(['sumimasen', 'yukkuri'], '不好意思，請說慢一點。', 'ok', '長回答聽不完很正常，請他慢一點。', 'n2s', {fix:true})]},
+  {id:'n2s', t:'hear', c:['kaisoku_notte', 'kaisoku_5', 'h1020'], zh:'請搭快速。快速從 5 號月台，10:20 發車。', q:[], learn:['快速：5 號月台 10:20'], next:'n3'},
+  {id:'n4', t:'hear', c:['hai_sou', 'kaidan_mukai'], zh:'對。請走樓梯到對面的月台。', q:[Q('5 號月台怎麼去？', ['走樓梯到對面月台', '就在這個月台', '搭電梯到 1 樓'], 'kaidan_mukai')], learn:['走樓梯到對面月台'],
+    fig:{type:'steps', s:[['■', '你在這個月台'], ['↑', '走樓梯'], ['■', '對面：5 號月台'], ['⏱', '10:20 快速']]}, next:'n5'},
+  {id:'n5', t:'end', res:'ok', text:'你走樓梯到對面的 5 號月台，搭 10:20 的快速。'},
+  {id:'n5s', t:'end', res:'slow', text:'你搭了眼前的慢車，會到京都，但比快速慢。'}]);
+
+K('kocchi_janai', '{京都|きょうと}は、こっちじゃないですね。', 'Kyōto wa, kotchi ja nai desu ne', '去京都不是這邊喔', 'dir');
+K('osaka_houmen', 'このホームは{大阪方面|おおさかほうめん}なので、', 'kono hōmu wa Ōsaka hōmen na node', '這個月台是往大阪方向，所以…', 'dir', '方面＝方向。');
+K('hantai_4', '{反対側|はんたいがわ}の4{番線|ばんせん}から{乗|の}ってください。', 'hantai-gawa no yon-bansen kara notte kudasai', '請從對面的 4 號月台搭', 'num');
+K('h1005', '{次|つぎ}は10{時|じ}5{分発|ふんはつ}の{快速|かいそく}です。', 'tsugi wa jū-ji go-fun hatsu no kaisoku desu', '下一班是 10:05 發車的快速', 'time');
+K('kocchi_osaka', 'こっちは{大阪行|おおさかゆ}きです。', 'kotchi wa Ōsaka-yuki desu', '這邊是往大阪', 'dir');
+K('go_4', '4{番線|ばんせん}に{行|い}ってください。', 'yon-bansen ni itte kudasai', '請到 4 號月台', 'num');
+K('yon_1005_ne', '4{番線|ばんせん}の10{時|じ}5{分|ふん}ですね。', 'yon-bansen no jū-ji go-fun desu ne', '4 號月台 10:05 對吧？', 'ask');
+K('osaka_houmen_ne', '{大阪方面|おおさかほうめん}ですね。{乗|の}ります。', 'Ōsaka hōmen desu ne. norimasu', '往大阪方向對吧，我上車', 'ask');
+K('tsugi_osaka', '{次|つぎ}は、{大阪|おおさか}です。', 'tsugi wa, Ōsaka desu', '下一站是大阪', 'place');
+K('kyoto_yuki_k', 'すみません、{京都行|きょうとゆ}きは{何番線|なんばんせん}ですか。', 'sumimasen, Kyōto-yuki wa nan-bansen desu ka', '請問往京都的在幾號月台？', 'ask');
+K('nana_bansen', '{京都行|きょうとゆ}きは7{番線|ばんせん}ですよ。', 'Kyōto-yuki wa nana-bansen desu yo', '往京都在 7 號月台', 'num');
+V('train', 5, 'tr5t', {who:'站務員', tr:true, note:'月台方向搭錯＋補救'}, [tOpen(),
+  {id:'n2', t:'hear', c:['kocchi_janai', 'osaka_houmen', 'hantai_4', 'h1005'], zh:'去京都不是這邊喔。這個月台是往大阪方向，請從對面的 4 號月台搭。下一班是 10:05 發車的快速。',
+    easy:{c:['kocchi_osaka', 'go_4', 'h1005'], zh:'這邊是往大阪。請到 4 號月台。下一班是 10:05 發車的快速。'},
+    q:[Q('這個月台方向對嗎？', ['不對，這邊往大阪', '對，往京都', '今天停駛'], 'kocchi_janai', 'kocchi_osaka'), Q('要去幾號月台？', ['4 號', '10 號', '5 號'], 'hantai_4', 'go_4'), Q('下一班什麼時候？', ['10:05 發車', '5 分鐘後發車', '要花 10 分鐘'], 'h1005', 'h1005')],
+    learn:['這邊是往大阪（反方向）', '對面 4 號月台', '10:05 快速'], todo:'去對面 4 號月台', next:'n3'},
+  {id:'n3', t:'act', q:'你要怎麼接？', o:[
+    O(['yon_1005_ne'], '4 號月台 10:05 對吧？', 'ok', '確認月台和時間。', 'n5', {skel:'ne', fix:true}),
+    O(['osaka_houmen_ne'], '往大阪方向對吧，我上車。', 'bad', '大阪方面 是「這邊往大阪」，你要去的京都在反方向。', 'nx', {do:'上車'})]},
+  {id:'nx', t:'hear', who:'車內廣播', c:['tsugi_osaka'], zh:'下一站是大阪。', q:[Q('發生什麼事？', ['坐反了，往大阪去了', '快到京都了', '電車停駛'], 'tsugi_osaka')], learn:['坐反了，下一站是大阪'], todo:'在大阪下車，問往京都的月台', next:'n6'},
+  {id:'n6', t:'act', q:'到了大阪，你要怎麼做？', o:[
+    O(['kyoto_yuki_k'], '（問站務員）往京都的在幾號月台？', 'ok', '坐錯不要慌，下車問往目的地的月台。', 'n7', {skel:'nanban', fix:true}),
+    O(['arigatou'], '（留在車上）', 'bad', '再坐下去會離京都更遠。', null)]},
+  {id:'n7', t:'hear', who:'大阪站站務員', c:['nana_bansen'], zh:'往京都在 7 號月台。', q:[Q('往京都在幾號月台？', ['7 號', '7 分鐘後', '第 7 站'], 'nana_bansen')], learn:['大阪站往京都：7 號月台'], next:'n8'},
+  {id:'n5', t:'end', res:'ok', text:'你走到對面 4 號月台，搭 10:05 的快速。'},
+  {id:'n8', t:'end', res:'late', text:'你先坐反到大阪，下車問了站務員，改到 7 號月台搭往京都的車。'}]);
+
+/* ============================================================
+   任務三：問路・找巴士搭乘處（模擬情境：建築、路線、乘車處編號為練習用）
+   ============================================================ */
+T({id:'way', name:'問路・找巴士搭乘處', place:'京都站・出口附近', dest:'巴士搭乘處', setup:'你要搭往金閣寺的巴士，但找不到巴士搭乘處。你問路人或站務員。',
+  sim:'模擬情境：路線、地標、乘車處編號是練習用，實際位置請看現場標示。',
+  axis:{1:'短的禮貌回答', 2:'句子變長：第幾個、左右', 3:'新詞：地標、轉彎', 4:'口語縮略、說得比較快', 5:'資訊量大：長的指路'}});
+K('noriba_doko', 'バス{乗|の}り{場|ば}はどこですか。', 'basu noriba wa doko desu ka', '巴士搭乘處在哪裡？', 'ask', '乗り場＝搭乘處。');
+const wOpen = () => ({id:'n1', t:'say', intent:'問：巴士搭乘處在哪裡？', skel:'doko', c:['sumimasen', 'noriba_doko'], zh:'不好意思，巴士搭乘處在哪裡？', next:'n2'});
+K('asoko_desu', 'あそこです。', 'asoko desu', '在那裡（離你們都遠的地方）', 'place', 'あそこ＝那裡。對方通常會用手指。');
+K('shiroi_mae', '{白|しろ}い{建物|たてもの}の{前|まえ}ですか。', 'shiroi tatemono no mae desu ka', '是白色建築前面嗎？', 'ask');
+K('asoko_doko', 'あそこはどこですか。', 'asoko wa doko desu ka', '那裡是哪裡？', 'ask');
+V('way', 1, 'w1a', {who:'路人', note:'あそこ＋手勢'}, [wOpen(),
+  {id:'n2', t:'hear', c:['asoko_desu'], zh:'在那裡。', point:'他用手指著右前方：那棟白色建築前面，停著很多巴士。',
+    q:[Q('搭乘處在哪？', ['他指的右前方那裡', '車站裡面', '他說沒有巴士'], 'asoko_desu')], learn:['在右前方，他指的那裡'], todo:'確認是哪一棟', next:'n3'},
+  {id:'n3', t:'act', q:'你要怎麼接？', o:[
+    O(['shiroi_mae'], '是白色建築前面嗎？', 'ok', '「あそこ」很模糊，用看得到的東西確認最清楚。', 'n4', {skel:'mae_ka', fix:true}),
+    O(['arigatou'], '謝謝。', 'ok', '看得到他指的地方，直接走過去也可以。', 'n5'),
+    O(['asoko_doko'], '那裡是哪裡？', 'part', '對方已經用手指了。用看得到的東西確認更清楚：「［地標］の前ですか」。', null)]},
+  {id:'n4', t:'hear', c:['hai_sou'], zh:'對，沒錯。', q:[], learn:['白色建築前面'], next:'n5'},
+  {id:'n5', t:'end', res:'ok', text:'你走到那棟白色建築前面，找到巴士搭乘處。'}]);
+
+K('massugu_itte', 'まっすぐ{行|い}って、', 'massugu itte', '直走', 'dir');
+K('migi_desu', '{右|みぎ}です。', 'migi desu', '在右邊', 'dir');
+K('massugu_migi_ne', 'まっすぐ、{右|みぎ}ですね。', 'massugu, migi desu ne', '直走、右邊，對吧？', 'ask');
+K('aruite2', '{歩|ある}いて2{分|ふん}くらいですよ。', 'aruite ni-fun kurai desu yo', '走路大約 2 分鐘', 'time');
+K('hidari_desuka', '{左|ひだり}ですか。', 'hidari desu ka', '左邊嗎？', 'ask');
+K('iie_migi', 'いいえ、{右|みぎ}です。', 'iie, migi desu', '不，是右邊', 'dir');
+V('way', 1, 'w1b', {who:'站務員', note:'直走、右邊'}, [wOpen(),
+  {id:'n2', t:'hear', c:['massugu_itte', 'migi_desu'], zh:'直走，然後在右邊。', q:[Q('怎麼走？', ['直走，在右邊', '直走，在左邊', '先右轉再直走'], 'migi_desu')], learn:['直走，在右邊'], fig:{type:'steps', s:[['↑', '直走'], ['→', '右手邊就是']]}, next:'n3'},
+  {id:'n3', t:'act', q:'你要怎麼接？', o:[
+    O(['massugu_migi_ne'], '直走、右邊，對吧？', 'ok', '方向最容易聽反，重複一次最保險。', 'n4', {skel:'ne', fix:true}),
+    O(['hidari_desuka'], '左邊嗎？', 'part', '用問句確認很好，不過他說的是「右」。他會糾正你。', 'n3b', {fix:true})]},
+  {id:'n3b', t:'hear', c:['iie_migi'], zh:'不，是右邊。', q:[], learn:['是右邊'], next:'n3'},
+  {id:'n4', t:'hear', c:['hai', 'aruite2'], zh:'對。走路大約 2 分鐘喔。', q:[Q('走路要多久？', ['大約 2 分鐘', '2 分鐘後有車', '2 號乘車處'], 'aruite2')], learn:['走路約 2 分鐘'], next:'n5'},
+  {id:'n5', t:'end', res:'ok', text:'你直走，在右邊找到巴士搭乘處。'}]);
+
+K('kono_michi_massugu', 'この{道|みち}をまっすぐです。', 'kono michi o massugu desu', '這條路直走', 'dir');
+K('hidarigawa', '{左側|ひだりがわ}にありますよ。', 'hidari-gawa ni arimasu yo', '在左手邊', 'dir');
+K('massugu_hidari_ne', 'まっすぐ、{左側|ひだりがわ}ですね。', 'massugu, hidari-gawa desu ne', '直走、左手邊對吧？', 'ask');
+V('way', 1, 'w1t', {who:'路人', tr:true, note:'換說法：この道をまっすぐ／左側に'}, [wOpen(),
+  {id:'n2', t:'hear', c:['kono_michi_massugu', 'hidarigawa'], zh:'這條路直走。在左手邊喔。', q:[Q('怎麼走？', ['直走，在左手邊', '直走，在右手邊', '左轉後直走'], 'hidarigawa')], learn:['直走，左手邊'], next:'n3'},
+  {id:'n3', t:'act', q:'你要怎麼接？', o:[
+    O(['massugu_hidari_ne'], '直走、左手邊對吧？', 'ok', '確認方向。', 'n5', {skel:'ne', fix:true}),
+    O(['arigatou'], '謝謝。', 'ok', '聽懂了就出發。', 'n5')]},
+  {id:'n5', t:'end', res:'ok', text:'你沿著這條路直走，在左手邊找到搭乘處。'}]);
+
+K('michi_massugu_itte', 'この{道|みち}をまっすぐ{行|い}って、', 'kono michi o massugu itte', '這條路直走', 'dir');
+K('futatsume_shingou', '{二|ふた}つ{目|め}の{信号|しんごう}を', 'futatsu-me no shingō o', '在第二個紅綠燈', 'num', '二つ目＝第二個。信号＝紅綠燈。');
+K('hidari_desu', '{左|ひだり}です。', 'hidari desu', '左轉（左邊）', 'dir');
+K('futatsume_hidari_ne', '{二|ふた}つ{目|め}の{信号|しんごう}を{左|ひだり}ですね。', 'futatsu-me no shingō o hidari desu ne', '第二個紅綠燈左轉，對吧？', 'ask');
+K('yuubin_tonari_yo', '{郵便局|ゆうびんきょく}の{隣|となり}ですよ。', 'yūbinkyoku no tonari desu yo', '在郵局隔壁', 'place');
+K('hitotsume_ka', '{一|ひと}つ{目|め}ですか。', 'hitotsu-me desu ka', '第一個嗎？', 'ask');
+K('iie_futatsume', 'いいえ、{二|ふた}つ{目|め}です。', 'iie, futatsu-me desu', '不，是第二個', 'num');
+V('way', 2, 'w2a', {who:'站務員', note:'第幾個紅綠燈'}, [wOpen(),
+  {id:'n2', t:'hear', c:['michi_massugu_itte', 'futatsume_shingou', 'hidari_desu'], zh:'這條路直走，在第二個紅綠燈左轉。', q:[Q('在哪裡轉？往哪轉？', ['第二個紅綠燈左轉', '第一個紅綠燈右轉', '第二個紅綠燈右轉'], 'futatsume_shingou')], learn:['直走，第二個紅綠燈左轉'], todo:'確認到了怎麼認', next:'n3'},
+  {id:'n3', t:'act', q:'你要怎麼接？', o:[
+    O(['futatsume_hidari_ne'], '第二個紅綠燈左轉，對吧？', 'ok', '「第幾個＋左右」最容易聽錯，確認這兩個就夠了。', 'n4', {skel:'ne', fix:true}),
+    O(['hitotsume_ka'], '第一個嗎？', 'part', '用問句確認很好，不過他說的是 二つ目（第二個）。', 'n3b', {fix:true})]},
+  {id:'n3b', t:'hear', c:['iie_futatsume'], zh:'不，是第二個。', q:[], learn:['是第二個'], next:'n3'},
+  {id:'n4', t:'hear', c:['hai', 'yuubin_tonari_yo'], zh:'對。在郵局隔壁喔。', q:[Q('搭乘處在哪？', ['郵局隔壁', '郵局對面', '郵局裡面'], 'yuubin_tonari_yo')], learn:['郵局隔壁'],
+    fig:{type:'steps', s:[['↑', '直走'], ['←', '第 2 個紅綠燈左轉'], ['■', '郵局隔壁']]}, next:'n5'},
+  {id:'n5', t:'end', res:'ok', text:'你在第二個紅綠燈左轉，郵局隔壁就是搭乘處。'}]);
+
+K('futatsume_kado', '{二|ふた}つ{目|め}の{角|かど}を', 'futatsu-me no kado o', '在第二個轉角', 'num', '角＝轉角。');
+K('migi_magatte', '{右|みぎ}に{曲|ま}がってください。', 'migi ni magatte kudasai', '請右轉', 'dir', '曲がる＝轉彎。');
+K('futatsume_kado_ne', '{二|ふた}つ{目|め}の{角|かど}を{右|みぎ}ですね。', 'futatsu-me no kado o migi desu ne', '第二個轉角右轉，對吧？', 'ask');
+V('way', 2, 'w2t', {who:'路人', tr:true, note:'換說法：角を右に曲がって'}, [wOpen(),
+  {id:'n2', t:'hear', c:['futatsume_kado', 'migi_magatte'], zh:'在第二個轉角右轉。', q:[Q('怎麼走？', ['第二個轉角右轉', '第二個轉角左轉', '第一個轉角右轉'], 'migi_magatte')], learn:['第二個轉角右轉'], next:'n3'},
+  {id:'n3', t:'act', q:'你要怎麼接？', o:[
+    O(['futatsume_kado_ne'], '第二個轉角右轉，對吧？', 'ok', '確認方向。', 'n5', {skel:'ne', fix:true}),
+    O(['arigatou'], '謝謝。', 'ok', '聽懂就出發。', 'n5')]},
+  {id:'n5', t:'end', res:'ok', text:'你在第二個轉角右轉，找到搭乘處。'}]);
+
+K('hidari_magatte', '{左|ひだり}に{曲|ま}がってください。', 'hidari ni magatte kudasai', '請左轉', 'dir');
+K('yuubin_tonari', '{郵便局|ゆうびんきょく}の{隣|となり}です。', 'yūbinkyoku no tonari desu', '在郵局隔壁', 'place', '隣＝隔壁；前＝前面；向かい＝對面。');
+K('yuubin_mae_ka', '{郵便局|ゆうびんきょく}の{前|まえ}ですか。', 'yūbinkyoku no mae desu ka', '在郵局前面嗎？', 'ask');
+K('ie_tonari', 'いえ、{隣|となり}です。', 'ie, tonari desu', '不，是隔壁', 'place');
+K('kanban', 'バスの{看板|かんばん}が{見|み}えますよ。', 'basu no kanban ga miemasu yo', '會看到巴士的招牌', 'place');
+K('yuubin_doko', '{郵便局|ゆうびんきょく}はどこですか。', 'yūbinkyoku wa doko desu ka', '郵局在哪裡？', 'ask');
+V('way', 3, 'w3a', {who:'站務員', note:'地標：隔壁 vs 前面'}, [wOpen(),
+  {id:'n2', t:'hear', c:['michi_massugu_itte', 'futatsume_shingou', 'hidari_magatte', 'yuubin_tonari'], zh:'這條路直走，在第二個紅綠燈左轉。在郵局隔壁。',
+    q:[Q('在哪裡轉？往哪轉？', ['第二個紅綠燈左轉', '第一個紅綠燈右轉', '第二個紅綠燈右轉'], 'hidari_magatte'), Q('旁邊有什麼？', ['郵局', '便利商店', '銀行'], 'yuubin_tonari')],
+    learn:['第二個紅綠燈左轉', '郵局隔壁'], next:'n3'},
+  {id:'n3', t:'act', q:'你要怎麼接？', o:[
+    O(['yuubin_mae_ka'], '在郵局前面嗎？', 'ok', '用地標確認是好方法。他會糾正你：是「隔壁」不是「前面」。', 'n4', {skel:'mae_ka', fix:true}),
+    O(['futatsume_hidari_ne'], '第二個紅綠燈左轉，對吧？', 'ok', '確認轉彎的地方。', 'n4b', {skel:'ne', fix:true}),
+    O(['yuubin_doko'], '郵局在哪裡？', 'part', '郵局只是用來認路的地標，不用另外找它。可以改確認轉彎的地方。', null)]},
+  {id:'n4', t:'hear', c:['ie_tonari', 'kanban'], zh:'不，是隔壁。會看到巴士的招牌喔。', q:[Q('搭乘處正確的位置？', ['郵局隔壁，看得到巴士招牌', '郵局正前方', '郵局裡面'], 'ie_tonari')], learn:['糾正：是郵局隔壁', '看得到巴士招牌'], next:'n5'},
+  {id:'n4b', t:'hear', c:['hai_sou', 'kanban'], zh:'對，沒錯。會看到巴士的招牌喔。', q:[Q('到了怎麼認？', ['看得到巴士招牌', '有紅色大門', '有車站時鐘'], 'kanban')], learn:['看得到巴士招牌'], next:'n5'},
+  {id:'n5', t:'end', res:'ok', text:'你在第二個紅綠燈左轉，郵局隔壁看到巴士的招牌。'}]);
+
+K('eki_detara', '{駅|えき}を{出|で}たら、', 'eki o detara', '出了車站之後', 'time');
+K('migi_itte', '{右|みぎ}に{行|い}って、', 'migi ni itte', '往右走', 'dir');
+K('hashi_watatta', '{橋|はし}を{渡|わた}ったところです。', 'hashi o watatta tokoro desu', '過了橋那裡', 'place');
+K('konbini_mukai', 'コンビニの{向|む}かいですよ。', 'konbini no mukai desu yo', '在便利商店對面', 'place', '向かい＝對面。');
+K('konbini_mae_ka', 'コンビニの{前|まえ}ですか。', 'konbini no mae desu ka', '在便利商店前面嗎？', 'ask');
+K('mukai_hantai', 'いいえ、{向|む}かいです。{道|みち}の{反対側|はんたいがわ}。', 'iie, mukai desu. michi no hantai-gawa', '不，是對面，馬路的另一邊', 'place');
+K('hashi_konbini_ne', '{橋|はし}を{渡|わた}って、コンビニの{向|む}かいですね。', 'hashi o watatte, konbini no mukai desu ne', '過橋，便利商店對面，對吧？', 'ask');
+V('way', 3, 'w3t', {who:'路人', tr:true, note:'換說法：橋を渡った／向かい'}, [wOpen(),
+  {id:'n2', t:'hear', c:['eki_detara', 'migi_itte', 'hashi_watatta', 'konbini_mukai'], zh:'出了車站，往右走，過了橋那裡。在便利商店對面喔。',
+    q:[Q('路線是？', ['出站→往右→過橋', '出站→往左→過橋', '出站→往右→過馬路'], 'hashi_watatta'), Q('旁邊的地標？', ['便利商店對面', '便利商店隔壁', '便利商店裡面'], 'konbini_mukai')],
+    learn:['出站往右，過橋', '便利商店對面'], next:'n3'},
+  {id:'n3', t:'act', q:'你要怎麼接？', o:[
+    O(['konbini_mae_ka'], '在便利商店前面嗎？', 'ok', '用地標確認。他會糾正：是「向かい」（對面）。', 'n4', {skel:'mae_ka', fix:true}),
+    O(['hashi_konbini_ne'], '過橋，便利商店對面，對吧？', 'ok', '把路線確認一次。', 'n5', {skel:'ne', fix:true})]},
+  {id:'n4', t:'hear', c:['mukai_hantai'], zh:'不，是對面，馬路的另一邊。', q:[Q('正確位置？', ['便利商店的馬路對面', '便利商店門口', '橋上'], 'mukai_hantai')], learn:['糾正：在便利商店的馬路對面'], next:'n5'},
+  {id:'n5', t:'end', res:'ok', text:'你出站往右，過橋，在便利商店的馬路對面找到搭乘處。'}]);
+
+K('aa_noriba', 'あー、バス{乗|の}り{場|ば}ですね。', 'ā, basu noriba desu ne', '啊，巴士搭乘處啊', 'filler');
+K('kaidan_orite', 'そこの{階段|かいだん}{降|お}りて、', 'soko no kaidan orite', '從那邊的樓梯下去', 'dir', '口語常省略「を」：階段（を）降りて。');
+K('chika_tootte', '{地下|ちか}{通|とお}って、', 'chika tōtte', '走地下（通道）', 'dir', '地下＝地下（通道）；地下鉄＝地下鐵。通る＝經過。');
+K('hantai_detara', '{反対側|はんたいがわ}に{出|で}たらすぐですよ。', 'hantai-gawa ni detara sugu desu yo', '從另一側出去就到了', 'place');
+K('kaidan_orite_e', '{階段|かいだん}を{降|お}りてください。', 'kaidan o orite kudasai', '請下樓梯', 'dir');
+K('chika_tootte_e', '{地下|ちか}を{通|とお}って、', 'chika o tōtte', '走地下通道', 'dir');
+K('hantai_dete', '{反対側|はんたいがわ}に{出|で}てください。', 'hantai-gawa ni dete kudasai', '請從另一側出去', 'place');
+K('sugu_desu', 'すぐです。', 'sugu desu', '馬上就到', 'place');
+K('deguchi_namae', '{反対側|はんたいがわ}の{出口|でぐち}は{何|なん}という{名前|なまえ}ですか。', 'hantai-gawa no deguchi wa nan to iu namae desu ka', '另一側的出口叫什麼名字？', 'ask');
+K('namae_oboete', '{名前|なまえ}は{覚|おぼ}えてないんですけど、', 'namae wa oboete nai n desu kedo', '名字我不記得，不過…', 'filler');
+K('kaite_aru', '「バスのりば」って{書|か}いてあるので、', '“basu noriba” tte kaite aru node', '有寫「巴士搭乘處」，所以…', 'place');
+K('mite_ikeba', 'それを{見|み}ていけば{大丈夫|だいじょうぶ}です。', 'sore o mite ikeba daijōbu desu', '跟著它走就沒問題', 'next');
+K('chikatetsu_ka', '{地下鉄|ちかてつ}に{乗|の}りますか。', 'chikatetsu ni norimasu ka', '要搭地下鐵嗎？', 'ask');
+K('aruite_ikemasu', 'いえいえ、{歩|ある}いて{行|い}けますよ。', 'ie ie, aruite ikemasu yo', '不不，走路就能到', 'concl');
+V('way', 4, 'w4a', {who:'站務員', note:'口語：省略を、地下 vs 地下鉄'}, [wOpen(),
+  {id:'n2', t:'hear', c:['aa_noriba', 'kaidan_orite', 'chika_tootte', 'hantai_detara'], zh:'啊，巴士搭乘處啊。從那邊的樓梯下去，走地下通道，從另一側出去就到了喔。',
+    easy:{c:['kaidan_orite_e', 'chika_tootte_e', 'hantai_dete', 'sugu_desu'], zh:'請下樓梯。走地下通道，從另一側出去。馬上就到。'},
+    q:[Q('路線順序？', ['下樓梯→走地下→另一側出去', '上樓梯→過天橋→右轉', '直走→過馬路→左轉'], 'chika_tootte', 'chika_tootte_e'), Q('出去之後還要走多遠？', ['出去就到了', '要再搭車', '要走 10 分鐘'], 'hantai_detara', 'sugu_desu')],
+    learn:['下樓梯→走地下→另一側出去'], todo:'確認出口怎麼認', next:'n3'},
+  {id:'n3', t:'act', q:'你要怎麼接？', o:[
+    O(['deguchi_namae'], '另一側的出口叫什麼名字？', 'ok', '日本車站出口很多，問出口名稱最實際。', 'n4'),
+    O(['chikatetsu_ka'], '要搭地下鐵嗎？', 'ok', '不確定就問，他會說明「地下」只是通道。', 'n3b', {fix:true}),
+    O(['sumimasen', 'yukkuri'], '不好意思，請說慢一點。', 'ok', '口語聽不清楚就請他慢一點。', 'n2s', {fix:true})]},
+  {id:'n3b', t:'hear', c:['aruite_ikemasu'], zh:'不不，走路就能到。', q:[Q('要怎麼去？', ['走路就能到', '要搭地下鐵', '要搭計程車'], 'aruite_ikemasu')], learn:['走地下通道過去，不用搭車'], next:'n3'},
+  {id:'n2s', t:'hear', c:['kaidan_orite_e', 'chika_tootte_e', 'hantai_dete', 'sugu_desu'], zh:'請下樓梯。走地下通道，從另一側出去。馬上就到。', q:[], learn:['下樓梯，走地下通道，另一側出去'], next:'n3'},
+  {id:'n4', t:'hear', c:['namae_oboete', 'kaite_aru', 'mite_ikeba'], zh:'名字我不記得，不過有寫「巴士搭乘處」，跟著它走就沒問題。',
+    q:[Q('要怎麼找到出口？', ['跟著「バスのりば」的標示', '找出口的名字', '再問下一個人'], 'kaite_aru')], learn:['跟著「バスのりば」標示'],
+    fig:{type:'steps', s:[['↓', '下樓梯'], ['→', '走地下通道'], ['↑', '另一側出去'], ['■', '看「バスのりば」標示']]}, next:'n5'},
+  {id:'n5', t:'end', res:'ok', text:'你下樓梯走地下通道，跟著「バスのりば」標示，從另一側出去就到了。'}]);
+
+K('sore_nara', 'バス？あ、それなら、', 'basu? a, sore nara', '巴士？啊，那樣的話', 'cond');
+K('kocchi_dete', 'こっち{出|で}て、', 'kotchi dete', '從這邊出去', 'dir');
+K('mou_miemasu', 'まっすぐ{行|い}ったら、もう{見|み}えますよ。', 'massugu ittara, mō miemasu yo', '直走就看得到了', 'place');
+K('kono_deguchi', 'この{出口|でぐち}を{出|で}てください。', 'kono deguchi o dete kudasai', '請從這個出口出去', 'dir');
+K('massugu_mieru', 'まっすぐ{行|い}くと{見|み}えます。', 'massugu iku to miemasu', '直走就會看到', 'place');
+K('kono_deguchi_ne', 'この{出口|でぐち}からまっすぐですね。', 'kono deguchi kara massugu desu ne', '從這個出口直走，對吧？', 'ask');
+V('way', 4, 'w4t', {who:'路人', tr:true, note:'換說法：それなら／こっち出て'}, [wOpen(),
+  {id:'n2', t:'hear', c:['sore_nara', 'kocchi_dete', 'mou_miemasu'], zh:'巴士？啊，那樣的話，從這邊出去，直走就看得到了。', point:'他指著你身後的出口。',
+    easy:{c:['kono_deguchi', 'massugu_mieru'], zh:'請從這個出口出去。直走就會看到。'},
+    q:[Q('怎麼去？', ['從這邊出去，直走就看得到', '要搭車', '往回走'], 'kocchi_dete', 'kono_deguchi')], learn:['從這個出口出去直走'], next:'n3'},
+  {id:'n3', t:'act', q:'你要怎麼接？', o:[
+    O(['kono_deguchi_ne'], '從這個出口直走，對吧？', 'ok', '確認方向。', 'n5', {skel:'ne', fix:true}),
+    O(['arigatou'], '謝謝。', 'ok', '聽懂就出發。', 'n5')]},
+  {id:'n5', t:'end', res:'ok', text:'你從這個出口出去，直走就看到搭乘處。'}]);
+
+K('wakarinikui', 'バス{乗|の}り{場|ば}は、ここからだとちょっと{分|わ}かりにくいんですよ。', 'basu noriba wa, koko kara da to chotto wakarinikui n desu yo', '巴士搭乘處從這裡去有點難找', 'filler', '開場白，不是指路。後面才是重點。');
+K('kaisatsu_dete', 'この{先|さき}の{改札|かいさつ}を{出|で}て、', 'kono saki no kaisatsu o dete', '從前面的剪票口出去', 'dir', '改札＝剪票口。');
+K('hidari_zutto', '{左|ひだり}にずっと{行|い}くと、', 'hidari ni zutto iku to', '往左一直走的話', 'dir');
+K('esuka', '{大|おお}きいエスカレーターがあるので、', 'ōkii esukarētā ga aru node', '會有大手扶梯，所以…', 'place');
+K('ikkai_made', 'それで1{階|かい}まで{降|お}りてください。', 'sore de ikkai made orite kudasai', '搭它下到 1 樓', 'dir');
+K('me_no_mae', '{降|お}りたら{目|め}の{前|まえ}です。', 'oritara me no mae desu', '下來就在眼前', 'place');
+K('kaisatsu_hidari', '{改札|かいさつ}を{出|で}て、{左|ひだり}です。', 'kaisatsu o dete, hidari desu', '出剪票口，往左', 'dir');
+K('esuka_1kai', 'エスカレーターで1{階|かい}に{降|お}りてください。', 'esukarētā de ikkai ni orite kudasai', '搭手扶梯下到 1 樓', 'dir');
+K('kaisatsu_ne', '{改札|かいさつ}を{出|で}て、{左|ひだり}、エスカレーターで1{階|かい}ですね。', 'kaisatsu o dete, hidari, esukarētā de ikkai desu ne', '出剪票口、往左、搭手扶梯到 1 樓，對吧？', 'ask');
+K('wakarinikui_ii', '{分|わ}かりにくいですか。じゃあ、いいです。', 'wakarinikui desu ka. jā, ii desu', '很難找嗎？那算了', 'ask');
+K('nikai_ka', '2{階|かい}ですか。', 'nikai desu ka', '2 樓嗎？', 'ask');
+K('ie_ikkai', 'いえ、1{階|かい}です。', 'ie, ikkai desu', '不，是 1 樓', 'num');
+K('soudesu2', 'そうです、そうです。', 'sō desu, sō desu', '對對', 'concl');
+K('ekiin', '{分|わ}からなかったら、また{駅員|えきいん}に{聞|き}いてくださいね。', 'wakaranakattara, mata ekiin ni kiite kudasai ne', '找不到的話再問站務員喔', 'next', '駅員＝站務員。');
+V('way', 5, 'w5a', {who:'站務員', note:'長的指路：開場白＋路線'}, [wOpen(),
+  {id:'n2', t:'hear', c:['wakarinikui', 'kaisatsu_dete', 'hidari_zutto', 'esuka', 'ikkai_made', 'me_no_mae'], zh:'巴士搭乘處從這裡去有點難找喔。從前面的剪票口出去，往左一直走，會有一個大手扶梯，請搭它下到 1 樓。下來就在眼前。',
+    easy:{c:['kaisatsu_hidari', 'esuka_1kai'], zh:'出剪票口，往左。搭手扶梯下到 1 樓。'},
+    q:[Q('第一句「分かりにくい」是什麼意思？', ['只是說有點難找', '搭乘處今天關閉', '要另外付錢'], 'wakarinikui'), Q('路線是？', ['出剪票口→往左→手扶梯下到 1 樓', '出剪票口→往右→樓梯上 2 樓', '不出剪票口→往左→電梯'], 'hidari_zutto', 'kaisatsu_hidari')],
+    learn:['出剪票口→往左→手扶梯下到 1 樓'], next:'n3'},
+  {id:'n3', t:'act', q:'你要怎麼接？', o:[
+    O(['kaisatsu_ne'], '出剪票口、往左、搭手扶梯到 1 樓，對吧？', 'ok', '長的指路只挑「動作」確認：出去、往左、往下。', 'n4', {skel:'ne', fix:true}),
+    O(['wakarinikui_ii'], '很難找嗎？那算了。', 'bad', '「有點難找」只是開場白，他後面就告訴你怎麼走了。', null),
+    O(['nikai_ka'], '2 樓嗎？', 'part', '用問句確認沒關係，他會糾正你：是 1 樓。', 'n3b', {fix:true})]},
+  {id:'n3b', t:'hear', c:['ie_ikkai'], zh:'不，是 1 樓。', q:[], learn:['是 1 樓'], next:'n3'},
+  {id:'n4', t:'hear', c:['soudesu2', 'ekiin'], zh:'對對。找不到的話再問站務員喔。', q:[Q('他最後說什麼？', ['找不到就再問站務員', '搭計程車比較好', '今天沒有巴士'], 'ekiin')], learn:['找不到可以再問站務員'],
+    fig:{type:'steps', s:[['■', '出剪票口'], ['←', '往左一直走'], ['↓', '大手扶梯下到 1 樓'], ['■', '眼前就是搭乘處']]}, next:'n5'},
+  {id:'n5', t:'end', res:'ok', text:'你出剪票口往左，搭大手扶梯到 1 樓，巴士搭乘處就在眼前。'}]);
+
+K('kinkakuyuki_deshitara', '{金閣寺行|きんかくじゆ}きのバスでしたら、', 'Kinkakuji-yuki no basu deshitara', '如果是往金閣寺的巴士', 'cond');
+K('koko_janakute', 'ここじゃなくて、', 'koko ja nakute', '不是這裡，而是…', 'neg');
+K('chuouguchi', '{中央口|ちゅうおうぐち}のほうのバスターミナルですね。', 'chūō-guchi no hō no basu tāminaru desu ne', '是中央口那邊的巴士總站', 'place');
+K('tsuuro', 'この{通路|つうろ}をまっすぐ{行|い}って、', 'kono tsūro o massugu itte', '這條通道直走', 'dir');
+K('tsukiatari', '{突|つ}き{当|あ}たりを{右|みぎ}、', 'tsukiatari o migi', '走到底右轉', 'dir', '突き当たり＝走到底（路的盡頭）。');
+K('soto_mae', '{外|そと}に{出|で}たら{目|め}の{前|まえ}です。', 'soto ni detara me no mae desu', '出去就在眼前', 'place');
+K('b3', '205{番|ばん}はB3っていうのりばです。', 'nihyaku-go-ban wa bī-surī tte iu noriba desu', '205 號是叫 B3 的乘車處', 'num');
+K('chuouguchi_e', '{中央口|ちゅうおうぐち}のバスターミナルです。', 'chūō-guchi no basu tāminaru desu', '在中央口的巴士總站', 'place');
+K('massugu_migi', 'まっすぐ{行|い}って、{右|みぎ}です。', 'massugu itte, migi desu', '直走，然後右轉', 'dir');
+K('b3_ne', 'B3ですね。ありがとうございます。', 'bī-surī desu ne. arigatō gozaimasu', 'B3 對吧，謝謝', 'ask');
+K('koko_de_machimasu', 'ここで{待|ま}ちます。', 'koko de machimasu', '我在這裡等', 'ask');
+V('way', 5, 'w5t', {who:'站務員', tr:true, note:'換說法：ここじゃなくて／突き当たり'}, [wOpen(),
+  {id:'n2', t:'hear', c:['kinkakuyuki_deshitara', 'koko_janakute', 'chuouguchi', 'tsuuro', 'tsukiatari', 'soto_mae', 'b3'], zh:'如果是往金閣寺的巴士，不是這裡，是中央口那邊的巴士總站。這條通道直走，走到底右轉，出去就在眼前。205 號是叫 B3 的乘車處。',
+    easy:{c:['chuouguchi_e', 'massugu_migi', 'b3'], zh:'在中央口的巴士總站。直走，然後右轉。205 號是 B3 乘車處。'},
+    q:[Q('要去哪裡？', ['中央口那邊的巴士總站', '這裡就是', '地下鐵站'], 'chuouguchi', 'chuouguchi_e'), Q('路線是？', ['通道直走→走到底右轉→出去就到', '通道直走→走到底左轉', '上樓→右轉'], 'tsukiatari', 'massugu_migi'), Q('205 號在哪個乘車處？', ['B3', 'B13', '3 號月台'], 'b3', 'b3')],
+    learn:['不是這裡：中央口巴士總站', '直走到底右轉', '205 號在 B3'], next:'n3'},
+  {id:'n3', t:'act', q:'你要怎麼接？', o:[
+    O(['b3_ne'], 'B3 對吧，謝謝。', 'ok', '確認乘車處編號就能出發。', 'n5', {skel:'ne', fix:true}),
+    O(['koko_de_machimasu'], '我在這裡等。', 'bad', '他說「ここじゃなくて」＝不是這裡。', null),
+    O(['sumimasen', 'mouichido'], '不好意思，請再說一次。', 'ok', '長的指路請他再說，他會說得短一點。', 'n2r', {fix:true})]},
+  {id:'n2r', t:'hear', c:['chuouguchi_e', 'massugu_migi', 'b3'], zh:'在中央口的巴士總站。直走，然後右轉。205 號是 B3 乘車處。', q:[], learn:['中央口，直走右轉，B3'], next:'n3'},
+  {id:'n5', t:'end', res:'ok', text:'你走到中央口的巴士總站，在 B3 等 205 號。'}]);
+
+/* ================= 把對話走完：執行引擎 =================
+   開口 → 聽回答 → 判斷或求助 → 補問 → 再確認 → 行動結果
+   進度分開記：看字完成 / 純聽完成 / 求助後完成 / 換說法也完成（遷移）
+   ======================================================== */
+const RES_LABEL = {ok:'完成', slow:'到了，但比較慢', late:'走錯後補救成功', fail:'沒有完成'};
+const G_LABEL = {ok:'能繼續', part:'需要補充', bad:'會造成錯誤行動'};
+const LVR = [0, 0.85, 0.9, 0.95, 1.08, 1.0];
+const REP = {
+  again:{jp:'もう{一度|いちど}お{願|ねが}いします', ro:'Mō ichido onegai shimasu', zh:'請再說一次'},
+  slow:{jp:'ゆっくりお{願|ねが}いします', ro:'Yukkuri onegai shimasu', zh:'請說慢一點'},
+  easy:{jp:'もう{少|すこ}し{簡単|かんたん}に{言|い}ってもらえますか', ro:'Mō sukoshi kantan ni itte moraemasu ka', zh:'可以說簡單一點嗎？'},
 };
+const TYPE_LABEL = {text:'看字／提示完成', listen:'純聽完成', repair:'求助後完成', transfer:'換說法也聽懂'};
+
+/* 執行時整理資料：簡單說法裡有同一個句塊時，自動當作 ke */
+(function normalizeTasks() {
+  TASKS.forEach(t => { for (let lv = 1; lv <= 5; lv++) t.v[lv].forEach(v => { for (const id in v.nodes) { const n = v.nodes[id];
+    if (n.t === 'hear' && n.easy) (n.q || []).forEach(q => { if (!q.ke && n.easy.c.includes(q.k)) q.ke = q.k; }); } }); });
+})();
+const VAR = {}; TASKS.forEach(t => { for (let lv = 1; lv <= 5; lv++) t.v[lv].forEach(v => { VAR[v.id] = v; }); });
+
+function plainJp(s) { return String(s).replace(/\{([^|{}]+)\|[^{}]+\}/g, '$1'); }
+function rubyHtml(s) { return esc(s).replace(/\{([^|{}]+)\|([^{}]+)\}/g, '<ruby>$1<rt>$2</rt></ruby>'); }
+function lineText(c) { return c.map(id => plainJp(CK[id].jp)).join(''); }
+function lineRo(c) { return c.map(id => CK[id].ro).join(' '); }
+function lineHtml(c, o = {}) {
+  const mask = o.mask || new Set();
+  const ro = c.map(id => mask.has(id) ? '…' : esc(CK[id].ro)).join(' ');
+  const jp = c.map(id => { const k = CK[id];
+    if (mask.has(id)) return `<span class="mask">［${CAT[k.cat] || '？'}］</span>`;
+    return o.tap ? `<button class="ckb" data-a="ckInfo" data-v="${id}">${rubyHtml(k.jp)}</button>` : `<span class="ck">${rubyHtml(k.jp)}</span>`; }).join('');
+  return `<div class="jl"><div class="xro">${ro}</div><div class="jp${o.big ? ' big' : ''}">${jp}</div></div>`;
+}
+function mkRec() { return {s:0, due:0, ok:0, ng:0, lapse:0, conf:{}, t0:Date.now(), last:0}; }
+function ckSt(id, create) { if (!S.ck[id] && create) S.ck[id] = {seen:Date.now(), t:mkRec(), l:mkRec(), weak:false}; return S.ck[id]; }
+function tkSt(tid) { return S.tk[tid] || (S.tk[tid] = {lv:{}}); }
+function lvSt(tid, lv) { const t = tkSt(tid); return t.lv[lv] || (t.lv[lv] = {done:0, text:0, listen:0, repair:0, transfer:0, seen:[], last:0, rec:null}); }
+function lvPeek(tid, lv) { return ((S.tk[tid] || {}).lv || {})[lv] || null; }
+function lvPassed(tid, lv) { const s = lvPeek(tid, lv); return !!s && (s.listen + s.repair + s.transfer) > 0; }
+
+/* 舊進度轉換：舊版「通過」= 第一次全對且沒看字 → 記為純聽完成 */
+function migrateOldDlg() {
+  if (S.migDlg) return;
+  for (const sid in (S.dlg || {})) {
+    if (!TASK[sid]) continue;
+    const pass = S.dlg[sid].pass || {};
+    for (const lv in pass) if (pass[lv] > 0) { const st = lvSt(sid, +lv); st.listen += pass[lv]; st.done += pass[lv]; st.last = Date.now(); }
+  }
+  S.migDlg = 1;
+}
+
+/* ---------- 推薦 ---------- */
+function recommend() {
+  const t = Date.now();
+  for (const tk of TASKS) for (let lv = 1; lv <= 5; lv++) { const s = lvPeek(tk.id, lv); if (s && s.rec && lvPassed(tk.id, lv) && s.rec.s < 7 && s.rec.due <= t) return {tid:tk.id, lv, why:'複習'}; }
+  for (let lv = 1; lv <= 5; lv++) for (const tk of TASKS) if (!lvPassed(tk.id, lv)) return {tid:tk.id, lv, why:lvPeek(tk.id, lv) ? '再練一次' : '下一級'};
+  const tk = pick(TASKS); return {tid:tk.id, lv:1 + (Math.random() * 5 | 0), why:'自由練習'};
+}
+function pickVariant(tid, lv) {
+  const s = lvPeek(tid, lv), seen = new Set(s ? s.seen : []), vs = TASK[tid].v[lv];
+  const base = vs.filter(v => !v.tr), tr = vs.filter(v => v.tr);
+  const ub = base.filter(v => !seen.has(v.id)); if (ub.length) return ub[0];
+  const ut = tr.filter(v => !seen.has(v.id)); if (ut.length) return ut[0];
+  return pick(vs);
+}
+
+/* ---------- 執行狀態（存在 S.run，可中斷接續） ---------- */
+let RUN_END = null, SIT = 0;
+function startRun(tid, lv, vid) {
+  closeSheet();
+  const v = vid ? VAR[vid] : pickVariant(tid, lv);
+  S.run = {tid, lv:v.lv, vid:v.id, node:null, cq:{}, vis:{}, ans:{}, ord:{}, easy:{}, pick:{}, said:{}, zh:{}, rep:0, path:[],
+    flags:{text:false, hint:false, help:false, bad:false, crit:false, noAudio:!canSpeak}, board:{known:[], todo:'問清楚怎麼去'}, wrong:[], t0:Date.now()};
+  RUN_END = null;
+  openRunView(); enterNode(v.start);
+}
+function curVar() { return S.run && VAR[S.run.vid]; }
+function curNode() { const v = curVar(); return v && v.nodes[S.run.node]; }
+function nodeWho(n) { return n.who || curVar().who; }
+function activeQs(n) { const r = S.run; return (n.q || []).map((q, i) => ({q, i})).filter(x => !r.easy[n.id] || x.q.ke); }
+function curQ(n) {
+  const r = S.run, qs = activeQs(n), ans = r.ans[n.id] || {};
+  return qs.find(x => x.i === r.cq[n.id]) || qs.find(x => ans[x.i] === undefined) || null;
+}
+function keyOf(n, q) { return S.run.easy[n.id] && q.ke ? q.ke : q.k; }
+function computeVis(n) {
+  if (!canSpeak) return 'full';
+  if (n.c.some(id => !S.ck[id])) return 'full';
+  const weak = (n.q || []).some(q => { const s = S.ck[q.k]; return !s || s.l.s < 2 || s.weak; });
+  return weak ? 'part' : 'listen';
+}
+function enterNode(id) {
+  const r = S.run, v = curVar(), n = v.nodes[id];
+  r.node = id; r.path.push(id);
+  if (n.t === 'hear') {
+    if (!r.vis[id]) r.vis[id] = computeVis(n);
+    if (!r.ord[id]) r.ord[id] = (n.q || []).map(q => shuffle(q.o.map((_, i) => i)));
+    if (r.vis[id] === 'full') r.flags.text = true;
+    if (r.vis[id] === 'part') r.flags.hint = true;
+  }
+  if (n.t === 'act' && !r.ord[id]) r.ord[id] = shuffle(n.o.map((_, i) => i));
+  if (n.t === 'end') finalizeRun(n);
+  persist(); renderRun();
+  const bd = $('#runBody'); if (bd) bd.scrollTop = 0;
+  if (n.t === 'hear' && S.settings.autoSpeak) playNode(n);
+}
+function playNode(n, mode) {
+  const r = S.run, rate = LVR[r.lv];
+  if (mode === 'easy' && n.easy) speak(lineText(n.easy.c), 'ja-JP', 0.85);
+  else if (mode === 'slow') speak(lineText(r.easy[n.id] && n.easy ? n.easy.c : n.c), 'ja-JP', 0.7);
+  else speak(lineText(n.c), 'ja-JP', rate);
+}
+function finishHear(n) {
+  const r = S.run;
+  n.c.forEach(id => ckSt(id, true)); if (r.easy[n.id] && n.easy) n.easy.c.forEach(id => ckSt(id, true));
+  (n.learn || []).forEach(x => { if (!r.board.known.includes(x)) r.board.known.push(x); });
+  if (n.todo) r.board.todo = n.todo;
+}
+function answerQ(oi) {
+  const r = S.run, n = curNode(); if (!n || n.t !== 'hear') return;
+  const cur = curQ(n); if (!cur) return;
+  r.ans[n.id] = r.ans[n.id] || {}; r.cq[n.id] = cur.i;
+  if (r.ans[n.id][cur.i] !== undefined) return;
+  r.ans[n.id][cur.i] = oi;
+  const ok = oi === 0, key = keyOf(n, cur.q), ck = CK[key], crit = CRIT.has(ck.cat), mode = r.vis[n.id];
+  const rec = ckSt(key, true);
+  if (mode === 'full' || !canSpeak) grade(rec.t, ok); else grade(rec.l, ok);
+  if (ok) rec.weak = false; else { r.wrong.push(key); if (crit) r.flags.crit = true; }
+  const lg = L(); lg.jp++; if (ok) lg.jpOk++;
+  touchStreak(); addXp(ok ? 6 : 1); persist(); renderRun();
+  requestAnimationFrame(() => { const fb = document.querySelector('#runBody .qfb'); fb && fb.scrollIntoView({behavior:'smooth', block:'nearest'}); });
+}
+
+/* ---------- 結算 ---------- */
+function runTypes() {
+  const r = S.run, f = r.flags, v = curVar();
+  const usedText = f.text || f.noAudio || !canSpeak, help = r.rep > 0 || f.help, out = [];
+  if (usedText || f.hint) out.push('text');
+  else if (help) out.push('repair');
+  else if (!f.crit) out.push('listen');
+  if (v.tr && !usedText && !f.hint && !f.crit) out.push('transfer');
+  return out;
+}
+function finalizeRun(n) {
+  const r = S.run; if (!r || r.done) return;
+  r.done = true;
+  const types = runTypes(), st = lvSt(r.tid, r.lv);
+  const passedNow = types.some(tp => tp !== 'text');
+  if (passedNow && st.done > 0 && st.last && dayKey(st.last) !== dayKey()) st.later = (st.later || 0) + 1;
+  st.done++; types.forEach(tp => st[tp]++); if (!st.seen.includes(r.vid)) st.seen.push(r.vid); st.last = Date.now();
+  st.rec = st.rec || mkRec(); grade(st.rec, passedNow);
+  if (passedNow && st.rec.s < 2) { st.rec.s = 2; st.rec.due = Date.now() + IV[2]; }
+  addXp(passedNow ? 15 : 6); SIT++;
+  RUN_END = {run:JSON.parse(JSON.stringify(r)), types, res:n.res, text:n.text};
+  S.run = null; persist();
+}
+
+/* ---------- 畫面 ---------- */
+function openRunView() {
+  let el = $('#run');
+  if (!el) { el = document.createElement('div'); el.id = 'run'; el.className = 'overlay jpmode'; document.body.append(el); }
+  el.hidden = false; document.body.style.overflow = 'hidden';
+}
+function closeRunView(silent) {
+  const el = $('#run'); if (el) el.hidden = true; document.body.style.overflow = '';
+  try { speechSynthesis.cancel(); } catch (e) {}
+  if (S.run && !silent) toast('已保存，回首頁可以從這裡接續');
+  RUN_END = null; render();
+}
+function boardHtml(r) {
+  const t = TASK[r.tid];
+  return `<div class="board" aria-label="任務板">
+    <div><span class="bk">目的地</span><span>${esc(t.dest)}</span></div>
+    <div><span class="bk">已確認</span><span>${r.board.known.length ? esc(r.board.known.slice(-3).join('；')) : '還沒有'}</span></div>
+    <div><span class="bk">下一步</span><span>${esc(r.board.todo || '—')}</span></div></div>`;
+}
+function figHtml(f) {
+  if (!f) return '';
+  if (f.type === 'steps') return `<div class="fig steps" role="img" aria-label="${esc(f.s.map(x => x[1]).join('，然後'))}">${f.s.map(([g, t]) => `<div class="stp"><span class="g" aria-hidden="true">${esc(g)}</span><span>${esc(t)}</span></div>`).join('<span class="arr" aria-hidden="true">›</span>')}</div>`;
+  if (f.type === 'cross') return `<div class="fig" role="img" aria-label="${esc(f.a)}，過馬路到${esc(f.b)}"><svg viewBox="0 0 320 150" width="100%" style="max-width:420px;display:block;margin:auto">
+    <rect x="0" y="0" width="320" height="38" fill="var(--surface2)" stroke="var(--line)"/><rect x="0" y="38" width="320" height="74" fill="var(--line)"/>
+    ${[0, 1, 2, 3, 4, 5].map(i => `<rect x="${140 + 0}" y="${42 + i * 12}" width="40" height="6" fill="var(--surface)"/>`).join('')}
+    <rect x="0" y="112" width="320" height="38" fill="var(--surface2)" stroke="var(--line)"/>
+    <path d="M160 108 L160 44" stroke="var(--jp)" stroke-width="4" fill="none" marker-end="url(#ah)"/>
+    <defs><marker id="ah" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="var(--jp)"/></marker></defs>
+    <text x="160" y="24" text-anchor="middle" font-size="14" font-weight="700" fill="var(--ink)">${esc(f.b)}</text>
+    <text x="160" y="137" text-anchor="middle" font-size="14" font-weight="700" fill="var(--ink)">${esc(f.a)}</text>
+    <text x="200" y="80" font-size="12" fill="var(--muted)">斑馬線／過馬路</text></svg></div>`;
+  return '';
+}
+function renderRun() {
+  const el = $('#run'); if (!el) return;
+  if (RUN_END) { el.innerHTML = runEndHtml(); return; }
+  const r = S.run; if (!r) { el.hidden = true; return; }
+  const t = TASK[r.tid], v = curVar(), n = curNode();
+  const head = `<div class="ov-head"><button class="icon-btn" data-a="runClose" aria-label="先離開，之後接續">${IC.x}</button>
+    <div style="flex:1;min-width:0"><div style="font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(t.name)}</div><div class="small muted">第 ${r.lv} 級・${esc(t.axis[r.lv])}${v.tr ? '・換說法' : ''}</div></div>
+    <span class="small muted tnum">第 ${r.path.length} 步</span></div>`;
+  let body = '', foot = '';
+  if (n.t === 'say') [body, foot] = sayHtml(n);
+  else if (n.t === 'hear') [body, foot] = hearHtml(n);
+  else if (n.t === 'act') [body, foot] = actHtml(n);
+  const prev = $('#runBody'), keep = prev && prev.dataset.node === r.node ? prev.scrollTop : 0;
+  el.innerHTML = head + `<div class="ov-body" id="runBody" data-node="${esc(r.node)}"><div class="in">${boardHtml(r)}${body}</div></div><div class="ov-foot"><div class="in">${foot}</div></div>`;
+  if (keep) $('#runBody').scrollTop = keep;
+}
+function sayHtml(n) {
+  const r = S.run, sk = SKEL[n.skel], shown = r.said[n.id];
+  const b = `<p class="small muted">${esc(TASK[r.tid].place)}</p><p style="font-size:16px">${esc(curVar().setup || TASK[r.tid].setup)}</p>
+    <section class="card stack" style="gap:8px"><p class="who" style="color:var(--en-ink)">你先開口</p><p style="font-size:19px;font-weight:800">${esc(n.intent)}</p>
+      ${sk ? `<p class="small">骨架：<b class="jpf">${esc(sk.f)}</b><br><span class="muted">${esc(sk.zh)}</span></p>` : ''}
+      ${shown ? `<div class="row" style="align-items:flex-end"><div style="flex:1;min-width:0">${lineHtml(n.c, {tap:true})}<p class="small muted">${esc(n.zh)}</p></div>${spkBtn(lineText(n.c), 'ja-JP')}</div>` : '<p class="small muted">先自己小聲說說看，再看參考答案。說得不一樣也沒關係。</p>'}
+    </section>`;
+  const f = shown ? `<button class="btn primary block" data-a="runNext">說完了，聽對方回答</button>` : `<button class="btn primary block" data-a="sayShow">看參考答案</button>`;
+  return [b, f];
+}
+function hearHtml(n) {
+  const r = S.run, vis = r.vis[n.id], qs = activeQs(n), ans = r.ans[n.id] || {};
+  const allDone = qs.every(x => ans[x.i] !== undefined), easy = r.easy[n.id] && n.easy;
+  const cur = curQ(n);
+  const mask = new Set();
+  if (vis === 'part' && !allDone) qs.forEach(x => { if (ans[x.i] === undefined) { mask.add(x.q.k); if (x.q.ke) mask.add(x.q.ke); } });
+  const showText = vis !== 'listen' || allDone;
+  let newCks = vis === 'full' && !allDone ? n.c.filter(id => !S.ck[id] && CRIT.has(CK[id].cat)).slice(0, 2) : [];
+  if (newCks.length >= n.c.length) newCks = [];
+  let b = '';
+  if (n.point) b += `<div class="point"><span class="bk">手勢</span>${esc(n.point)}</div>`;
+  if (newCks.length) b += `<section class="newck"><p class="sec-title" style="margin:0">這段的新句塊（先看一眼）</p>${newCks.map(id => `<div class="row"><div style="flex:1;min-width:0">${lineHtml([id])}<p class="small muted">${esc(CK[id].zh)}</p></div>${spkBtn(plainJp(CK[id].jp), 'ja-JP')}</div>`).join('')}</section>`;
+  b += `<div class="bubble"><div class="grow"><p class="who">${esc(nodeWho(n))}</p>
+    ${showText ? lineHtml(n.c, {mask, tap:allDone}) : '<p class="muted" style="padding-block:6px">只用聽的。聽不懂可以用下面的說法求助。</p>'}
+    ${allDone || r.zh[n.id] ? `<p class="small muted" style="margin-top:4px">${esc(n.zh)}</p>` : ''}
+    ${easy ? `<p class="small" style="margin-top:8px">你請他說簡單一點，他改說：</p>${showText ? lineHtml(n.easy.c, {mask, tap:allDone}) : ''}${allDone ? `<p class="small muted">${esc(n.easy.zh)}</p>` : ''}` : ''}
+    </div></div>`;
+  if (canSpeak) b += `<button class="btn jp-b block" data-a="hearPlay">${IC.speak}再聽一次</button>
+    <div class="repair3">${['again', 'slow', 'easy'].map(k => `<button class="rep" data-a="hearRep" data-v="${k}"><span class="jpf">${rubyHtml(REP[k].jp)}</span><span class="small muted"><span class="xro">${esc(REP[k].ro)}・</span>${esc(REP[k].zh)}</span></button>`).join('')}</div>`;
+  else b += `<p class="small muted">這台裝置不能播放聲音，先用看的練習（這次會記成「看字完成」）。</p>`;
+  if (!allDone && canSpeak) b += `<div class="row wrap" style="justify-content:center">${vis === 'listen' ? '<button class="btn ghost sm" data-a="hearVis" data-v="part">給我提示</button>' : ''}${vis !== 'full' ? '<button class="btn ghost sm" data-a="hearVis" data-v="full">顯示全文</button>' : ''}${!r.zh[n.id] ? '<button class="btn ghost sm" data-a="hearZh">看中文</button>' : ''}</div>`;
+  if (cur && (!allDone || ans[cur.i] !== undefined)) {
+    const a = ans[cur.i], answered = a !== undefined, key = keyOf(n, cur.q);
+    b += `<section class="card stack qcard" style="gap:10px"><p class="small muted">問題 ${qs.findIndex(x => x.i === cur.i) + 1} / ${qs.length}</p><p class="q" style="font-size:18px">${esc(cur.q.q)}</p>
+      <div class="opts">${r.ord[n.id][cur.i].map(oi => `<button class="opt ${answered && oi === 0 ? 'correct' : answered && oi === a ? 'wrong' : ''}" data-a="hearQ" data-v="${oi}" ${answered ? 'disabled' : ''}>${esc(cur.q.o[oi])}</button>`).join('')}</div>
+      ${answered ? (a === 0 ? `<div class="qfb ok">對了。關鍵：<b class="jpf">${rubyHtml(CK[key].jp)}</b>＝${esc(CK[key].zh)}</div>`
+        : `<div class="qfb no">答案是「${esc(cur.q.o[0])}」。可以先確認這一塊：<b class="jpf">${rubyHtml(CK[key].jp)}</b>（${esc(CK[key].zh)}）。
+          <details><summary>還可以怎麼做</summary><p class="small">不確定時可以按「もう一度」「ゆっくり」或「簡単に」，或在下一步用「〜ですね」確認。${CK[key].note ? '<br>' + esc(CK[key].note) : ''}</p></details></div>`) : ''}
+    </section>`;
+  }
+  if (allDone) {
+    b += `${(n.learn || []).length ? `<div class="fb ok" style="animation:none"><h3>確認了</h3>${n.learn.map(x => `<p>・${esc(x)}</p>`).join('')}</div>` : ''}${n.fig ? `<p class="sec-title">照這張卡走</p>${figHtml(n.fig)}` : ''}
+      <details class="card flat"><summary style="cursor:pointer;font-weight:700">拆開來看（點句塊看說明）</summary><div class="list" style="margin-top:10px">${(easy ? n.c.concat(n.easy.c.filter(id => !n.c.includes(id))) : n.c).map(id => `<button class="li" data-a="ckInfo" data-v="${id}"><div class="grow"><div class="jpf" style="font-weight:700;font-size:17px">${rubyHtml(CK[id].jp)}</div><div class="zh" style="white-space:normal">${esc(CK[id].zh)}<span class="muted">・${CAT[CK[id].cat]}</span></div></div>${IC.chev}</button>`).join('')}</div></details>`;
+  }
+  let f;
+  if (allDone) f = `<button class="btn primary block" data-a="hearDone">繼續</button>`;
+  else if (cur && ans[cur.i] !== undefined) f = `<button class="btn primary block" data-a="hearNextQ">下一題</button>`;
+  else f = `<p class="small muted" style="text-align:center">${qs.length ? '聽完回答問題' : ''}</p>${!qs.length ? '<button class="btn primary block" data-a="hearDone">繼續</button>' : ''}`;
+  return [b, f];
+}
+function lastHear(r) { const v = curVar(); for (let i = r.path.length - 2; i >= 0; i--) { const n = v.nodes[r.path[i]]; if (n && n.t === 'hear') return n; } return null; }
+function actHtml(n) {
+  const r = S.run, p = r.pick[n.id], picked = p !== undefined, showZh = r.zh[n.id] || picked;
+  const lh = lastHear(r), skels = [...new Set(n.o.map(o => o.skel).filter(Boolean))];
+  let b = lh ? `<div class="bubble"><div class="grow"><p class="who">${esc(nodeWho(lh))}剛剛說</p>${lineHtml(r.easy[lh.id] && lh.easy ? lh.easy.c : lh.c)}<p class="small muted" style="margin-top:4px">${esc(r.easy[lh.id] && lh.easy ? lh.easy.zh : lh.zh)}</p></div></div>` : '';
+  b += `<p class="q">${esc(n.q)}</p>`;
+  if (skels.length && !picked) b += `<details class="card flat"><summary style="cursor:pointer">先自己說說看（可用的骨架）</summary>${skels.map(s => `<p class="small" style="margin-top:6px"><b class="jpf">${esc(SKEL[s].f)}</b><br><span class="muted">${esc(SKEL[s].zh)}</span></p>`).join('')}</details>`;
+  b += `<div class="opts">${r.ord[n.id].map(i => { const o = n.o[i];
+    const cls = picked && i === p ? (o.g === 'ok' ? 'correct' : o.g === 'part' ? 'partial' : 'wrong') : '';
+    return `<button class="opt ${cls}" data-a="actPick" data-v="${i}" ${picked ? 'disabled' : ''}><span style="min-width:0;display:block">${o.c ? lineHtml(o.c) : ''}${o.do ? `<span class="sub">（${esc(o.do)}）</span>` : ''}${showZh ? `<span class="sub">${esc(o.zh)}</span>` : ''}</span></button>`; }).join('')}</div>`;
+  if (!picked && !r.zh[n.id]) b += `<button class="btn ghost sm" style="align-self:center" data-a="actZh">看中文意思</button>`;
+  let f = `<p class="small muted" style="text-align:center">選一個你會說或會做的</p>`;
+  if (picked) {
+    const o = n.o[p];
+    b += `<div class="fb ${o.g === 'ok' ? 'ok' : o.g === 'part' ? 'mid' : 'no'}"><h3>${G_LABEL[o.g]}</h3><p>${esc(o.why)}</p>${o.skel ? `<p class="small">用到的骨架：<b class="jpf">${esc(SKEL[o.skel].f)}</b></p>` : ''}</div>`;
+    f = o.next ? `<button class="btn primary block" data-a="actGo">${o.g === 'bad' ? '看看會發生什麼' : '繼續'}</button>` : `<button class="btn primary block" data-a="actRe">重新選</button>`;
+  }
+  return [b, f];
+}
+function runEndHtml() {
+  const e = RUN_END, r = e.run, t = TASK[r.tid], v = VAR[r.vid], rec = recommend(), more = SIT < (S.settings.dlgLen || 1);
+  const wrong = [...new Set(r.wrong)];
+  const types = e.types.length ? e.types : [];
+  const rt = TASK[rec.tid];
+  return `<div class="ov-head"><button class="icon-btn" data-a="runClose" aria-label="關閉">${IC.x}</button><div style="flex:1"></div></div>
+    <div class="ov-body"><div class="in">
+      <div class="done-hero" style="padding-top:4px"><h2 style="font-size:24px">${RES_LABEL[e.res]}</h2><p class="muted">${esc(t.name)}・第 ${r.lv} 級${v.tr ? '・換說法' : ''}</p></div>
+      <section class="card stack" style="gap:6px"><p class="sec-title" style="margin:0">結果</p><p style="font-size:18px;font-weight:700">${esc(e.text)}</p></section>
+      <section class="card flat stack" style="gap:8px"><p class="sec-title" style="margin:0">這次的完成方式</p>
+        <div class="chips">${types.length ? types.map(tp => `<span class="pill ${tp === 'text' ? 'st-short' : 'st-mast'}">${TYPE_LABEL[tp]}</span>`).join('') : '<span class="pill st-conf">走完了，但有關鍵資訊沒抓到</span>'}</div>
+        <p class="small muted">${types.includes('listen') || types.includes('transfer') ? '不看字也聽懂了。' : types.includes('repair') ? '用了重說、簡單說法或確認，在日本這樣做完全沒問題。' : types.includes('text') ? '這次有看字或提示，下次同一級會試著少一點提示。' : '下次再練一次就好。'}${r.rep ? `（請對方重說 ${r.rep} 次）` : ''}</p></section>
+      ${r.board.known.length ? `<section class="card flat stack" style="gap:4px"><p class="sec-title" style="margin:0">你確認了</p>${r.board.known.map(x => `<p>・${esc(x)}</p>`).join('')}</section>` : ''}
+      ${wrong.length ? `<section class="stack" style="gap:8px"><p class="sec-title" style="margin:0">可以再確認的句塊（已排進句塊複習）</p><div class="list">${wrong.map(id => `<button class="li" data-a="ckInfo" data-v="${id}"><div class="grow"><div class="jpf" style="font-weight:700">${rubyHtml(CK[id].jp)}</div><div class="zh">${esc(CK[id].zh)}</div></div>${IC.chev}</button>`).join('')}</div></section>` : ''}
+      <p class="small muted">${esc(t.sim)}</p>
+    </div></div>
+    <div class="ov-foot"><div class="in">
+      ${more ? `<button class="btn primary block" data-a="runRec">下一段：${esc(rt.name)}・第 ${rec.lv} 級</button><button class="btn block" data-a="runClose">先到這裡</button>`
+        : `<button class="btn primary block" data-a="runClose">完成</button><button class="btn block" data-a="runRec">再一段：${esc(rt.name)}・第 ${rec.lv} 級</button>`}
+    </div></div>`;
+}
+function recapText(r) {
+  const t = TASK[r.tid];
+  return `${t.name}・第 ${r.lv} 級。目的地：${t.dest}。${r.board.known.length ? '已確認：' + r.board.known.slice(-2).join('；') + '。' : ''}${r.board.todo ? '下一步：' + r.board.todo + '。' : ''}`;
+}
+function resumeRun() { if (!S.run || !VAR[S.run.vid]) { S.run = null; return; } RUN_END = null; openRunView(); renderRun(); }
+
+/* ---------- 事件 ---------- */
+function runAction(a, v) {
+  const r = S.run, n = r && curNode();
+  switch (a) {
+    case 'sayShow': r.said[n.id] = true; persist(); renderRun(); speak(lineText(n.c), 'ja-JP', 0.9); return true;
+    case 'runNext': enterNode(n.next); return true;
+    case 'hearPlay': playNode(n); return true;
+    case 'hearRep': {
+      r.rep++;
+      if (v === 'easy') { if (n.easy) { r.easy[n.id] = true; toast('你說：' + plainJp(REP.easy.jp)); playNode(n, 'easy'); }
+        else { toast('他已經說得很簡單了，可以請他說慢一點'); playNode(n, 'slow'); } }
+      else { toast('你說：' + plainJp(REP[v].jp)); playNode(n, v === 'slow' ? 'slow' : ''); }
+      persist(); renderRun(); return true;
+    }
+    case 'hearVis': r.vis[n.id] = v; if (v === 'full') r.flags.text = true; else r.flags.hint = true; persist(); renderRun(); return true;
+    case 'hearZh': r.zh[n.id] = true; r.flags.text = true; persist(); renderRun(); return true;
+    case 'hearQ': answerQ(+v); return true;
+    case 'hearNextQ': { const ans = r.ans[n.id] || {}, nx = activeQs(n).find(x => ans[x.i] === undefined); r.cq[n.id] = nx ? nx.i : undefined; persist(); renderRun(); return true; }
+    case 'hearDone': finishHear(n); enterNode(n.next); return true;
+    case 'actZh': r.zh[n.id] = true; persist(); renderRun(); return true;
+    case 'actPick': {
+      if (r.pick[n.id] !== undefined) return true;
+      const o = n.o[+v]; if (!o) return true; r.pick[n.id] = +v;
+      if (o.fix || o.g === 'part') r.flags.help = true;
+      if (o.g === 'bad') r.flags.bad = true;
+      const lg = L(); lg.jp++; if (o.g === 'ok') lg.jpOk++;
+      touchStreak(); addXp(o.g === 'ok' ? 6 : 1); persist(); renderRun();
+      if (o.c && S.settings.autoSpeak) speak(lineText(o.c), 'ja-JP', 0.9);
+      requestAnimationFrame(() => { const fb = document.querySelector('#runBody .fb'); fb && fb.scrollIntoView({behavior:'smooth', block:'nearest'}); });
+      return true;
+    }
+    case 'actRe': delete r.pick[n.id]; persist(); renderRun(); return true;
+    case 'actGo': { const o = n.o[r.pick[n.id]]; delete r.pick[n.id]; enterNode(o.next); return true; }
+  }
+  return false;
+}
+
+/* ---------- 句塊說明 ---------- */
+function exampleOf(id) {
+  for (const t of TASKS) for (let lv = 1; lv <= 5; lv++) for (const v of t.v[lv]) for (const nid in v.nodes) { const n = v.nodes[nid];
+    if (n.t === 'hear' && n.c.includes(id)) return {c:n.c, zh:n.zh}; if (n.t === 'hear' && n.easy && n.easy.c.includes(id)) return {c:n.easy.c, zh:n.easy.zh}; }
+  return null;
+}
+function ckSheet(id) {
+  const k = CK[id], st = S.ck[id], ex = exampleOf(id);
+  const dots = rec => rec ? '●'.repeat(Math.min(4, rec.s)) + '○'.repeat(Math.max(0, 4 - Math.min(4, rec.s))) : '○○○○';
+  return `<div class="row"><div style="flex:1;min-width:0">${lineHtml([id], {big:true})}</div>${spkBtn(plainJp(k.jp), 'ja-JP')}</div>
+    <p style="font-size:20px;font-weight:800">${esc(k.zh)}</p><p class="small muted">${esc(CAT[k.cat])}${CRIT.has(k.cat) ? '・會影響行動的資訊' : ''}</p>
+    ${k.note ? `<p class="rule j">${esc(k.note)}</p>` : ''}
+    ${st ? `<p class="small">看字 <span class="tnum">${dots(st.t)}</span>　聽音 <span class="tnum">${dots(st.l)}</span></p>` : '<p class="small muted">還沒在對話裡遇過</p>'}
+    ${ex ? `<div class="card flat stack" style="gap:4px"><p class="small muted">在對話裡：</p>${lineHtml(ex.c)}<p class="small muted">${esc(ex.zh)}</p></div>` : ''}
+    <button class="btn block" data-a="ckWeak" data-v="${id}">${st && st.weak ? '已標成不熟（會優先複習）' : '標成不熟，優先複習'}</button>`;
+}
+
+/* ================= 句塊複習（看字、聽音分開追蹤）＋舊單字卡 ================= */
+function ckDue() {
+  const t = Date.now(), out = [];
+  for (const id in S.ck) { const s = S.ck[id], k = CK[id]; if (!k || ['ask', 'polite', 'topic'].includes(k.cat)) continue;
+    const lDue = canSpeak && (s.l.due <= t && s.l.s < 7), tDue = s.t.due <= t && s.t.s < 7;
+    if (s.weak || lDue || tDue) out.push(id); }
+  return out.sort((a, b) => (CRIT.has(CK[b].cat) - CRIT.has(CK[a].cat)) || ((S.ck[b].weak ? 1 : 0) - (S.ck[a].weak ? 1 : 0)) || (S.ck[a].l.s - S.ck[b].l.s));
+}
+function makeCkQ(id) {
+  const k = CK[id], s = S.ck[id];
+  const mode = canSpeak && (s.t.s >= 1 || s.l.s >= 1) ? 'l' : 't';
+  const same = Object.values(CK).filter(x => x.id !== id && x.zh !== k.zh && x.cat === k.cat && S.ck[x.id]);
+  const other = Object.values(CK).filter(x => x.id !== id && x.zh !== k.zh && x.cat === k.cat);
+  const pool = shuffle(same).concat(shuffle(other)).concat(shuffle(Object.values(CK).filter(x => x.zh !== k.zh && CRIT.has(x.cat))));
+  const opts = [k.zh]; for (const x of pool) { if (opts.length >= 4) break; if (!opts.includes(x.zh)) opts.push(x.zh); }
+  return {t:'ck', id, mode, opts:shuffle(opts)};
+}
+function startCkReview() {
+  let ids = ckDue().slice(0, 8);
+  if (!ids.length) ids = shuffle(Object.keys(S.ck).filter(id => CK[id] && CRIT.has(CK[id].cat))).slice(0, 6);
+  if (!ids.length) { toast('還沒有學過的句塊。先練一段對話'); return; }
+  startSession('jp', shuffle(ids).map(makeCkQ), '句塊複習', {ck:true});
+}
+function sesCk(c) {
+  const k = CK[c.id], res = SES.res, ex = res ? exampleOf(c.id) : null, show = c.mode === 't' || res;
+  let b = `<p class="small muted">${c.mode === 'l' ? '只用聽的' : '看字'}・${esc(CAT[k.cat])}・意思是？</p>
+    <div class="card stack" style="align-items:center;gap:10px;padding:22px">
+      ${show ? lineHtml([c.id], {big:true}) : '<p class="muted">先聽，不看字</p>'}
+      ${canSpeak ? `<button class="btn jp-b" data-a="speak" data-v="${esc(plainJp(k.jp))}" data-l="ja-JP">${IC.speak}再聽一次</button>` : ''}
+    </div>
+    <div class="opts">${c.opts.map((o, i) => `<button class="opt ${res ? (o === k.zh ? 'correct' : i === res.chosen ? 'wrong' : '') : ''}" data-a="ckq" data-v="${i}" ${res ? 'disabled' : ''}>${esc(o)}</button>`).join('')}</div>`;
+  if (res) b += `<div class="${res.ok ? 'fb ok' : 'fb no'}"><h3>${res.ok ? '對了' : '是「' + esc(k.zh) + '」'}</h3>${k.note ? `<p class="small">${esc(k.note)}</p>` : ''}
+    ${ex ? `<p class="small">在對話裡：</p>${lineHtml(ex.c)}<p class="small muted">${esc(ex.zh)}</p>` : ''}</div>`;
+  return [b, res ? `<button class="btn primary block" data-a="next">下一個</button>` : `<p class="small muted" style="text-align:center">選一個意思</p>`];
+}
+function answerCk(i) {
+  const c = curCard(); if (!c || SES.res) return;
+  const k = CK[c.id], s = ckSt(c.id, true), ok = c.opts[i] === k.zh;
+  SES.res = {chosen:i, ok};
+  if (!SES.graded.has(c.id)) { SES.graded.add(c.id); grade(c.mode === 'l' ? s.l : s.t, ok); if (ok) s.weak = false; }
+  if (!ok && !SES.requeued.has(c.id)) { SES.requeued.add(c.id); SES.cards.splice(Math.min(SES.i + 3, SES.cards.length), 0, makeCkQ(c.id)); }
+  SES.stats.n++; if (ok) SES.stats.ok++;
+  const lg = L(); lg.jp++; if (ok) lg.jpOk++;
+  touchStreak(); addXp(ok ? 4 : 1); persist(); renderSes();
+  speak(plainJp(k.jp), 'ja-JP', 0.9);
+}
+function ckListHtml() {
+  const ids = Object.keys(S.ck).filter(id => CK[id] && !['ask', 'polite', 'topic'].includes(CK[id].cat));
+  const due = ckDue().length;
+  const dot = rec => `<span class="sdots" aria-label="${rec.s} 級">${[0, 1, 2, 3].map(i => `<i class="${rec.s > i ? 'on' : ''}"></i>`).join('')}</span>`;
+  let h = `<p class="muted small">聽懂回答用的「句塊」：完整的意義單位，像「向こう側から」「次のバス」「〜には止まりません」。看字認得和聽得出來分開記。</p>`;
+  if (!ids.length) h += `<div class="card flat empty">還沒有句塊。練一段對話後，遇過的句塊會出現在這裡。</div>`;
+  else {
+    h += `<button class="btn jp-b block" data-a="startCk">${due ? `句塊複習（${due} 個，約 2 分鐘）` : '句塊複習'}</button>`;
+    const groups = {}; ids.forEach(id => { const c = CK[id].cat; (groups[c] = groups[c] || []).push(id); });
+    Object.keys(CAT).filter(c => groups[c]).sort((a, b) => CRIT.has(b) - CRIT.has(a)).forEach(c => {
+      h += `<p class="sec-title">${CAT[c]}${CRIT.has(c) ? '・會影響行動' : ''}</p><div class="list">${groups[c].map(id => { const s = S.ck[id];
+        return `<button class="li" data-a="ckInfo" data-v="${id}"><div class="grow"><div class="jpf" style="font-weight:700;font-size:17px">${rubyHtml(CK[id].jp)}</div><div class="zh">${esc(CK[id].zh)}</div></div>
+          <div class="small muted" style="text-align:right;line-height:1.6">看 ${dot(s.t)}<br>聽 ${dot(s.l)}</div></button>`; }).join('')}</div>`;
+    });
+  }
+  const old = Object.keys(S.jpw || {});
+  if (old.length) h += `<p class="sec-title">舊版單字卡（${old.length}）</p><button class="btn block" data-a="startWords">練習舊單字卡</button>
+    <div class="list">${old.map(k => `<div class="li"><div class="grow"><div class="jpf" style="font-weight:700">${esc(S.jpw[k].jp)}</div><div class="zh">${esc(S.jpw[k].zh)}</div></div>${spkBtn(S.jpw[k].jp.replace(/^〜/, ''), 'ja-JP')}<button class="chip" data-a="wDel" data-v="${esc(k)}" style="flex:none">移除</button></div>`).join('')}</div>`;
+  return h;
+}
+
+/* 舊版單字卡（保留使用者原本加的字） */
+function wordDue() { const t = Date.now(); return Object.keys(S.jpw || {}).filter(k => S.jpw[k].s < 7 && S.jpw[k].due <= t); }
+function startWords() {
+  let ids = shuffle(wordDue()).slice(0, 10);
+  if (!ids.length) ids = Object.keys(S.jpw || {}).slice(0, 8);
+  if (!ids.length) { toast('沒有舊單字卡'); return; }
+  startSession('jp', ids.map(makeWq), '舊單字卡', {words:true});
+}
+function makeWq(jp) {
+  const w = S.jpw[jp], pool = Object.values(S.jpw).map(x => x.zh).concat(Object.values(CK).filter(x => CRIT.has(x.cat)).map(x => x.zh)).filter(z => z !== w.zh);
+  const opts = [w.zh]; for (const z of shuffle(pool)) { if (opts.length >= 4) break; if (!opts.includes(z)) opts.push(z); }
+  return {t:'wq', jp, opts:shuffle(opts)};
+}
+function sesWq(c) {
+  const w = S.jpw[c.jp], res = SES.res;
+  let b = `<p class="small muted">舊單字卡・意思是？</p><div class="card stack" style="align-items:center;gap:10px;padding:22px"><p class="jpf" style="font-size:28px;font-weight:700">${esc(w.jp)}</p><p class="small muted xro">${esc(w.ro)}</p>
+    ${canSpeak ? `<button class="btn jp-b" data-a="speak" data-v="${esc(w.jp.replace(/^〜/, ''))}" data-l="ja-JP">${IC.speak}再聽一次</button>` : ''}</div>
+    <div class="opts">${c.opts.map((o, i) => `<button class="opt ${res ? (o === w.zh ? 'correct' : i === res.chosen ? 'wrong' : '') : ''}" data-a="wq" data-v="${i}" ${res ? 'disabled' : ''}>${esc(o)}</button>`).join('')}</div>`;
+  if (res) b += `<div class="${res.ok ? 'fb ok' : 'fb no'}"><h3>${res.ok ? '對了' : '是「' + esc(w.zh) + '」'}</h3></div>`;
+  return [b, res ? `<button class="btn primary block" data-a="next">下一個</button>` : ''];
+}
+function answerWq(i) {
+  const c = curCard(); if (!c || SES.res) return;
+  const w = S.jpw[c.jp]; if (!w) { nextCard(); return; }
+  const ok = c.opts[i] === w.zh; SES.res = {chosen:i, ok};
+  if (!SES.graded.has(c.jp)) { SES.graded.add(c.jp); grade(w, ok); }
+  SES.stats.n++; if (ok) SES.stats.ok++;
+  touchStreak(); addXp(ok ? 4 : 1); persist(); renderSes();
+  speak(w.jp.replace(/^〜/, ''), 'ja-JP', 0.85);
+}
+
+/* ================= 日文頁與首頁的推薦 ================= */
+function lvBadges(tid) {
+  return [1, 2, 3, 4, 5].map(lv => { const s = lvPeek(tid, lv);
+    const st = !s ? '' : (s.transfer ? 'tr' : (s.listen || s.repair) ? 'pass' : 'tried');
+    return `<i class="${st}" title="第 ${lv} 級"></i>`; }).join('');
+}
+function jpNextHtml(onHero) {
+  if (S.run && VAR[S.run.vid]) return `<p class="small muted">接續上次</p><p style="font-size:19px;font-weight:800">${esc(TASK[S.run.tid].name)}・第 ${S.run.lv} 級</p>
+    <p class="small ${onHero ? '' : 'muted'}">前情：${esc(recapText(S.run))}</p>
+    <div class="row"><button class="btn onhero" style="flex:1" data-a="runResume">繼續</button><button class="btn ghost" style="color:#fff;border-color:rgba(255,255,255,.5)" data-a="runDrop">放棄這段</button></div>`;
+  const due = ckDue().length;
+  if (due >= 4) return `<p class="small muted">推薦下一步</p><p style="font-size:19px;font-weight:800">句塊複習 ${due} 個</p><p class="small muted">約 2 分鐘。方向、否定、號碼、時間優先。</p>
+    <div class="row"><button class="btn onhero" style="flex:1" data-a="startCk">開始複習</button><button class="btn ghost" style="color:#fff;border-color:rgba(255,255,255,.5)" data-a="runRec">改練對話</button></div>`;
+  const rec = recommend(), t = TASK[rec.tid];
+  return `<p class="small muted">推薦下一步・${esc(rec.why)}</p><p style="font-size:19px;font-weight:800">${esc(t.name)}・第 ${rec.lv} 級</p><p class="small muted">${esc(t.axis[rec.lv])}・約 2–4 分鐘</p>
+    <div class="row"><button class="btn onhero" style="flex:1" data-a="runRec">開始</button><button class="btn ghost" style="color:#fff;border-color:rgba(255,255,255,.5)" data-a="lsOpen">${IC.speak}耳機</button></div>`;
+}
+function dlgTasksHtml() {
+  return `<p class="muted small">你先開口，日本人用自然的日文回答。聽不懂可以請對方重說、說慢、說簡單一點，或用「〜ですね」確認。每一級都可以直接試。</p>
+    <div class="legend2 small muted"><span><i class="tried"></i>練過</span><span><i class="pass"></i>不看字完成</span><span><i class="tr"></i>換說法也聽懂</span></div>
+    <div class="list">${TASKS.map(t => `<button class="li" data-a="taskSheet" data-v="${t.id}"><div class="grow"><div style="font-weight:800">${esc(t.name)}</div><div class="zh">${esc(t.place)}</div><div class="lvdots">${lvBadges(t.id)}</div></div>${IC.chev}</button>`).join('')}</div>
+    <button class="btn block" data-a="lsOpen">${IC.speak}耳機模式</button>
+    <p class="small muted">交通流程穩定後，會再加餐廳、飯店、購物。</p>`;
+}
+function taskSheet(tid) {
+  const t = TASK[tid], rec = recommend();
+  return `<h2 style="font-size:22px">${esc(t.name)}</h2><p class="muted">${esc(t.place)}・${esc(t.setup)}</p>
+    <div class="list">${[1, 2, 3, 4, 5].map(lv => { const s = lvPeek(tid, lv), isRec = rec.tid === tid && rec.lv === lv;
+      const stat = s ? `看字 ${s.text}・純聽 ${s.listen}・求助 ${s.repair}・換說法 ${s.transfer}${s.later ? '・隔天仍完成 ' + s.later : ''}` : '還沒練過';
+      return `<button class="li" data-a="taskGo" data-v="${tid}:${lv}"><div class="grow"><div style="font-weight:800">第 ${lv} 級・${esc(t.axis[lv])}${isRec ? ' <span class="pill st-fam">推薦</span>' : ''}</div><div class="zh">${stat}</div></div>${IC.chev}</button>`; }).join('')}</div>
+    <p class="small muted">每一級都可以直接試，不用先通過前一級。不看字完成或求助後完成，就會推薦下一級。</p>
+    <button class="btn block" data-a="lsOpen" data-v="${tid}">${IC.speak}用耳機模式聽這個情境</button>
+    <p class="small muted">${esc(t.sim)}</p>`;
+}
+function readSegHtml() {
+  const cur = S.settings.read || 'furi';
+  return `<div class="seg" role="group" aria-label="讀音顯示">${[['furi', '振假名'], ['ro', '拼音'], ['both', '兩者'], ['none', '關']].map(([v, l]) => `<button data-a="read" data-v="${v}" aria-pressed="${cur === v}">${l}</button>`).join('')}</div>`;
+}
+function applyRead() {
+  const r = S.settings.read || 'furi';
+  ['furi', 'ro', 'both', 'none'].forEach(x => document.body.classList.toggle('rd-' + x, r === x));
+  S.settings.romaji = r !== 'none';
+}
+function weekDays() { let n = 0; for (let i = 0; i < 7; i++) { const d = S.log[dayKey(Date.now() - i * DAY)]; if (d && (d.en || d.jp || d.look)) n++; } return n; }
+
+function jpProgressHtml() {
+  const sum = {done:0, text:0, listen:0, repair:0, transfer:0, later:0};
+  TASKS.forEach(t => { for (let lv = 1; lv <= 5; lv++) { const s = lvPeek(t.id, lv); if (s) for (const k in sum) sum[k] += s[k] || 0; } });
+  const ckN = Object.keys(S.ck).length, ckL = Object.values(S.ck).filter(x => x.l.s >= 3).length;
+  if (!sum.done && !ckN) return '';
+  return `<p class="sec-title">日文對話進度</p><div class="kpis">
+    <div class="kpi"><span class="small muted">不看字完成</span><b class="tnum">${sum.listen}</b><span class="small muted">求助後完成 ${sum.repair}・看字 ${sum.text}</span></div>
+    <div class="kpi"><span class="small muted">換說法也聽懂</span><b class="tnum">${sum.transfer}</b><span class="small muted">隔天仍完成 ${sum.later}</span></div>
+    <div class="kpi"><span class="small muted">句塊</span><b class="tnum">${ckN}</b><span class="small muted">聽得出來 ${ckL} 個</span></div>
+    <div class="kpi"><span class="small muted">練過的對話</span><b class="tnum">${sum.done}</b><span class="small muted">次</span></div></div>`;
+}
+
+/* ================= 耳機模式 =================
+   模式：教學（日文→中文→慢速→日文）／連播（熟悉的對話，只放日文）／接話（輪到你時留空，再放參考答案）
+   優先播放已經練過的對話；記住播放位置。
+   ============================================= */
+const LSM = {teach:'教學', flow:'連播', gap:'接話'};
+const LS = {open:false, playing:false, list:[], q:[], k:0, gen:0, lock:null, scope:null};
+function lsPref() { if (!S.lsp) S.lsp = {mode:'teach', zh:true, pause:1, loop:true, pos:{}}; return S.lsp; }
+function goldenPath(v) {
+  const out = []; let id = v.start, guard = 0;
+  while (id && guard++ < 30) {
+    const n = v.nodes[id]; if (!n) break;
+    if (n.t === 'say') { out.push({me:true, who:'你', c:n.c, zh:n.zh}); id = n.next; }
+    else if (n.t === 'hear') { out.push({me:false, who:n.who || v.who, c:n.c, zh:n.zh}); id = n.next; }
+    else if (n.t === 'act') { const o = n.o.find(x => x.g === 'ok' && x.next && !x.fix) || n.o.find(x => x.g === 'ok' && x.next); if (o.c) out.push({me:true, who:'你', c:o.c, zh:o.zh}); id = o.next; }
+    else break;
+  }
+  return out;
+}
+function lsPlaylist(scope) {
+  const out = [];
+  TASKS.forEach(t => { if (scope && t.id !== scope) return;
+    for (let lv = 1; lv <= 5; lv++) { const s = lvPeek(t.id, lv); (s ? s.seen : []).forEach(vid => out.push({vid, last:s.last})); } });
+  out.sort((a, b) => b.last - a.last);
+  if (!out.length) { const t = scope ? TASK[scope] : TASKS[0]; out.push({vid:t.v[1].find(v => !v.tr).id, preview:true}); }
+  return out;
+}
+function lsKey() { return (LS.scope || 'all') + ':' + lsPref().mode; }
+function lsBuild() {
+  const p = lsPref(), q = [], gapMul = p.pause;
+  LS.list.forEach((it, di) => {
+    const v = VAR[it.vid], t = TASK[v.tid], rate = LVR[v.lv], head = {d:di, title:`${t.name}・第 ${v.lv} 級`};
+    const say = (text, lang, r, gap, show) => q.push(Object.assign({say:text, lang, rate:r, gap:Math.round(gap * gapMul), show}, head));
+    say(`${t.name}，第 ${v.lv} 級。`, 'zh-TW', 1, 500, {zh:v.setup || t.setup});
+    const lines = goldenPath(v);
+    if (p.mode === 'teach') {
+      const weak = [...new Set(lines.filter(l => !l.me).flatMap(l => l.c))].filter(id => CRIT.has(CK[id].cat) && (!S.ck[id] || S.ck[id].l.s < 2)).slice(0, 4);
+      weak.forEach(id => { say(plainJp(CK[id].jp), 'ja-JP', 0.85, 400, {c:[id], zh:CK[id].zh, who:'句塊'}); say(CK[id].zh, 'zh-TW', 1, 600, {c:[id], zh:CK[id].zh, who:'句塊'}); });
+    }
+    lines.forEach(l => {
+      const show = {c:l.c, zh:l.zh, who:l.who}, text = lineText(l.c);
+      if (p.mode === 'teach') { say(text, 'ja-JP', rate, 800, show); if (p.zh) say(l.zh, 'zh-TW', 1, 600, show); say(text, 'ja-JP', 0.7, 800, show); say(text, 'ja-JP', rate, 1200, show); }
+      else if (p.mode === 'flow') { say(text, 'ja-JP', rate, 900, show); if (p.zh) say(l.zh, 'zh-TW', 1, 900, show); }
+      else {
+        if (l.me) { if (p.zh) say('你說：' + l.zh, 'zh-TW', 1, 300, Object.assign({}, show, {hide:true})); q.push(Object.assign({say:'', gap:Math.round(5000 * gapMul), show:Object.assign({}, show, {hide:true, yourTurn:true})}, head)); say(text, 'ja-JP', 0.9, 1200, show); }
+        else { say(text, 'ja-JP', rate, 1000, show); if (p.zh) say(l.zh, 'zh-TW', 1, 800, show); }
+      }
+    });
+    q.push(Object.assign({say:'', gap:Math.round(1500 * gapMul), show:{zh:'（這段結束）'}}, head));
+  });
+  LS.q = q;
+}
+function lsOpen(scope) {
+  closeSheet();
+  LS.scope = scope || null; LS.list = lsPlaylist(LS.scope); lsBuild();
+  const pos = lsPref().pos[lsKey()]; LS.k = pos && pos < LS.q.length ? pos : 0;
+  LS.open = true;
+  let el = $('#lsv');
+  if (!el) { el = document.createElement('div'); el.id = 'lsv'; el.className = 'overlay jpmode'; document.body.append(el); }
+  el.hidden = false; document.body.style.overflow = 'hidden';
+  lsRender();
+}
+function lsSavePos() { const p = lsPref(); p.pos[lsKey()] = LS.k; saveLocal(); }
+function lsClose() { lsStop(); lsSavePos(); persist(); LS.open = false; const el = $('#lsv'); if (el) el.hidden = true; document.body.style.overflow = ''; render(); }
+async function lsWake(on) {
+  try {
+    if (on && !LS.lock && navigator.wakeLock) { LS.lock = await navigator.wakeLock.request('screen'); LS.lock.addEventListener?.('release', () => { LS.lock = null; }); }
+    if (!on && LS.lock) { await LS.lock.release(); LS.lock = null; }
+  } catch (e) { LS.lock = null; }
+}
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && LS.playing) lsWake(true); });
+function lsStop() { LS.playing = false; LS.gen++; try { speechSynthesis.cancel(); } catch (e) {} lsWake(false); }
+function lsToggle() {
+  if (LS.playing) { lsStop(); lsSavePos(); lsRender(); return; }
+  if (!canSpeak) { toast('這台裝置不能播放聲音'); return; }
+  LS.playing = true; LS.gen++; lsWake(true); lsStep(LS.gen); lsRender();
+}
+function lsStep(gen) {
+  if (gen !== LS.gen || !LS.playing) return;
+  if (LS.k >= LS.q.length) { if (!lsPref().loop) { lsStop(); LS.k = 0; lsSavePos(); lsRender(); return; } LS.k = 0; }
+  const it = LS.q[LS.k], myK = LS.k; let fired = false;
+  lsRender(); if (LS.k % 4 === 0) lsSavePos();
+  const done = () => {
+    if (fired) return; fired = true;
+    if (gen !== LS.gen || !LS.playing || LS.k !== myK) return;
+    setTimeout(() => { if (gen !== LS.gen || !LS.playing || LS.k !== myK) return; LS.k++; lsStep(gen); }, it.gap || 600);
+  };
+  if (!it.say) { done(); return; }
+  speak(it.say, it.lang, it.rate, done);
+  setTimeout(done, 1500 + it.say.length * (it.lang.startsWith('ja') ? 260 : 330) / ((it.rate || 1) * S.settings.rate));
+}
+function lsSkip(dir) {
+  const cur = LS.q[LS.k] ? LS.q[LS.k].d : 0, target = Math.max(0, Math.min(LS.list.length - 1, cur + dir));
+  LS.k = Math.max(0, LS.q.findIndex(x => x.d === target)); lsSavePos();
+  if (LS.playing) { LS.gen++; try { speechSynthesis.cancel(); } catch (e) {} lsStep(LS.gen); } else lsRender();
+}
+function lsSet(k, v) {
+  const p = lsPref(), cur = LS.q[LS.k] ? LS.q[LS.k].d : 0;
+  if (k === 'mode') p.mode = v; else if (k === 'pause') p.pause = +v; else p[k] = !p[k];
+  lsBuild(); LS.k = Math.max(0, LS.q.findIndex(x => x.d === cur)); persist();
+  if (LS.playing) { LS.gen++; try { speechSynthesis.cancel(); } catch (e) {} lsStep(LS.gen); } else lsRender();
+}
+function lsRender() {
+  const el = $('#lsv'); if (!el || !LS.open) return;
+  const p = lsPref(), it = LS.q[LS.k] || LS.q[0], s = it.show || {}, di = it.d;
+  const preview = LS.list.some(x => x.preview);
+  el.innerHTML = `<div class="ov-head"><button class="icon-btn" data-a="lsClose" aria-label="關閉耳機模式">${IC.x}</button><div class="prog" aria-hidden="true"><i style="width:${(LS.k / Math.max(1, LS.q.length)) * 100}%"></i></div><span class="small muted tnum">${di + 1}/${LS.list.length} 段</span></div>
+    <div class="ov-body"><div class="in">
+      <div><p class="small muted">耳機模式・${LSM[p.mode]}${LS.scope ? '・' + esc(TASK[LS.scope].name) : '・練過的對話'}</p><h2 style="font-size:21px">${esc(it.title)}</h2></div>
+      ${preview ? '<p class="small muted">你還沒練過對話，先放第 1 級給你預習。</p>' : ''}
+      <section class="card stack" style="gap:8px;min-height:170px;justify-content:center">
+        ${s.who ? `<p class="who">${esc(s.who)}</p>` : ''}
+        ${s.yourTurn ? '<p style="font-size:20px;font-weight:800">輪到你說</p><p class="muted">先自己說，等一下會播參考答案。</p>' : s.c && !s.hide ? lineHtml(s.c, {big:true}) : ''}
+        ${s.zh && !s.yourTurn ? `<p class="muted" style="font-size:16px">${esc(s.zh)}</p>` : ''}
+      </section>
+      <div class="row" style="justify-content:center;gap:12px">
+        <button class="btn" data-a="lsSkip" data-v="-1">上一段</button>
+        <button class="btn jp-b" style="min-width:132px;min-height:64px;font-size:19px" data-a="lsToggle">${LS.playing ? '暫停' : '播放'}</button>
+        <button class="btn" data-a="lsSkip" data-v="1">下一段</button>
+      </div>
+      <div class="seg" role="group" aria-label="模式">${Object.entries(LSM).map(([k, l]) => `<button data-a="lsSet" data-k="mode" data-v="${k}" aria-pressed="${p.mode === k}">${l}</button>`).join('')}</div>
+      <p class="small muted">${p.mode === 'teach' ? '教學：先念不熟的句塊，每句播「日文→中文→慢速→日文」。' : p.mode === 'flow' ? '連播：熟悉的對話照正常速度連著播，不重複。' : '接話：輪到你時留空，先自己說，再播參考答案。'}</p>
+      <div class="row wrap" style="justify-content:center">
+        <button class="chip" data-a="lsSet" data-k="zh" aria-pressed="${p.zh}">中文解說</button>
+        <button class="chip" data-a="lsSet" data-k="loop" aria-pressed="${p.loop}">全部循環</button>
+        ${[[0.6, '停頓短'], [1, '停頓中'], [1.6, '停頓長']].map(([v, l]) => `<button class="chip" data-a="lsSet" data-k="pause" data-v="${v}" aria-pressed="${p.pause === v}">${l}</button>`).join('')}
+      </div>
+      <div class="card flat stack" style="gap:6px">
+        <p class="small">播放時請讓螢幕保持亮著，App 會盡量讓螢幕不暗。iPhone 鎖定螢幕或切到別的 App，聲音會停（目前不支援鎖屏播放）。</p>
+        <p class="small muted">騎車時音量開小一點，留意路況。</p>
+      </div>
+      <p class="sec-title">播放清單（${LS.list.length} 段，最近練的在前）</p>
+      <div class="list">${LS.list.map((x, i) => { const v = VAR[x.vid]; return `<div class="li" style="${i === di ? 'background:var(--jp-soft)' : ''}"><div class="grow"><div style="font-weight:700">${esc(TASK[v.tid].name)}・第 ${v.lv} 級</div><div class="zh">${esc(v.note || '')}${v.tr ? '・換說法' : ''}</div></div></div>`; }).join('')}</div>
+    </div></div>`;
+}
 /* ================= utilities ================= */
 const MIN = 6e4, HOUR = 36e5, DAY = 864e5;
 const $ = s => document.querySelector(s);
@@ -905,9 +2177,10 @@ const SCENE_MAP = Object.fromEntries(SCENES.map(s => [s.id, s]));
 
 /* ================= state ================= */
 const LSK = 'bnk-state-v1';
-const DEF = () => ({v:1, updatedAt:0, created:Date.now(), settings:{romaji:true, dailyNew:5, rate:1, autoSpeak:true},
-  en:{}, custom:{}, jp:{}, dlg:{}, dlgMiss:{}, jpw:{}, jpConf:{}, scenes:{}, favs:[], pastes:[], log:{}, xp:0, streak:{n:0, last:''}, newDay:{d:'', n:0}, boost:[], again:{d:'', ids:[]}});
-function migrate(o) { const d = DEF(); if (!o || typeof o !== 'object') return d; for (const k in d) if (o[k] === undefined) o[k] = d[k]; o.settings = Object.assign(d.settings, o.settings || {}); return o; }
+const DEF = () => ({v:1, updatedAt:0, created:Date.now(), settings:{romaji:true, read:'furi', dlgLen:1, dailyNew:5, rate:1, autoSpeak:true},
+  en:{}, custom:{}, jp:{}, dlg:{}, dlgMiss:{}, jpw:{}, ck:{}, tk:{}, run:null, lsp:null, migDlg:0, jpConf:{}, scenes:{}, favs:[], pastes:[], log:{}, xp:0, streak:{n:0, last:''}, newDay:{d:'', n:0}, boost:[], again:{d:'', ids:[]}});
+function migrate(o) { const d = DEF(); if (!o || typeof o !== 'object') return d; for (const k in d) if (o[k] === undefined) o[k] = d[k];
+  const had = o.settings || {}; o.settings = Object.assign(d.settings, had); if (had.read === undefined) o.settings.read = had.romaji === false ? 'none' : 'furi'; return o; }
 let S = DEF();
 try { const raw = localStorage.getItem(LSK); if (raw) S = migrate(JSON.parse(raw)); } catch (e) {}
 const UI = {tab:'home', enSeg:'lib', cat:'all', st:'all', jpSeg:'dlg', look:{text:'', res:null, ai:null, busy:false, err:''}};
@@ -1176,10 +2449,11 @@ function tower() {
 }
 function topbar(title) {
   return `<header class="topbar">${tower()}<div class="grow"><h1>${title}</h1><div class="lv"><span class="tnum">Lv ${level()}</span><span class="xpbar"><i style="width:${Math.round(lvProgress() * 100)}%"></i></span></div></div>
-    <div class="streak" title="連續學習天數"><b class="tnum">${streakNow()}</b>連續天數</div></header>`;
+    <div class="streak" title="最近 7 天有學習的天數"><b class="tnum">${weekDays()}</b>本週天數</div></header>`;
 }
 function render() {
-  document.body.classList.toggle('noro', !S.settings.romaji);
+  migrateOldDlg(); applyRead();
+  document.body.classList.toggle('noro', S.settings.read === 'none');
   const v = $('#view');
   const map = {home:vHome, en:vEn, look:vLook, jp:vJp, me:vMe};
   v.innerHTML = (map[UI.tab] || vHome)();
@@ -1207,12 +2481,7 @@ function vHome() {
       <button class="btn onhero block" data-a="startEn">${due || nw ? '開始英文練習' : '再多學 3 個新字'}</button>
       ${learnedIds().length ? `<button class="btn block" style="background:rgba(255,255,255,.14);color:#fff;border-color:rgba(255,255,255,.45)" data-a="review">複習學過的字（${learnedIds().length} 個）</button>` : ''}
     </section>
-    <section class="card hero-jp stack" aria-label="日文">
-      <div><p class="small muted">日文 · 把對話走完</p><p style="font-size:20px;font-weight:800">${esc(dlgHeroText())}</p>
-      <p class="small muted">${wordDue().length ? `單字卡 ${wordDue().length} 個要複習・` : ''}${jd ? `開口積木 ${jd} 個要複習` : '你開口 → 對方自然回答 → 聽懂 → 決定怎麼接'}</p></div>
-      <button class="btn block" style="background:rgba(255,255,255,.14);color:#fff;border-color:rgba(255,255,255,.45)" data-a="lsOpen">${IC.speak}耳機模式：反覆聽練過的對話</button>
-      <div class="row"><button class="btn onhero" style="flex:1" data-a="startDlg">開始對話練習</button><button class="btn ghost" style="color:#fff;border-color:rgba(255,255,255,.5)" data-a="startJp">積木</button></div>
-    </section>
+    <section class="card hero-jp stack" aria-label="日文">${jpNextHtml(true)}</section>
     ${again.length ? `<section class="stack" style="gap:8px"><p class="sec-title">今天再遇到</p><div class="chips">${again.map(id => `<button class="chip en" data-a="word" data-v="${id}">${esc(getEn(id).w)}</button>`).join('')}</div><p class="small muted">今天答錯或在 Claude 裡查過的字。它們會在 10 分鐘後的練習裡再出現。</p></section>` : ''}
     <div class="kpis">
       <div class="kpi"><span class="small muted">本週查字次數</span><b class="tnum">${lw}</b><span class="small muted">上週 ${pw} 次${pw && lw < pw ? '，變少了' : ''}</span></div>
@@ -1303,9 +2572,9 @@ function vJp() {
   const nextPat = PAT.find(p => !S.jp[p.id]);
   let body = '';
   if (UI.jpSeg === 'dlg') {
-    body = dlgListHtml();
-  } else if (UI.jpSeg === 'w') {
-    body = wordListHtml();
+    body = dlgTasksHtml();
+  } else if (UI.jpSeg === 'ck' || UI.jpSeg === 'w') {
+    body = ckListHtml();
   } else if (UI.jpSeg === 'scene') {
     body = `<div class="list">${SCENES.map(s => { const st = S.scenes[s.id]; return `<button class="li" data-a="scene" data-v="${s.id}"><div class="grow"><div style="font-weight:800">${esc(s.name)}</div><div class="zh">${esc(s.sub)}・${s.steps.length} 句</div></div>${st && st.done ? `<span class="pill st-mast">完成 ${st.done} 次</span>` : '<span class="pill st-new">未開始</span>'}${IC.chev}</button>`; }).join('')}</div>
       <p class="small muted">每個情境都是真的會遇到的對話。你從積木裡拼出回答，錯了會告訴你錯在哪一塊。</p>`;
@@ -1319,11 +2588,9 @@ function vJp() {
       ${PT_EXAMPLES.map(ex => `<section class="card stack" style="gap:12px"><p style="font-weight:800">${esc(ex.t)}</p>${ex.rows.map(seq => `<div class="row" style="align-items:flex-end"><div style="flex:1;min-width:0">${sentHtml(seq)}<p class="small muted" style="margin-top:4px">${esc(zhOfSeq(seq))}</p></div>${spkBtn(sentText(seq), 'ja-JP')}</div>`).join('')}</section>`).join('')}`;
   }
   return topbar('日文') + `<div class="stack">
-    <section class="card hero-jp stack"><div><p class="small muted">把對話走完</p><p style="font-size:20px;font-weight:800">${esc(dlgHeroText())}</p></div>
-      <div class="row"><button class="btn onhero" style="flex:1" data-a="startDlg">開始對話練習</button><button class="btn ghost" style="color:#fff;border-color:rgba(255,255,255,.5)" data-a="startJp">積木練習${jd ? `（${jd}）` : ''}</button></div></section>
-    <div class="card flat" style="padding:0"><div class="set-row"><div class="grow"><b>羅馬拼音</b><p class="small muted">${S.settings.romaji ? '開著。熟了之後可以關掉，看不懂時點句子會暫時顯示。' : '關著。點日文句子可以偷看拼音。'}</p></div><button class="switch" role="switch" aria-checked="${S.settings.romaji}" aria-label="羅馬拼音" data-a="romaji"></button></div></div>
-    ${S.settings.romaji && famN >= 3 ? `<div class="hint-bar"><span style="flex:1">你已經熟悉 ${famN} 個句型了。試試看關掉羅馬拼音？</span><button class="btn sm" data-a="romaji">關掉</button></div>` : ''}
-    <div class="seg" role="group"><button data-a="jpSeg" data-v="dlg" aria-pressed="${UI.jpSeg === 'dlg'}">對話</button><button data-a="jpSeg" data-v="w" aria-pressed="${UI.jpSeg === 'w'}">單字</button><button data-a="jpSeg" data-v="scene" aria-pressed="${UI.jpSeg === 'scene'}">開口</button><button data-a="jpSeg" data-v="pat" aria-pressed="${UI.jpSeg === 'pat'}">句型</button><button data-a="jpSeg" data-v="pt" aria-pressed="${UI.jpSeg === 'pt'}">助詞</button></div>
+    <section class="card hero-jp stack">${jpNextHtml(true)}</section>
+    <div class="row" style="gap:10px"><span class="small muted" style="flex:none">讀音</span><div style="flex:1;min-width:0">${readSegHtml()}</div></div>
+    <div class="seg" role="group"><button data-a="jpSeg" data-v="dlg" aria-pressed="${UI.jpSeg === 'dlg'}">對話</button><button data-a="jpSeg" data-v="ck" aria-pressed="${UI.jpSeg === 'ck' || UI.jpSeg === 'w'}">句塊</button><button data-a="jpSeg" data-v="scene" aria-pressed="${UI.jpSeg === 'scene'}">開口</button><button data-a="jpSeg" data-v="pat" aria-pressed="${UI.jpSeg === 'pat'}">句型</button><button data-a="jpSeg" data-v="pt" aria-pressed="${UI.jpSeg === 'pt'}">助詞</button></div>
     ${body}</div>`;
 }
 const ZH_SEQ = {'tokyo,ni,kimashita':'我來到東京了', 'kankou,de,kimashita':'我是來觀光的', 'taiwan,kara,kimashita':'我從台灣來', 'card,de,onegai':'用信用卡付款', 'wifi,wa,arimasuka':'有 Wi-Fi 嗎？', 'toire,wa,dokodesuka':'廁所在哪裡？', 'kore,wa,ikura':'這個多少錢？', 'kore,wo,kudasai':'請給我這個', 'checkin,wo,onegai':'麻煩辦入住', 'iyahon,wo,sagashite':'我在找耳機'};
@@ -1347,9 +2614,11 @@ function vMe() {
     ${confEn.length ? `<p class="sec-title">常搞混的英文</p><div class="list">${confEn.slice(0, 6).map(([a, b, n]) => `<button class="li" data-a="word" data-v="${a}"><div class="grow"><div class="w">${esc(getEn(a).w)} <span class="muted small">被你當成</span> ${esc(getEn(b).w)}</div><div class="zh">${esc(getEn(a).zh)} ≠ ${esc(getEn(b).zh)}</div></div><span class="pill st-conf">${n} 次</span></button>`).join('')}</div>` : ''}
     ${favs ? `<p class="sec-title">收藏</p><div class="list">${favs}</div>` : ''}
     ${my.length ? `<p class="sec-title">我自己加的字（${my.length}）</p><div class="list">${my.map(id => `<button class="li" data-a="word" data-v="${id}"><div class="grow"><div class="w">${esc(S.custom[id].w)}</div><div class="zh">${esc(S.custom[id].zh)}</div></div>${pill(status(S.en[id]))}</button>`).join('')}</div>` : ''}
+    ${jpProgressHtml()}
     <p class="sec-title">設定</p>
     <div class="list">
-      <div class="set-row"><div class="grow"><b>羅馬拼音</b><p class="small muted">日文上方的拼音</p></div><button class="switch" role="switch" aria-checked="${S.settings.romaji}" aria-label="羅馬拼音" data-a="romaji"></button></div>
+      <div class="set-row" style="flex-wrap:wrap"><div class="grow"><b>日文讀音</b><p class="small muted">振假名、羅馬拼音可以選</p></div><div style="min-width:220px;flex:1">${readSegHtml()}</div></div>
+      <div class="set-row" style="flex-wrap:wrap"><div class="grow"><b>日文對話一次練幾段</b><p class="small muted">一段約 2–4 分鐘</p></div>${seg('dlgLen', [[1, '1 段'], [2, '2 段']], S.settings.dlgLen || 1)}</div>
       <div class="set-row"><div class="grow"><b>答題時自動發音</b><p class="small muted">看到新字、答完題時念出來</p></div><button class="switch" role="switch" aria-checked="${S.settings.autoSpeak}" aria-label="自動發音" data-a="set" data-k="autoSpeak" data-v="${!S.settings.autoSpeak}"></button></div>
       <div class="set-row" style="flex-wrap:wrap"><div class="grow"><b>每天新英文字</b></div>${seg('dailyNew', [[3, '3'], [5, '5'], [8, '8']], S.settings.dailyNew)}</div>
       <div class="set-row" style="flex-wrap:wrap"><div class="grow"><b>發音速度</b></div>${seg('rate', [[0.75, '慢'], [1, '正常']], S.settings.rate)}</div>
@@ -1479,8 +2748,8 @@ function curCard() { return SES && SES.cards[SES.i]; }
 function autoSpeakCard() {
   const c = curCard(); if (!c || !S.settings.autoSpeak) return;
   if (c.t === 'teach') speak(getEn(c.id).w, 'en-US');
-  if (c.t === 'dRound') playLine(c);
-  if (c.t === 'wq') speak(c.jp, 'ja-JP', 0.85);
+  if (c.t === 'wq') speak(c.jp.replace(/^〜/, ''), 'ja-JP', 0.85);
+  if (c.t === 'ck' && c.mode === 'l') speak(plainJp(CK[c.id].jp), 'ja-JP', 0.9);
 }
 
 function renderSes() {
@@ -1494,10 +2763,7 @@ function renderSes() {
   else if (c.t === 'pteach') [body, foot] = sesPTeach(c);
   else if (c.t === 'sceneIntro') [body, foot] = sesSceneIntro(c);
   else if (c.t === 'build') [body, foot] = sesBuild(c);
-  else if (c.t === 'dIntro') [body, foot] = sesDIntro(c);
-  else if (c.t === 'dRound') [body, foot] = sesDRound(c);
-  else if (c.t === 'dFollow') [body, foot] = sesDFollow(c);
-  else if (c.t === 'dEnd') [body, foot] = sesDEnd(c);
+  else if (c.t === 'ck') [body, foot] = sesCk(c);
   else if (c.t === 'wq') [body, foot] = sesWq(c);
   const prev = $('#sesBody'), keep = prev && SES._ri === SES.i ? prev.scrollTop : 0;
   el.innerHTML = head + `<div class="ov-body" id="sesBody"><div class="in">${body}</div></div><div class="ov-foot"><div class="in">${foot}</div></div>`;
@@ -1592,7 +2858,7 @@ function sesDone() {
   const b = `<div class="done-hero"><div class="pop">${tower()}</div><h2 style="font-size:26px">完成！</h2>
     <p class="muted">答對 ${s.ok} / ${s.n} 題${s.nw ? `・新學 ${s.nw} 個` : ''}・經驗值 +${s.xp}</p>
     ${isEn ? `<p style="font-size:18px">看懂率 <b class="tnum">${Math.round(cov1 * 100)}%</b>${d > 0 ? `<span style="color:var(--ok)">（+${d}%）</span>` : ''}</p>` : ''}
-    <p class="small muted">連續學習 ${streakNow()} 天</p></div>
+    <p class="small muted">最近 7 天學了 ${weekDays()} 天</p></div>
     ${isEn ? '<p class="small muted" style="text-align:center">答錯的字 10 分鐘後會再出現；答對的字會越隔越久才出現。</p>' : (SES.dlg ? '<p class="small muted" style="text-align:center">漏聽的對話很快會再出現；聽懂的會越隔越久，通過了就解鎖下一級。</p>' : '<p class="small muted" style="text-align:center">錯的句型很快會再出現；熟了的會越隔越久。</p>')}`;
   const f = `${isEn && !SES.more ? '<button class="btn block" data-a="more">再學 3 個新字</button>' : ''}<button class="btn primary block" data-a="sesClose">完成</button>`;
   return [b, f];
@@ -1652,7 +2918,6 @@ function nextCard() {
   const c = curCard();
   if (c && c.t === 'pteach' && !S.jp[c.pid]) { recOf('jp', c.pid, true); persist(); }
   SES.i++; SES.res = null; SES.build = null; SES.d = null;
-  if (curCard() && curCard().t === 'dEnd') finalizeDlg(curCard().ctx);
   if (!curCard()) finishSession();
   renderSes(); const bd = $('#sesBody'); if (bd) bd.scrollTop = 0; autoSpeakCard();
 }
@@ -1721,22 +2986,26 @@ document.addEventListener('click', e => {
     case 'startEn': startEn(enDue().length || newCandidates().length ? 0 : 3); break;
     case 'more': SES.more = true; { const extra = newCandidates(3).filter(id => !S.en[id]).slice(0, 3); if (!extra.length) { toast('字庫裡的字都學過了！'); break; } extra.forEach(id => SES.cards.push({t:'teach', id}, {t:'q', id, isNew:true})); renderSes(); autoSpeakCard(); } break;
     case 'startJp': startJp(); break;
-    case 'startDlg': startDlg(); break;
-    case 'dlgSit': showSheet(() => dlgSitSheet(v)); break;
-    case 'dlgGo': { const [sid, lv] = v.split(':'); startDlgOne(sid, +lv); } break;
-    case 'dPlay': playLine(curCard()); break;
-    case 'dRep': { const c = curCard(); c.ctx.rep++; if (v === 'slow' && dlgLine(c).easy) SES.d.easy = true; toast('你說：' + REPAIR[v].jp); playLine(c, v === 'slow' ? 'slow' : ''); if (SES.d.easy) renderSes(); } break;
-    case 'dPeek': SES.d.shown = true; curCard().ctx.peek = true; renderSes(); break;
-    case 'dq': answerDq(v); break;
-    case 'dfu': answerFu(v); break;
-    case 'wMark': toggleWord(v); if (SES) renderSes(); else render(); refreshSheet(); break;
+    case 'runRec': { const r = recommend(); RUN_END = null; startRun(r.tid, r.lv); } break;
+    case 'runResume': resumeRun(); break;
+    case 'runDrop': S.run = null; persist(); render(); toast('已放棄這段'); break;
+    case 'runClose': closeRunView(); break;
+    case 'taskSheet': showSheet(() => taskSheet(v)); break;
+    case 'taskGo': { const [tid, lv] = v.split(':'); startRun(tid, +lv); } break;
+    case 'ckInfo': showSheet(() => ckSheet(v)); break;
+    case 'ckWeak': { const st = ckSt(v, true); st.weak = !st.weak; persist(); refreshSheet(); toast(st.weak ? '已標成不熟，會優先複習' : '取消不熟'); } break;
+    case 'startCk': startCkReview(); break;
+    case 'ckq': answerCk(+v); break;
+    case 'read': S.settings.read = v; persist(); render(); if (S.run && !$('#run').hidden) renderRun(); break;
     case 'startWords': startWords(); break;
     case 'wq': answerWq(+v); break;
+    case 'wDel': delete S.jpw[v]; persist(); render(); break;
     case 'lsOpen': lsOpen(v); break;
     case 'lsToggle': lsToggle(); break;
     case 'lsSkip': lsSkip(+v); break;
-    case 'lsOpt': LS[v] = !LS[v]; lsRebuild(); break;
+    case 'lsSet': lsSet(t.dataset.k, v); break;
     case 'lsClose': lsClose(); break;
+    default: if (S.run) runAction(a, v); break;
     case 'review': startReview(); break;
     case 'reviewAgain': endSession(); startReview(); break;
     case 'scene': startScene(v); break;
@@ -1757,8 +3026,8 @@ document.addEventListener('click', e => {
     case 'st': UI.st = v; render(); break;
     case 'enSeg': UI.enSeg = v; render(); break;
     case 'jpSeg': UI.jpSeg = v; render(); break;
-    case 'romaji': S.settings.romaji = !S.settings.romaji; persist(); render(); break;
-    case 'set': { const k = t.dataset.k; let val = v; if (k === 'dailyNew' || k === 'rate') val = +v; if (k === 'autoSpeak') val = v === 'true'; S.settings[k] = val; persist(); render(); } break;
+    case 'romaji': S.settings.read = S.settings.read === 'none' ? 'furi' : 'none'; persist(); render(); break;
+    case 'set': { const k = t.dataset.k; let val = v; if (k === 'dailyNew' || k === 'rate' || k === 'dlgLen') val = +v; if (k === 'autoSpeak') val = v === 'true'; S.settings[k] = val; persist(); render(); } break;
     case 'analyze': {
       const txt = ($('#pasteBox')?.value || '').trim(); UI.look.text = txt; if (!txt) { toast('先貼上一段英文'); break; }
       const res = analyze(txt); UI.look.res = res; UI.look.ai = null; UI.look.err = '';
@@ -1803,357 +3072,4 @@ buildIndex();
 render();
 initCloud();
 initSample();
-
-/* ================= 把對話走完 (listening-first dialogue practice) ================= */
-function dlgSt(sid) { return S.dlg[sid] || (S.dlg[sid] = {un:1, rec:{}, pass:{}}); }
-function dlgScript(ctx) { return DLG_MAP[ctx.sid].lv[ctx.lv]; }
-function mkRec() { return {s:0, due:0, ok:0, ng:0, lapse:0, conf:{}, t0:Date.now(), last:0}; }
-function dlgDue() {
-  const t = Date.now(), out = [];
-  DLG.forEach(d => { const st = S.dlg[d.id]; if (!st) return; for (const lv in st.rec) { const r = st.rec[lv]; if (r.s < 7 && r.due <= t) out.push({sid:d.id, lv:+lv}); } });
-  return out;
-}
-function dlgNext() {
-  for (const d of DLG) { const st = dlgSt(d.id); if (!st.rec[st.un]) return {sid:d.id, lv:st.un}; }
-  return null;
-}
-function dlgCards(sid, lv) {
-  const ctx = {sid, lv, ok:0, n:0, rep:0, peek:false, miss:[], wrongK:{r1:[], r2:[]}, fuOk:null};
-  return [{t:'dIntro', ctx}, {t:'dRound', ctx, r:'r1'}, {t:'dFollow', ctx}, {t:'dRound', ctx, r:'r2'}, {t:'dEnd', ctx}];
-}
-function startDlg() {
-  const due = shuffle(dlgDue()).slice(0, 2), picks = due.slice();
-  const room = due.length ? 1 : 2;
-  for (const d of DLG) {
-    if (picks.length >= due.length + room) break;
-    const st = dlgSt(d.id);
-    if (!st.rec[st.un] && !picks.some(p => p.sid === d.id && p.lv === st.un)) picks.push({sid:d.id, lv:st.un});
-  }
-  if (!picks.length) shuffle(DLG).slice(0, 2).forEach(d => picks.push({sid:d.id, lv:dlgSt(d.id).un}));
-  startSession('jp', picks.flatMap(p => dlgCards(p.sid, p.lv)), '對話練習', {dlg:true});
-}
-function startDlgOne(sid, lv) { closeSheet(); startSession('jp', dlgCards(sid, lv), DLG_MAP[sid].name, {dlg:true}); }
-
-function jl2(jp, ro, size) { return `<span class="jline"><span class="ro">${esc(ro)}</span><span class="jp" ${size ? `style="font-size:${size}px"` : ''}>${esc(jp)}</span></span>`; }
-function dlgLine(c) { const sc = dlgScript(c.ctx); return sc[c.r]; }
-function playLine(c, mode) {
-  const L = dlgLine(c), lv = c.ctx.lv;
-  if (mode === 'slow') { if (L.easy) speak(L.easy.jp, 'ja-JP', 0.8); else speak(L.jp, 'ja-JP', 0.7); }
-  else speak(L.jp, 'ja-JP', LV_RATE[lv]);
-}
-
-function sesDIntro(c) {
-  const d = DLG_MAP[c.ctx.sid], sc = dlgScript(c.ctx), lv = c.ctx.lv;
-  const b = `<p class="small muted">${esc(d.place)}</p><h2 style="font-size:24px">${esc(d.name)}</h2>
-    <div class="row wrap"><span class="pill lvp">第 ${lv} 級・${LV_NAME[lv]}</span><span class="small muted">回答你的人：${esc(sc.who)}</span></div>
-    <p style="font-size:17px">${esc(d.setup)}</p>
-    <section class="stack" style="gap:8px"><p class="sec-title" style="margin:0">先認識這幾個字</p>
-      <div class="list">${DLG_W[c.ctx.sid][lv].map(wordRow).join('')}</div>
-      <p class="small muted">不熟的按「不熟」，會加到單字卡，之後另外練。</p></section>
-    <section class="card stack" style="gap:6px"><p class="who" style="color:var(--en-ink)">你先開口</p>
-      <div class="row" style="align-items:flex-end"><div style="flex:1;min-width:0">${jline(d.me.jp, d.me.ro)}<p class="small muted">${esc(d.me.zh)}</p></div>${spkBtn(d.me.jp, 'ja-JP')}</div></section>
-    <p class="small muted">先自己唸出來。下一步對方會回答，先只用聽的，不給你看字。日本人不會照課本回答，抓到重點就好。</p>`;
-  return [b, `<button class="btn primary block" data-a="next">說完了，聽他怎麼回</button>`];
-}
-
-function sesDRound(c) {
-  const sc = dlgScript(c.ctx), L = sc[c.r];
-  if (!SES.d) SES.d = {ans:{}, ord:L.q.map(q => shuffle(q.o.map((_, i) => i))), shown:false, easy:false};
-  const d = SES.d, nAns = Object.keys(d.ans).length, done = nAns === L.q.length, reveal = done || d.shown || !canSpeak;
-  const wrongK = new Set(L.q.filter((q, qi) => d.ans[qi] !== undefined && d.ans[qi] !== 0).map(q => q.k));
-  let b = `<div class="bubble"><div class="grow"><p class="who">${esc(sc.who)}${c.r === 'r2' ? '・第二輪' : ''}</p>
-    ${reveal ? jline(L.jp, L.ro) + `<p class="small muted" style="margin-top:4px">${esc(L.zh)}</p>`
-      + (d.easy && L.easy ? `<p class="small" style="margin-top:8px">你請他說慢一點，他換了簡單的說法：</p>${jline(L.easy.jp, L.easy.ro)}<p class="small muted">${esc(L.easy.zh)}</p>` : '')
-      : `<p class="muted" style="padding-block:6px">先聽，還不給你看字。</p>`}
-    </div></div>`;
-  if (canSpeak) b += `<button class="btn jp-b block" data-a="dPlay">${IC.speak}再聽一次</button>
-    <div class="repair">${['again', 'slow'].map(k => `<button class="rep" data-a="dRep" data-v="${k}"><span class="jpf">${esc(REPAIR[k].jp)}</span><span class="small muted">${S.settings.romaji ? esc(REPAIR[k].ro) + '・' : ''}${esc(REPAIR[k].zh)}</span></button>`).join('')}</div>
-    <p class="small muted" style="margin-top:-6px">聽不懂就用上面兩句。在日本真的可以這樣說，不扣分。</p>`;
-  else b += `<p class="small muted">這台裝置不能播放聲音，先用看的練習。</p>`;
-  b += L.q.map((q, qi) => {
-    const a = d.ans[qi], answered = a !== undefined;
-    return `<section class="stack" style="gap:8px"><p class="q" style="font-size:17px">${L.q.length > 1 ? (qi + 1) + '. ' : ''}${esc(q.q)}</p>
-      <div class="opts">${d.ord[qi].map(oi => `<button class="opt ${answered && oi === 0 ? 'correct' : answered && oi === a ? 'wrong' : ''}" data-a="dq" data-v="${qi}:${oi}" ${answered ? 'disabled' : ''}>${esc(q.o[oi])}</button>`).join('')}</div>
-      ${answered && a !== 0 ? `<div class="fb no" style="padding:12px 14px"><p>答案是「${esc(q.o[0])}」。關鍵在這一塊：<b class="jpf">${esc(L.ch[q.k][0])}</b>＝${esc(L.ch[q.k][1])}</p><p class="small muted">這題考的是：${TAG[q.tag]}</p></div>` : ''}
-    </section>`;
-  }).join('');
-  if (!reveal) b += `<button class="btn ghost sm" style="align-self:center" data-a="dPeek">聽不出來，直接看字</button>`;
-  if (done) b += `<p class="sec-title">拆開來看</p><div class="list">${L.ch.map(([j, z], i) => `<div class="li ${wrongK.has(i) ? 'keych' : ''}" style="align-items:flex-start"><div class="grow"><div class="jpf" style="font-weight:700;font-size:18px">${esc(j)}</div><div class="small muted" style="white-space:normal">${esc(z)}</div></div></div>`).join('')}</div>`;
-  const f = done ? `<button class="btn primary block" data-a="next">${c.r === 'r1' ? '決定怎麼接話' : '看結果'}</button>` : `<p class="small muted" style="text-align:center">聽完，回答上面的問題（${nAns}/${L.q.length}）</p>`;
-  return [b, f];
-}
-
-function sesDFollow(c) {
-  const sc = dlgScript(c.ctx), fu = sc.fu;
-  if (!SES.d) SES.d = {ord:shuffle(fu.o.map((_, i) => i)), pick:null};
-  const d = SES.d, picked = d.pick !== null, okI = fu.o.findIndex(o => o.ok);
-  let b = `<div class="bubble"><div class="grow"><p class="who">${esc(sc.who)}剛剛說</p>${jline(sc.r1.jp, sc.r1.ro)}<p class="small muted" style="margin-top:4px">${esc(sc.r1.zh)}</p></div></div>
-    <p class="q">你要怎麼接？</p>
-    <div class="opts">${d.ord.map(oi => { const o = fu.o[oi];
-      return `<button class="opt ${picked && o.ok ? 'correct' : picked && oi === d.pick ? 'wrong' : ''}" data-a="dfu" data-v="${oi}" ${picked ? 'disabled' : ''}><span style="min-width:0">${jl2(o.jp, o.ro, 18)}${picked ? `<span class="sub">${esc(o.zh)}</span>` : ''}</span></button>`; }).join('')}</div>`;
-  if (picked) {
-    const p = fu.o[d.pick], g = fu.o[okI];
-    b += p.ok ? `<div class="fb ok"><h3>好的接法</h3><p>${esc(p.why)}</p></div>`
-      : `<div class="fb no"><h3>這樣接會卡住</h3><p>${esc(p.why)}</p><p>比較好的接法：<b class="jpf">${esc(g.jp)}</b>（${esc(g.zh)}）</p><p class="small muted">${esc(g.why)}</p></div>`;
-    b += `<div class="row"><p class="small muted" style="flex:1">對話會照好的接法繼續。</p>${spkBtn(g.jp, 'ja-JP', '聽這句')}</div>`;
-  }
-  return [b, picked ? `<button class="btn primary block" data-a="next">說出口，聽他怎麼回</button>` : `<p class="small muted" style="text-align:center">選一句你會說的話</p>`];
-}
-
-function sesDEnd(c) {
-  const ctx = c.ctx, d = DLG_MAP[ctx.sid], sc = dlgScript(ctx), g = sc.fu.o.find(o => o.ok);
-  const tags = [...new Set(ctx.miss)];
-  const more = SES.cards.slice(SES.i + 1).length > 0;
-  const b = `<div class="done-hero" style="padding-top:8px"><h2 style="font-size:24px">${ctx.pass ? '這段對話走完了！' : '走完了，有幾個地方漏聽'}</h2>
-      <p class="muted">${esc(d.name)}・第 ${ctx.lv} 級</p></div>
-    <section class="card stack" style="gap:6px"><p class="sec-title" style="margin:0">結果</p><p style="font-size:18px;font-weight:700">${esc(sc.end)}</p></section>
-    <div class="kpis">
-      <div class="kpi"><span class="small muted">聽懂</span><b class="tnum">${ctx.ok} / ${ctx.n}</b><span class="small muted">第一次就答對</span></div>
-      <div class="kpi"><span class="small muted">請對方重說</span><b class="tnum">${ctx.rep} 次</b><span class="small muted">不扣分</span></div>
-    </div>
-    ${tags.length ? `<p class="small">這次漏掉的：${tags.map(t => `<span class="pill st-conf" style="margin-right:4px">${TAG[t]}</span>`).join('')}</p>` : ''}
-    ${ctx.unlocked ? `<div class="fb ok"><h3>第 ${ctx.unlocked} 級解鎖了</h3><p>下一級的回答會${LV_NAME[ctx.unlocked]}。</p></div>`
-      : ctx.pass ? '' : `<p class="small muted">${ctx.peek ? '這次有直接看字，' : ''}這一段會很快再出現。全部第一次就聽懂、而且沒有直接看字，才算通過。</p>`}
-    <section class="stack" style="gap:8px"><p class="sec-title" style="margin:0">這段的關鍵字・還不熟就加入單字卡</p><div class="list">${DLG_W[ctx.sid][ctx.lv].map(wordRow).join('')}</div></section>
-    <details class="card flat"><summary style="cursor:pointer;min-height:28px;font-weight:700">整段對話</summary>
-      <div class="stack" style="gap:10px;margin-top:10px">
-        ${[['你', d.me], [sc.who, sc.r1], ['你', g], [sc.who, sc.r2]].map(([w, l]) => `<div><p class="who">${esc(w)}</p><div class="row" style="align-items:flex-end"><div style="flex:1;min-width:0">${jline(l.jp, l.ro)}<p class="small muted">${esc(l.zh)}</p></div>${spkBtn(l.jp, 'ja-JP')}</div></div>`).join('')}
-      </div></details>`;
-  return [b, `<button class="btn primary block" data-a="next">${more ? '下一段對話' : '完成'}</button>`];
-}
-
-function finalizeDlg(ctx) {
-  if (ctx.done) return; ctx.done = true;
-  ctx.pass = ctx.ok === ctx.n && !ctx.peek;
-  const st = dlgSt(ctx.sid), rec = st.rec[ctx.lv] || mkRec();
-  grade(rec, ctx.pass); if (ctx.pass && rec.s < 2) { rec.s = 2; rec.due = Date.now() + IV[2]; } st.rec[ctx.lv] = rec;
-  if (ctx.pass) { st.pass[ctx.lv] = (st.pass[ctx.lv] || 0) + 1; if (ctx.lv === st.un && ctx.lv < 5) { st.un++; ctx.unlocked = st.un; } }
-  addXp(ctx.pass ? 20 : 5); persist();
-}
-function answerDq(v) {
-  const c = curCard(), L = dlgLine(c), d = SES.d, [qi, oi] = v.split(':').map(Number);
-  if (!d || d.ans[qi] !== undefined) return;
-  d.ans[qi] = oi; const ok = oi === 0, q = L.q[qi], ctx = c.ctx;
-  ctx.n++; if (ok) ctx.ok++; else { ctx.miss.push(q.tag); S.dlgMiss[q.tag] = (S.dlgMiss[q.tag] || 0) + 1; }
-  SES.stats.n++; if (ok) SES.stats.ok++;
-  const lg = L_(); lg.jp++; if (ok) lg.jpOk++;
-  touchStreak(); addXp(ok ? 8 : 1); persist(); renderSes();
-}
-function answerFu(v) {
-  const c = curCard(), d = SES.d; if (!d || d.pick !== null) return;
-  const fu = dlgScript(c.ctx).fu, oi = +v, ok = !!fu.o[oi].ok, ctx = c.ctx;
-  d.pick = oi; ctx.n++; if (ok) ctx.ok++; else { ctx.miss.push('fu'); S.dlgMiss.fu = (S.dlgMiss.fu || 0) + 1; }
-  SES.stats.n++; if (ok) SES.stats.ok++;
-  const lg = L_(); lg.jp++; if (ok) lg.jpOk++;
-  touchStreak(); addXp(ok ? 8 : 1); persist(); renderSes();
-  if (S.settings.autoSpeak) speak(fu.o.find(o => o.ok).jp, 'ja-JP', 0.9);
-  requestAnimationFrame(() => { const fb = document.querySelector('#sesBody .fb'); fb && fb.scrollIntoView({behavior:'smooth', block:'nearest'}); });
-}
-function L_() { return L(); }
-
-/* ---- 日文頁：對話清單 ---- */
-function dlgListHtml() {
-  const miss = Object.entries(S.dlgMiss).sort((a, b) => b[1] - a[1]).slice(0, 3);
-  return `<p class="muted small">你先開口，日本人用自然的日文回答。先只用聽的抓重點，再決定怎麼接。每個情境有 5 級，回答會越來越像真的日本人。</p>
-    ${miss.length ? `<div class="card flat stack" style="gap:6px"><p class="sec-title" style="margin:0">你最常漏聽的</p><p>${miss.map(([t, n]) => `${TAG[t]} <span class="muted small">${n} 次</span>`).join('　')}</p></div>` : ''}
-    <button class="btn jp-b block" data-a="lsOpen">${IC.speak}耳機模式：反覆聽練過的對話</button>
-    <div class="list">${DLG.map(d => { const st = dlgSt(d.id);
-      return `<button class="li" data-a="dlgSit" data-v="${d.id}"><div class="grow"><div style="font-weight:800">${esc(d.name)}</div><div class="zh">${esc(d.place)}</div>
-        <div class="lvdots" aria-label="通過到第 ${st.un} 級">${[1, 2, 3, 4, 5].map(l => `<i class="${st.pass[l] ? 'pass' : l === st.un ? 'cur' : ''}"></i>`).join('')}</div></div>${IC.chev}</button>`; }).join('')}</div>
-    <p class="small muted">接下來會加：餐廳、飯店、購物，以及數字和時間的聽力小練習。</p>`;
-}
-function dlgSitSheet(sid) {
-  const d = DLG_MAP[sid], st = dlgSt(sid);
-  return `<h2 style="font-size:22px">${esc(d.name)}</h2><p class="muted">${esc(d.place)}・${esc(d.setup)}</p>
-    <div class="list">${[1, 2, 3, 4, 5].map(l => { const lock = l > st.un, r = st.rec[l];
-      return `<button class="li" data-a="dlgGo" data-v="${sid}:${l}" ${lock ? 'disabled style="opacity:.45"' : ''}><div class="grow"><div style="font-weight:800">第 ${l} 級・${LV_NAME[l]}</div>
-        <div class="zh">${lock ? `先通過第 ${l - 1} 級` : st.pass[l] ? `通過 ${st.pass[l]} 次${r ? '・下次複習 ' + relDue(r.due) : ''}` : r ? '還沒通過' : '還沒練過'}</div></div>${lock ? '' : IC.chev}</button>`; }).join('')}</div>
-    <button class="btn block" data-a="lsOpen" data-v="${sid}">${IC.speak}用耳機模式聽這個情境</button>
-    <p class="small muted">通過＝每一題第一次就答對，而且沒有直接看字。請對方重說或說慢一點不扣分。</p>`;
-}
-function dlgHeroText() {
-  const due = dlgDue().length, nx = dlgNext();
-  return due ? `${due} 段對話要複習` : nx ? `下一段：${DLG_MAP[nx.sid].name}・第 ${nx.lv} 級` : '可以自由重練任何一級';
-}
-
-/* ================= 日文單字卡（從對話裡勾「不熟」的字） ================= */
-function allDlgWords() {
-  const m = new Map();
-  for (const sid in DLG_W) DLG_W[sid].forEach(list => (list || []).forEach(([jp, ro, zh]) => { if (!m.has(jp)) m.set(jp, {jp, ro, zh}); }));
-  return m;
-}
-function wordInfo(jp) { return S.jpw[jp] || allDlgWords().get(jp); }
-function wordRow([jp, ro, zh]) {
-  const on = !!S.jpw[jp];
-  return `<div class="li" style="gap:10px"><div class="grow"><div class="jpf" style="font-weight:700;font-size:19px">${esc(jp)}</div><div class="small muted">${S.settings.romaji ? esc(ro) + '・' : ''}${esc(zh)}</div></div>
-    ${spkBtn(jp.replace(/^〜/, ''), 'ja-JP')}<button class="chip" data-a="wMark" data-v="${esc(jp)}" aria-pressed="${on}" style="flex:none">${on ? '已加入' : '不熟'}</button></div>`;
-}
-function toggleWord(jp) {
-  if (S.jpw[jp]) { delete S.jpw[jp]; toast('已從單字卡移除'); }
-  else { const w = allDlgWords().get(jp); if (!w) return; S.jpw[jp] = Object.assign({jp:w.jp, ro:w.ro, zh:w.zh}, mkRec(), {due:Date.now()}); toast('已加入單字卡：' + jp); }
-  persist();
-}
-function wordDue() { const t = Date.now(); return Object.keys(S.jpw).filter(k => S.jpw[k].s < 7 && S.jpw[k].due <= t); }
-function wordWhere(jp) {
-  const key = jp.replace(/^〜/, '').replace(/る$|ます$/, '');
-  for (const d of DLG) for (let l = 1; l <= 5; l++) { const s = d.lv[l]; for (const r of [s.r1, s.r2]) if (r.jp.includes(key)) return r; }
-  return null;
-}
-function startWords() {
-  let ids = shuffle(wordDue()).slice(0, 12);
-  if (!ids.length) ids = Object.keys(S.jpw).sort((a, b) => S.jpw[a].s - S.jpw[b].s).slice(0, 8);
-  if (!ids.length) { toast('單字卡還是空的。練對話時把不熟的字按「不熟」'); return; }
-  startSession('jp', ids.map(makeWq), '單字卡', {words:true});
-}
-function makeWq(jp) {
-  const w = S.jpw[jp], pool = [...allDlgWords().values()].filter(x => x.jp !== jp && x.zh !== w.zh);
-  const opts = shuffle([w.zh, ...shuffle(pool).slice(0, 3).map(x => x.zh)]);
-  return {t:'wq', jp, mode:w.s >= 2 && Math.random() < 0.5 ? 'listen' : 'read', opts};
-}
-function sesWq(c) {
-  const w = S.jpw[c.jp] || wordInfo(c.jp), res = SES.res, where = res ? wordWhere(c.jp) : null;
-  const showText = c.mode === 'read' || res;
-  let b = `<p class="small muted">${c.mode === 'listen' ? '只用聽的' : '看字'}・意思是？</p>
-    <div class="card stack" style="align-items:center;gap:10px;padding:22px">
-      ${showText ? jline(w.jp, w.ro, true) : '<p class="muted">先聽，不看字</p>'}
-      ${canSpeak ? `<button class="btn jp-b" data-a="speak" data-v="${esc(w.jp.replace(/^〜/, ''))}" data-l="ja-JP">${IC.speak}再聽一次</button>` : ''}
-    </div>
-    <div class="opts">${c.opts.map((o, i) => `<button class="opt ${res ? (o === w.zh ? 'correct' : i === res.chosen ? 'wrong' : '') : ''}" data-a="wq" data-v="${i}" ${res ? 'disabled' : ''}>${esc(o)}</button>`).join('')}</div>`;
-  if (res) b += `<div class="${res.ok ? 'fb ok' : 'fb no'}"><h3>${res.ok ? '對了' : '是「' + esc(w.zh) + '」'}</h3><p><b class="jpf">${esc(w.jp)}</b>（${esc(w.ro)}）＝${esc(w.zh)}</p>
-      ${where ? `<p class="small">在對話裡是這樣出現的：</p>${jline(where.jp, where.ro)}<p class="small muted">${esc(where.zh)}</p>` : ''}</div>`;
-  return [b, res ? `<button class="btn primary block" data-a="next">下一個</button>` : `<p class="small muted" style="text-align:center">選一個意思</p>`];
-}
-function answerWq(i) {
-  const c = curCard(); if (!c || SES.res) return;
-  const w = S.jpw[c.jp]; if (!w) { nextCard(); return; }
-  const ok = c.opts[i] === w.zh; SES.res = {chosen:i, ok};
-  if (!SES.graded.has(c.jp)) { SES.graded.add(c.jp); grade(w, ok); }
-  if (!ok && !SES.requeued.has(c.jp)) { SES.requeued.add(c.jp); SES.cards.splice(Math.min(SES.i + 3, SES.cards.length), 0, makeWq(c.jp)); }
-  SES.stats.n++; if (ok) SES.stats.ok++;
-  const lg = L(); lg.jp++; if (ok) lg.jpOk++;
-  touchStreak(); addXp(ok ? 5 : 1); persist(); renderSes();
-  speak(w.jp.replace(/^〜/, ''), 'ja-JP', 0.85);
-}
-function wordListHtml() {
-  const ids = Object.keys(S.jpw), due = wordDue().length;
-  if (!ids.length) return `<div class="card flat empty">單字卡還是空的。<br>練對話時，在「先認識這幾個字」裡把不熟的按「不熟」，就會出現在這裡。</div>`;
-  return `<button class="btn jp-b block" data-a="startWords">${due ? `練習單字卡（${due} 個要複習）` : '練習單字卡'}</button>
-    <div class="list">${ids.map(k => { const w = S.jpw[k];
-      return `<div class="li" style="gap:10px"><div class="grow"><div class="jpf" style="font-weight:700;font-size:18px">${esc(w.jp)}</div><div class="small muted">${S.settings.romaji ? esc(w.ro) + '・' : ''}${esc(w.zh)}</div></div>${pill(status(w))}${spkBtn(w.jp.replace(/^〜/, ''), 'ja-JP')}<button class="chip" data-a="wMark" data-v="${esc(w.jp)}" style="flex:none">移除</button></div>`; }).join('')}</div>
-    <p class="small muted">答錯的字 10 分鐘後再出現，答對的越隔越久。熟了之後會改成「只用聽的」考你。</p>`;
-}
-
-/* ================= 耳機模式：不用操作手機，反覆聽練過的對話 ================= */
-const LS = {open:false, playing:false, list:[], q:[], k:0, gen:0, zh:true, words:true, loop:true, lock:null, cur:null, sidOnly:null};
-function lsPlaylist(sid) {
-  const out = [];
-  DLG.forEach(d => {
-    if (sid && d.id !== sid) return;
-    const st = dlgSt(d.id);
-    for (let l = 1; l <= 5; l++) if (sid ? l <= st.un : st.rec[l]) out.push({sid:d.id, lv:l});
-  });
-  if (!out.length) DLG.forEach(d => out.push({sid:d.id, lv:1}));
-  return out;
-}
-function lsBuild() {
-  const q = [];
-  LS.list.forEach((p, di) => {
-    const d = DLG_MAP[p.sid], sc = d.lv[p.lv], rate = LV_RATE[p.lv], good = sc.fu.o.find(o => o.ok);
-    const head = {d:di, title:`${d.name}・第 ${p.lv} 級`};
-    q.push(Object.assign({say:`${d.name}，第 ${p.lv} 級。`, lang:'zh-TW', gap:600, show:{zh:d.setup}}, head));
-    if (LS.words) DLG_W[p.sid][p.lv].forEach(([jp, ro, zh]) => {
-      q.push(Object.assign({say:jp.replace(/^〜/, ''), lang:'ja-JP', rate:0.85, gap:500, show:{jp, ro, zh, who:'單字'}}, head));
-      if (LS.zh) q.push(Object.assign({say:zh, lang:'zh-TW', gap:700, show:{jp, ro, zh, who:'單字'}}, head));
-    });
-    [['你', d.me], [sc.who, sc.r1], ['你', good], [sc.who, sc.r2]].forEach(([who, l]) => {
-      const show = {jp:l.jp, ro:l.ro, zh:l.zh, who};
-      q.push(Object.assign({say:l.jp, lang:'ja-JP', rate, gap:900, show}, head));
-      if (LS.zh) q.push(Object.assign({say:l.zh, lang:'zh-TW', gap:700, show}, head));
-      q.push(Object.assign({say:l.jp, lang:'ja-JP', rate:0.7, gap:900, show}, head));
-      q.push(Object.assign({say:l.jp, lang:'ja-JP', rate, gap:1300, show}, head));
-    });
-    q.push(Object.assign({say:'', gap:1800, show:{zh:'（這段結束）'}}, head));
-  });
-  LS.q = q;
-}
-function lsOpen(sid) {
-  closeSheet();
-  LS.sidOnly = sid || null; LS.list = lsPlaylist(LS.sidOnly); lsBuild(); LS.k = 0; LS.open = true;
-  let el = $('#lsv');
-  if (!el) { el = document.createElement('div'); el.id = 'lsv'; el.className = 'overlay jpmode'; document.body.append(el); }
-  el.hidden = false; document.body.style.overflow = 'hidden';
-  lsRender();
-}
-function lsClose() {
-  lsStop(); LS.open = false; const el = $('#lsv'); if (el) el.hidden = true; document.body.style.overflow = '';
-  render();
-}
-async function lsWake(on) {
-  try {
-    if (on && !LS.lock && navigator.wakeLock) { LS.lock = await navigator.wakeLock.request('screen'); LS.lock.addEventListener?.('release', () => { LS.lock = null; }); }
-    if (!on && LS.lock) { await LS.lock.release(); LS.lock = null; }
-  } catch (e) { LS.lock = null; }
-}
-document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && LS.playing) lsWake(true); });
-function lsStop() { LS.playing = false; LS.gen++; try { speechSynthesis.cancel(); } catch (e) {} lsWake(false); }
-function lsToggle() {
-  if (LS.playing) { lsStop(); lsRender(); return; }
-  if (!canSpeak) { toast('這台裝置不能播放聲音'); return; }
-  LS.playing = true; LS.gen++; lsWake(true); lsStep(LS.gen); lsRender();
-}
-function lsStep(gen) {
-  if (gen !== LS.gen || !LS.playing) return;
-  if (LS.k >= LS.q.length) {
-    if (!LS.loop) { lsStop(); LS.k = 0; lsRender(); return; }
-    LS.k = 0;
-  }
-  const it = LS.q[LS.k], myK = LS.k; let fired = false;
-  lsRender();
-  const done = () => {
-    if (fired) return; fired = true;
-    if (gen !== LS.gen || !LS.playing || LS.k !== myK) return;
-    setTimeout(() => { if (gen !== LS.gen || !LS.playing || LS.k !== myK) return; LS.k++; lsStep(gen); }, it.gap || 600);
-  };
-  if (!it.say) { done(); return; }
-  speak(it.say, it.lang, it.rate, done);
-  // fallback if the device never reports the end of speech
-  setTimeout(done, 1500 + it.say.length * (it.lang.startsWith('ja') ? 260 : 330) / ((it.rate || 1) * S.settings.rate));
-}
-function lsSkip(dir) {
-  const cur = LS.q[LS.k] ? LS.q[LS.k].d : 0, target = Math.max(0, Math.min(LS.list.length - 1, cur + dir));
-  LS.k = LS.q.findIndex(x => x.d === target); if (LS.k < 0) LS.k = 0;
-  if (LS.playing) { LS.gen++; try { speechSynthesis.cancel(); } catch (e) {} lsStep(LS.gen); } else lsRender();
-}
-function lsRebuild() {
-  const cur = LS.q[LS.k] ? LS.q[LS.k].d : 0;
-  lsBuild(); LS.k = Math.max(0, LS.q.findIndex(x => x.d === cur));
-  if (LS.playing) { LS.gen++; try { speechSynthesis.cancel(); } catch (e) {} lsStep(LS.gen); } else lsRender();
-}
-function lsRender() {
-  const el = $('#lsv'); if (!el || !LS.open) return;
-  const it = LS.q[LS.k] || LS.q[0], s = it.show || {}, di = it.d;
-  const opt = (k, label) => `<button class="chip" data-a="lsOpt" data-v="${k}" aria-pressed="${LS[k]}">${label}</button>`;
-  el.innerHTML = `<div class="ov-head"><button class="icon-btn" data-a="lsClose" aria-label="關閉耳機模式">${IC.x}</button><div class="prog" aria-hidden="true"><i style="width:${(LS.k / Math.max(1, LS.q.length)) * 100}%"></i></div><span class="small muted tnum">${di + 1}/${LS.list.length} 段</span></div>
-    <div class="ov-body"><div class="in">
-      <div><p class="small muted">耳機模式${LS.sidOnly ? '・' + esc(DLG_MAP[LS.sidOnly].name) : '・練過的對話'}</p><h2 style="font-size:22px">${esc(it.title)}</h2></div>
-      <section class="card stack" style="gap:8px;min-height:180px;justify-content:center">
-        ${s.who ? `<p class="who">${esc(s.who)}</p>` : ''}
-        ${s.jp ? jline(s.jp, s.ro, true) : ''}
-        ${s.zh ? `<p class="muted" style="font-size:16px">${esc(s.zh)}</p>` : ''}
-      </section>
-      <div class="row" style="justify-content:center;gap:14px">
-        <button class="btn" data-a="lsSkip" data-v="-1" aria-label="上一段">上一段</button>
-        <button class="btn jp-b" style="min-width:140px;min-height:64px;font-size:19px" data-a="lsToggle">${LS.playing ? '暫停' : '開始播放'}</button>
-        <button class="btn" data-a="lsSkip" data-v="1" aria-label="下一段">下一段</button>
-      </div>
-      <div class="chips" style="justify-content:center">${opt('words', '先念關鍵字')}${opt('zh', '中文解說')}${opt('loop', '全部循環')}</div>
-      <div class="card flat stack" style="gap:6px">
-        <p class="small">每一句的播放順序：日文 → ${LS.zh ? '中文意思 → ' : ''}慢速日文 → 正常日文。</p>
-        <p class="small muted">播放時請讓螢幕保持亮著，App 會盡量讓螢幕不暗下來。iPhone 鎖定螢幕或切到別的 App，聲音就會停。</p>
-        <p class="small muted">騎車時音量開小一點，留意路況。</p>
-      </div>
-      <p class="sec-title">這次會播的對話（${LS.list.length} 段）</p>
-      <div class="list">${LS.list.map((p, i) => `<div class="li" style="${i === di ? 'background:var(--jp-soft)' : ''}"><div class="grow"><div style="font-weight:700">${esc(DLG_MAP[p.sid].name)}</div><div class="zh">第 ${p.lv} 級・${LV_NAME[p.lv]}</div></div></div>`).join('')}</div>
-    </div></div>`;
-}
 </script>

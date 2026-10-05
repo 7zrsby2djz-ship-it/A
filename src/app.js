@@ -39,9 +39,10 @@ const SCENE_MAP = Object.fromEntries(SCENES.map(s => [s.id, s]));
 
 /* ================= state ================= */
 const LSK = 'bnk-state-v1';
-const DEF = () => ({v:1, updatedAt:0, created:Date.now(), settings:{romaji:true, dailyNew:5, rate:1, autoSpeak:true},
-  en:{}, custom:{}, jp:{}, dlg:{}, dlgMiss:{}, jpw:{}, jpConf:{}, scenes:{}, favs:[], pastes:[], log:{}, xp:0, streak:{n:0, last:''}, newDay:{d:'', n:0}, boost:[], again:{d:'', ids:[]}});
-function migrate(o) { const d = DEF(); if (!o || typeof o !== 'object') return d; for (const k in d) if (o[k] === undefined) o[k] = d[k]; o.settings = Object.assign(d.settings, o.settings || {}); return o; }
+const DEF = () => ({v:1, updatedAt:0, created:Date.now(), settings:{romaji:true, read:'furi', dlgLen:1, dailyNew:5, rate:1, autoSpeak:true},
+  en:{}, custom:{}, jp:{}, dlg:{}, dlgMiss:{}, jpw:{}, ck:{}, tk:{}, run:null, lsp:null, migDlg:0, jpConf:{}, scenes:{}, favs:[], pastes:[], log:{}, xp:0, streak:{n:0, last:''}, newDay:{d:'', n:0}, boost:[], again:{d:'', ids:[]}});
+function migrate(o) { const d = DEF(); if (!o || typeof o !== 'object') return d; for (const k in d) if (o[k] === undefined) o[k] = d[k];
+  const had = o.settings || {}; o.settings = Object.assign(d.settings, had); if (had.read === undefined) o.settings.read = had.romaji === false ? 'none' : 'furi'; return o; }
 let S = DEF();
 try { const raw = localStorage.getItem(LSK); if (raw) S = migrate(JSON.parse(raw)); } catch (e) {}
 const UI = {tab:'home', enSeg:'lib', cat:'all', st:'all', jpSeg:'dlg', look:{text:'', res:null, ai:null, busy:false, err:''}};
@@ -310,10 +311,11 @@ function tower() {
 }
 function topbar(title) {
   return `<header class="topbar">${tower()}<div class="grow"><h1>${title}</h1><div class="lv"><span class="tnum">Lv ${level()}</span><span class="xpbar"><i style="width:${Math.round(lvProgress() * 100)}%"></i></span></div></div>
-    <div class="streak" title="連續學習天數"><b class="tnum">${streakNow()}</b>連續天數</div></header>`;
+    <div class="streak" title="最近 7 天有學習的天數"><b class="tnum">${weekDays()}</b>本週天數</div></header>`;
 }
 function render() {
-  document.body.classList.toggle('noro', !S.settings.romaji);
+  migrateOldDlg(); applyRead();
+  document.body.classList.toggle('noro', S.settings.read === 'none');
   const v = $('#view');
   const map = {home:vHome, en:vEn, look:vLook, jp:vJp, me:vMe};
   v.innerHTML = (map[UI.tab] || vHome)();
@@ -341,12 +343,7 @@ function vHome() {
       <button class="btn onhero block" data-a="startEn">${due || nw ? '開始英文練習' : '再多學 3 個新字'}</button>
       ${learnedIds().length ? `<button class="btn block" style="background:rgba(255,255,255,.14);color:#fff;border-color:rgba(255,255,255,.45)" data-a="review">複習學過的字（${learnedIds().length} 個）</button>` : ''}
     </section>
-    <section class="card hero-jp stack" aria-label="日文">
-      <div><p class="small muted">日文 · 把對話走完</p><p style="font-size:20px;font-weight:800">${esc(dlgHeroText())}</p>
-      <p class="small muted">${wordDue().length ? `單字卡 ${wordDue().length} 個要複習・` : ''}${jd ? `開口積木 ${jd} 個要複習` : '你開口 → 對方自然回答 → 聽懂 → 決定怎麼接'}</p></div>
-      <button class="btn block" style="background:rgba(255,255,255,.14);color:#fff;border-color:rgba(255,255,255,.45)" data-a="lsOpen">${IC.speak}耳機模式：反覆聽練過的對話</button>
-      <div class="row"><button class="btn onhero" style="flex:1" data-a="startDlg">開始對話練習</button><button class="btn ghost" style="color:#fff;border-color:rgba(255,255,255,.5)" data-a="startJp">積木</button></div>
-    </section>
+    <section class="card hero-jp stack" aria-label="日文">${jpNextHtml(true)}</section>
     ${again.length ? `<section class="stack" style="gap:8px"><p class="sec-title">今天再遇到</p><div class="chips">${again.map(id => `<button class="chip en" data-a="word" data-v="${id}">${esc(getEn(id).w)}</button>`).join('')}</div><p class="small muted">今天答錯或在 Claude 裡查過的字。它們會在 10 分鐘後的練習裡再出現。</p></section>` : ''}
     <div class="kpis">
       <div class="kpi"><span class="small muted">本週查字次數</span><b class="tnum">${lw}</b><span class="small muted">上週 ${pw} 次${pw && lw < pw ? '，變少了' : ''}</span></div>
@@ -437,9 +434,9 @@ function vJp() {
   const nextPat = PAT.find(p => !S.jp[p.id]);
   let body = '';
   if (UI.jpSeg === 'dlg') {
-    body = dlgListHtml();
-  } else if (UI.jpSeg === 'w') {
-    body = wordListHtml();
+    body = dlgTasksHtml();
+  } else if (UI.jpSeg === 'ck' || UI.jpSeg === 'w') {
+    body = ckListHtml();
   } else if (UI.jpSeg === 'scene') {
     body = `<div class="list">${SCENES.map(s => { const st = S.scenes[s.id]; return `<button class="li" data-a="scene" data-v="${s.id}"><div class="grow"><div style="font-weight:800">${esc(s.name)}</div><div class="zh">${esc(s.sub)}・${s.steps.length} 句</div></div>${st && st.done ? `<span class="pill st-mast">完成 ${st.done} 次</span>` : '<span class="pill st-new">未開始</span>'}${IC.chev}</button>`; }).join('')}</div>
       <p class="small muted">每個情境都是真的會遇到的對話。你從積木裡拼出回答，錯了會告訴你錯在哪一塊。</p>`;
@@ -453,11 +450,9 @@ function vJp() {
       ${PT_EXAMPLES.map(ex => `<section class="card stack" style="gap:12px"><p style="font-weight:800">${esc(ex.t)}</p>${ex.rows.map(seq => `<div class="row" style="align-items:flex-end"><div style="flex:1;min-width:0">${sentHtml(seq)}<p class="small muted" style="margin-top:4px">${esc(zhOfSeq(seq))}</p></div>${spkBtn(sentText(seq), 'ja-JP')}</div>`).join('')}</section>`).join('')}`;
   }
   return topbar('日文') + `<div class="stack">
-    <section class="card hero-jp stack"><div><p class="small muted">把對話走完</p><p style="font-size:20px;font-weight:800">${esc(dlgHeroText())}</p></div>
-      <div class="row"><button class="btn onhero" style="flex:1" data-a="startDlg">開始對話練習</button><button class="btn ghost" style="color:#fff;border-color:rgba(255,255,255,.5)" data-a="startJp">積木練習${jd ? `（${jd}）` : ''}</button></div></section>
-    <div class="card flat" style="padding:0"><div class="set-row"><div class="grow"><b>羅馬拼音</b><p class="small muted">${S.settings.romaji ? '開著。熟了之後可以關掉，看不懂時點句子會暫時顯示。' : '關著。點日文句子可以偷看拼音。'}</p></div><button class="switch" role="switch" aria-checked="${S.settings.romaji}" aria-label="羅馬拼音" data-a="romaji"></button></div></div>
-    ${S.settings.romaji && famN >= 3 ? `<div class="hint-bar"><span style="flex:1">你已經熟悉 ${famN} 個句型了。試試看關掉羅馬拼音？</span><button class="btn sm" data-a="romaji">關掉</button></div>` : ''}
-    <div class="seg" role="group"><button data-a="jpSeg" data-v="dlg" aria-pressed="${UI.jpSeg === 'dlg'}">對話</button><button data-a="jpSeg" data-v="w" aria-pressed="${UI.jpSeg === 'w'}">單字</button><button data-a="jpSeg" data-v="scene" aria-pressed="${UI.jpSeg === 'scene'}">開口</button><button data-a="jpSeg" data-v="pat" aria-pressed="${UI.jpSeg === 'pat'}">句型</button><button data-a="jpSeg" data-v="pt" aria-pressed="${UI.jpSeg === 'pt'}">助詞</button></div>
+    <section class="card hero-jp stack">${jpNextHtml(true)}</section>
+    <div class="row" style="gap:10px"><span class="small muted" style="flex:none">讀音</span><div style="flex:1;min-width:0">${readSegHtml()}</div></div>
+    <div class="seg" role="group"><button data-a="jpSeg" data-v="dlg" aria-pressed="${UI.jpSeg === 'dlg'}">對話</button><button data-a="jpSeg" data-v="ck" aria-pressed="${UI.jpSeg === 'ck' || UI.jpSeg === 'w'}">句塊</button><button data-a="jpSeg" data-v="scene" aria-pressed="${UI.jpSeg === 'scene'}">開口</button><button data-a="jpSeg" data-v="pat" aria-pressed="${UI.jpSeg === 'pat'}">句型</button><button data-a="jpSeg" data-v="pt" aria-pressed="${UI.jpSeg === 'pt'}">助詞</button></div>
     ${body}</div>`;
 }
 const ZH_SEQ = {'tokyo,ni,kimashita':'我來到東京了', 'kankou,de,kimashita':'我是來觀光的', 'taiwan,kara,kimashita':'我從台灣來', 'card,de,onegai':'用信用卡付款', 'wifi,wa,arimasuka':'有 Wi-Fi 嗎？', 'toire,wa,dokodesuka':'廁所在哪裡？', 'kore,wa,ikura':'這個多少錢？', 'kore,wo,kudasai':'請給我這個', 'checkin,wo,onegai':'麻煩辦入住', 'iyahon,wo,sagashite':'我在找耳機'};
@@ -481,9 +476,11 @@ function vMe() {
     ${confEn.length ? `<p class="sec-title">常搞混的英文</p><div class="list">${confEn.slice(0, 6).map(([a, b, n]) => `<button class="li" data-a="word" data-v="${a}"><div class="grow"><div class="w">${esc(getEn(a).w)} <span class="muted small">被你當成</span> ${esc(getEn(b).w)}</div><div class="zh">${esc(getEn(a).zh)} ≠ ${esc(getEn(b).zh)}</div></div><span class="pill st-conf">${n} 次</span></button>`).join('')}</div>` : ''}
     ${favs ? `<p class="sec-title">收藏</p><div class="list">${favs}</div>` : ''}
     ${my.length ? `<p class="sec-title">我自己加的字（${my.length}）</p><div class="list">${my.map(id => `<button class="li" data-a="word" data-v="${id}"><div class="grow"><div class="w">${esc(S.custom[id].w)}</div><div class="zh">${esc(S.custom[id].zh)}</div></div>${pill(status(S.en[id]))}</button>`).join('')}</div>` : ''}
+    ${jpProgressHtml()}
     <p class="sec-title">設定</p>
     <div class="list">
-      <div class="set-row"><div class="grow"><b>羅馬拼音</b><p class="small muted">日文上方的拼音</p></div><button class="switch" role="switch" aria-checked="${S.settings.romaji}" aria-label="羅馬拼音" data-a="romaji"></button></div>
+      <div class="set-row" style="flex-wrap:wrap"><div class="grow"><b>日文讀音</b><p class="small muted">振假名、羅馬拼音可以選</p></div><div style="min-width:220px;flex:1">${readSegHtml()}</div></div>
+      <div class="set-row" style="flex-wrap:wrap"><div class="grow"><b>日文對話一次練幾段</b><p class="small muted">一段約 2–4 分鐘</p></div>${seg('dlgLen', [[1, '1 段'], [2, '2 段']], S.settings.dlgLen || 1)}</div>
       <div class="set-row"><div class="grow"><b>答題時自動發音</b><p class="small muted">看到新字、答完題時念出來</p></div><button class="switch" role="switch" aria-checked="${S.settings.autoSpeak}" aria-label="自動發音" data-a="set" data-k="autoSpeak" data-v="${!S.settings.autoSpeak}"></button></div>
       <div class="set-row" style="flex-wrap:wrap"><div class="grow"><b>每天新英文字</b></div>${seg('dailyNew', [[3, '3'], [5, '5'], [8, '8']], S.settings.dailyNew)}</div>
       <div class="set-row" style="flex-wrap:wrap"><div class="grow"><b>發音速度</b></div>${seg('rate', [[0.75, '慢'], [1, '正常']], S.settings.rate)}</div>
@@ -613,8 +610,8 @@ function curCard() { return SES && SES.cards[SES.i]; }
 function autoSpeakCard() {
   const c = curCard(); if (!c || !S.settings.autoSpeak) return;
   if (c.t === 'teach') speak(getEn(c.id).w, 'en-US');
-  if (c.t === 'dRound') playLine(c);
-  if (c.t === 'wq') speak(c.jp, 'ja-JP', 0.85);
+  if (c.t === 'wq') speak(c.jp.replace(/^〜/, ''), 'ja-JP', 0.85);
+  if (c.t === 'ck' && c.mode === 'l') speak(plainJp(CK[c.id].jp), 'ja-JP', 0.9);
 }
 
 function renderSes() {
@@ -628,10 +625,7 @@ function renderSes() {
   else if (c.t === 'pteach') [body, foot] = sesPTeach(c);
   else if (c.t === 'sceneIntro') [body, foot] = sesSceneIntro(c);
   else if (c.t === 'build') [body, foot] = sesBuild(c);
-  else if (c.t === 'dIntro') [body, foot] = sesDIntro(c);
-  else if (c.t === 'dRound') [body, foot] = sesDRound(c);
-  else if (c.t === 'dFollow') [body, foot] = sesDFollow(c);
-  else if (c.t === 'dEnd') [body, foot] = sesDEnd(c);
+  else if (c.t === 'ck') [body, foot] = sesCk(c);
   else if (c.t === 'wq') [body, foot] = sesWq(c);
   const prev = $('#sesBody'), keep = prev && SES._ri === SES.i ? prev.scrollTop : 0;
   el.innerHTML = head + `<div class="ov-body" id="sesBody"><div class="in">${body}</div></div><div class="ov-foot"><div class="in">${foot}</div></div>`;
@@ -726,7 +720,7 @@ function sesDone() {
   const b = `<div class="done-hero"><div class="pop">${tower()}</div><h2 style="font-size:26px">完成！</h2>
     <p class="muted">答對 ${s.ok} / ${s.n} 題${s.nw ? `・新學 ${s.nw} 個` : ''}・經驗值 +${s.xp}</p>
     ${isEn ? `<p style="font-size:18px">看懂率 <b class="tnum">${Math.round(cov1 * 100)}%</b>${d > 0 ? `<span style="color:var(--ok)">（+${d}%）</span>` : ''}</p>` : ''}
-    <p class="small muted">連續學習 ${streakNow()} 天</p></div>
+    <p class="small muted">最近 7 天學了 ${weekDays()} 天</p></div>
     ${isEn ? '<p class="small muted" style="text-align:center">答錯的字 10 分鐘後會再出現；答對的字會越隔越久才出現。</p>' : (SES.dlg ? '<p class="small muted" style="text-align:center">漏聽的對話很快會再出現；聽懂的會越隔越久，通過了就解鎖下一級。</p>' : '<p class="small muted" style="text-align:center">錯的句型很快會再出現；熟了的會越隔越久。</p>')}`;
   const f = `${isEn && !SES.more ? '<button class="btn block" data-a="more">再學 3 個新字</button>' : ''}<button class="btn primary block" data-a="sesClose">完成</button>`;
   return [b, f];
@@ -786,7 +780,6 @@ function nextCard() {
   const c = curCard();
   if (c && c.t === 'pteach' && !S.jp[c.pid]) { recOf('jp', c.pid, true); persist(); }
   SES.i++; SES.res = null; SES.build = null; SES.d = null;
-  if (curCard() && curCard().t === 'dEnd') finalizeDlg(curCard().ctx);
   if (!curCard()) finishSession();
   renderSes(); const bd = $('#sesBody'); if (bd) bd.scrollTop = 0; autoSpeakCard();
 }
@@ -855,22 +848,26 @@ document.addEventListener('click', e => {
     case 'startEn': startEn(enDue().length || newCandidates().length ? 0 : 3); break;
     case 'more': SES.more = true; { const extra = newCandidates(3).filter(id => !S.en[id]).slice(0, 3); if (!extra.length) { toast('字庫裡的字都學過了！'); break; } extra.forEach(id => SES.cards.push({t:'teach', id}, {t:'q', id, isNew:true})); renderSes(); autoSpeakCard(); } break;
     case 'startJp': startJp(); break;
-    case 'startDlg': startDlg(); break;
-    case 'dlgSit': showSheet(() => dlgSitSheet(v)); break;
-    case 'dlgGo': { const [sid, lv] = v.split(':'); startDlgOne(sid, +lv); } break;
-    case 'dPlay': playLine(curCard()); break;
-    case 'dRep': { const c = curCard(); c.ctx.rep++; if (v === 'slow' && dlgLine(c).easy) SES.d.easy = true; toast('你說：' + REPAIR[v].jp); playLine(c, v === 'slow' ? 'slow' : ''); if (SES.d.easy) renderSes(); } break;
-    case 'dPeek': SES.d.shown = true; curCard().ctx.peek = true; renderSes(); break;
-    case 'dq': answerDq(v); break;
-    case 'dfu': answerFu(v); break;
-    case 'wMark': toggleWord(v); if (SES) renderSes(); else render(); refreshSheet(); break;
+    case 'runRec': { const r = recommend(); RUN_END = null; startRun(r.tid, r.lv); } break;
+    case 'runResume': resumeRun(); break;
+    case 'runDrop': S.run = null; persist(); render(); toast('已放棄這段'); break;
+    case 'runClose': closeRunView(); break;
+    case 'taskSheet': showSheet(() => taskSheet(v)); break;
+    case 'taskGo': { const [tid, lv] = v.split(':'); startRun(tid, +lv); } break;
+    case 'ckInfo': showSheet(() => ckSheet(v)); break;
+    case 'ckWeak': { const st = ckSt(v, true); st.weak = !st.weak; persist(); refreshSheet(); toast(st.weak ? '已標成不熟，會優先複習' : '取消不熟'); } break;
+    case 'startCk': startCkReview(); break;
+    case 'ckq': answerCk(+v); break;
+    case 'read': S.settings.read = v; persist(); render(); if (S.run && !$('#run').hidden) renderRun(); break;
     case 'startWords': startWords(); break;
     case 'wq': answerWq(+v); break;
+    case 'wDel': delete S.jpw[v]; persist(); render(); break;
     case 'lsOpen': lsOpen(v); break;
     case 'lsToggle': lsToggle(); break;
     case 'lsSkip': lsSkip(+v); break;
-    case 'lsOpt': LS[v] = !LS[v]; lsRebuild(); break;
+    case 'lsSet': lsSet(t.dataset.k, v); break;
     case 'lsClose': lsClose(); break;
+    default: if (S.run) runAction(a, v); break;
     case 'review': startReview(); break;
     case 'reviewAgain': endSession(); startReview(); break;
     case 'scene': startScene(v); break;
@@ -891,8 +888,8 @@ document.addEventListener('click', e => {
     case 'st': UI.st = v; render(); break;
     case 'enSeg': UI.enSeg = v; render(); break;
     case 'jpSeg': UI.jpSeg = v; render(); break;
-    case 'romaji': S.settings.romaji = !S.settings.romaji; persist(); render(); break;
-    case 'set': { const k = t.dataset.k; let val = v; if (k === 'dailyNew' || k === 'rate') val = +v; if (k === 'autoSpeak') val = v === 'true'; S.settings[k] = val; persist(); render(); } break;
+    case 'romaji': S.settings.read = S.settings.read === 'none' ? 'furi' : 'none'; persist(); render(); break;
+    case 'set': { const k = t.dataset.k; let val = v; if (k === 'dailyNew' || k === 'rate' || k === 'dlgLen') val = +v; if (k === 'autoSpeak') val = v === 'true'; S.settings[k] = val; persist(); render(); } break;
     case 'analyze': {
       const txt = ($('#pasteBox')?.value || '').trim(); UI.look.text = txt; if (!txt) { toast('先貼上一段英文'); break; }
       const res = analyze(txt); UI.look.res = res; UI.look.ai = null; UI.look.err = '';
