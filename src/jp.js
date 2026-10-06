@@ -99,7 +99,7 @@ function answerWq(i) {
 
 /* ================= 日文頁與首頁的推薦 ================= */
 function lvBadges(tid) {
-  return [1, 2, 3, 4, 5].map(lv => { const s = lvPeek(tid, lv);
+  return lvList(tid).map(lv => { const s = lvPeek(tid, lv);
     const st = !s ? '' : (s.transfer ? 'tr' : (s.listen || s.repair) ? 'pass' : 'tried');
     return `<i class="${st}" title="第 ${lv} 級"></i>`; }).join('');
 }
@@ -115,16 +115,16 @@ function jpNextHtml(onHero) {
     <div class="row"><button class="btn onhero" style="flex:1" data-a="runRec">開始</button><button class="btn ghost" style="color:#fff;border-color:rgba(255,255,255,.5)" data-a="lsOpen">${IC.speak}耳機</button></div>`;
 }
 function dlgTasksHtml() {
-  return `<p class="muted small">你先開口，日本人用自然的日文回答。聽不懂可以請對方重說、說慢、說簡單一點，或用「〜ですね」確認。每一級都可以直接試。</p>
+  return `<p class="muted small">你先開口（或店員、廣播先說），日本人用自然的日文回答。聽不懂可以請對方重說、說慢、說簡單一點，或用「〜ですね」確認。每一級都可以直接試。</p>
     <div class="legend2 small muted"><span><i class="tried"></i>練過</span><span><i class="pass"></i>不看字完成</span><span><i class="tr"></i>換說法也聽懂</span></div>
-    <div class="list">${TASKS.map(t => `<button class="li" data-a="taskSheet" data-v="${t.id}"><div class="grow"><div style="font-weight:800">${esc(t.name)}</div><div class="zh">${esc(t.place)}</div><div class="lvdots">${lvBadges(t.id)}</div></div>${IC.chev}</button>`).join('')}</div>
+    ${[...new Set(TASKS.map(t => t.group))].map(g => `<p class="sec-title">${esc(g)}</p><div class="list">${TASKS.filter(t => t.group === g).map(t => `<button class="li" data-a="taskSheet" data-v="${t.id}"><div class="grow"><div style="font-weight:800">${esc(t.name)}</div><div class="zh">${esc(t.place)}</div><div class="lvdots">${lvBadges(t.id)}</div></div>${IC.chev}</button>`).join('')}</div>`).join('')}
     <button class="btn block" data-a="lsOpen">${IC.speak}耳機模式</button>
-    <p class="small muted">交通流程穩定後，會再加餐廳、飯店、購物。</p>`;
+    <p class="small muted">生活情境多半是店員或廣播先開口。關鍵字＋問的語氣（例如「洗濯機？」「全部普通で」「初めてです」）常常就夠了。</p>`;
 }
 function taskSheet(tid) {
   const t = TASK[tid], rec = recommend();
   return `<h2 style="font-size:22px">${esc(t.name)}</h2><p class="muted">${esc(t.place)}・${esc(t.setup)}</p>
-    <div class="list">${[1, 2, 3, 4, 5].map(lv => { const s = lvPeek(tid, lv), isRec = rec.tid === tid && rec.lv === lv;
+    <div class="list">${lvList(tid).map(lv => { const s = lvPeek(tid, lv), isRec = rec.tid === tid && rec.lv === lv;
       const stat = s ? `看字 ${s.text}・純聽 ${s.listen}・求助 ${s.repair}・換說法 ${s.transfer}${s.later ? '・隔天仍完成 ' + s.later : ''}` : '還沒練過';
       return `<button class="li" data-a="taskGo" data-v="${tid}:${lv}"><div class="grow"><div style="font-weight:800">第 ${lv} 級・${esc(t.axis[lv])}${isRec ? ' <span class="pill st-fam">推薦</span>' : ''}</div><div class="zh">${stat}</div></div>${IC.chev}</button>`; }).join('')}</div>
     <p class="small muted">每一級都可以直接試，不用先通過前一級。不看字完成或求助後完成，就會推薦下一級。</p>
@@ -144,7 +144,7 @@ function weekDays() { let n = 0; for (let i = 0; i < 7; i++) { const d = S.log[d
 
 function jpProgressHtml() {
   const sum = {done:0, text:0, listen:0, repair:0, transfer:0, later:0};
-  TASKS.forEach(t => { for (let lv = 1; lv <= 5; lv++) { const s = lvPeek(t.id, lv); if (s) for (const k in sum) sum[k] += s[k] || 0; } });
+  TASKS.forEach(t => { for (let lv = 1; lv <= t.levels; lv++) { const s = lvPeek(t.id, lv); if (s) for (const k in sum) sum[k] += s[k] || 0; } });
   const ckN = Object.keys(S.ck).length, ckL = Object.values(S.ck).filter(x => x.l.s >= 3).length;
   if (!sum.done && !ckN) return '';
   return `<p class="sec-title">日文對話進度</p><div class="kpis">
@@ -153,3 +153,5 @@ function jpProgressHtml() {
     <div class="kpi"><span class="small muted">句塊</span><b class="tnum">${ckN}</b><span class="small muted">聽得出來 ${ckL} 個</span></div>
     <div class="kpi"><span class="small muted">練過的對話</span><b class="tnum">${sum.done}</b><span class="small muted">次</span></div></div>`;
 }
+
+function lvList(tid) { return Array.from({length:TASK[tid].levels}, (_, i) => i + 1); }

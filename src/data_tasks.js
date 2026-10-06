@@ -6,7 +6,7 @@
        日文裡的漢字用 {漢字|かな} 標讀音，App 會顯示成振假名。
        類別：concl 結論 / neg 否定 / dir 方向 / place 地點 / time 時間 / num 號碼數字
              cond 條件 / advice 建議 / next 下一步 / reason 理由 / topic 主題 / filler 語氣開場
-             ask 問句 / polite 回應
+             ask 問句 / polite 回應 / q 對方在問（生活情境）
    - 一句話 = 句塊 id 的陣列（c），加上整句中文（zh）。日文、拼音由句塊自動組成。
    - 節點（node）：
        say  你先開口：intent 要說的意思、skel 骨架、c 參考答案
@@ -23,8 +23,8 @@ function K(id, jp, ro, zh, cat, note) {
   CK[id] = {id, jp, ro, zh, cat, note:note || ''};
   return id;
 }
-const CAT = {concl:'結論', neg:'否定', dir:'方向', place:'地點', time:'時間', num:'號碼・數字', cond:'條件', advice:'建議', next:'下一步', reason:'理由', topic:'主題', filler:'語氣・開場', ask:'問句', polite:'回應'};
-const CRIT = new Set(['concl', 'neg', 'dir', 'place', 'time', 'num', 'advice', 'next']);
+const CAT = {concl:'結論', neg:'否定', dir:'方向', place:'地點', time:'時間', num:'號碼・數字', cond:'條件', advice:'建議', next:'下一步', reason:'理由', topic:'主題', filler:'語氣・開場', ask:'問句', polite:'回應', q:'對方在問'};
+const CRIT = new Set(['concl', 'neg', 'dir', 'place', 'time', 'num', 'advice', 'next', 'q']);
 const SKEL = {
   iku_ka:{f:'この［車］は［目的地］に行きますか', zh:'這台［車］會到［目的地］嗎？'},
   ne:{f:'［重點］ですね', zh:'確認：是［重點］對吧？'},
@@ -36,7 +36,7 @@ const SKEL = {
 };
 const TASKS = [];
 const TASK = {};
-function T(def) { def.v = {1:[], 2:[], 3:[], 4:[], 5:[]}; TASKS.push(def); TASK[def.id] = def; return def; }
+function T(def) { def.levels = def.levels || 5; def.v = {}; for (let i = 1; i <= def.levels; i++) def.v[i] = []; TASKS.push(def); TASK[def.id] = def; return def; }
 function V(tid, lv, id, meta, nodes) {
   const n = {}; nodes.forEach(x => { if (n[x.id]) throw new Error('dup node ' + id + x.id); n[x.id] = x; });
   const v = Object.assign({id, tid, lv, start:nodes[0].id, nodes:n}, meta);

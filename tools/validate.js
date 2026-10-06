@@ -4,7 +4,7 @@
 const fs = require('fs'), vm = require('vm'), path = require('path');
 const ctx = {console};
 vm.createContext(ctx);
-vm.runInContext(fs.readFileSync(path.join(__dirname, '../src/data_tasks.js'), 'utf8') + '\n;this.CK=CK;this.TASKS=TASKS;this.CRIT=CRIT;this.SKEL=SKEL;', ctx);
+vm.runInContext(['data_tasks.js', 'data_life.js'].map(f => fs.readFileSync(path.join(__dirname, '../src', f), 'utf8')).join('\n') + '\n;this.CK=CK;this.TASKS=TASKS;this.CRIT=CRIT;this.SKEL=SKEL;', ctx);
 const {CK, TASKS, CRIT, SKEL} = ctx;
 const errs = [], warns = [], used = new Set();
 const ruby = /\{([^|{}]+)\|([^|{}]+)\}/g;
@@ -18,7 +18,7 @@ for (const id in CK) {
 }
 let nVar = 0;
 for (const t of TASKS) {
-  for (let lv = 1; lv <= 5; lv++) {
+  for (let lv = 1; lv <= t.levels; lv++) {
     const vs = t.v[lv];
     if (!vs.length) errs.push(`${t.id} 第 ${lv} 級沒有變體`);
     if (!vs.some(v => !v.tr)) errs.push(`${t.id} 第 ${lv} 級沒有一般變體`);
@@ -61,7 +61,7 @@ for (const t of TASKS) {
       const canEnd = {};
       const reach = (x, stack) => { if (canEnd[x] !== undefined) return canEnd[x]; if (stack.has(x)) return false; stack.add(x); const n = N[x]; let r = n.t === 'end'; if (!r) r = (n.t === 'act' ? n.o.map(o => o.next).filter(Boolean) : [n.next]).some(y => y && reach(y, stack)); stack.delete(x); return (canEnd[x] = r); };
       for (const nid of seen) if (!reach(nid, new Set())) errs.push(`${where}.${nid} 走不到任何結局`);
-      if (N[v.start].t !== 'say') warns.push(`${where} 不是從開口開始`);
+      if (N[v.start].t !== 'say' && t.group !== '生活') warns.push(`${where} 不是從開口開始`);
     }
   }
 }

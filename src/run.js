@@ -15,10 +15,10 @@ const TYPE_LABEL = {text:'看字／提示完成', listen:'純聽完成', repair:
 
 /* 執行時整理資料：簡單說法裡有同一個句塊時，自動當作 ke */
 (function normalizeTasks() {
-  TASKS.forEach(t => { for (let lv = 1; lv <= 5; lv++) t.v[lv].forEach(v => { for (const id in v.nodes) { const n = v.nodes[id];
+  TASKS.forEach(t => { for (let lv = 1; lv <= t.levels; lv++) t.v[lv].forEach(v => { for (const id in v.nodes) { const n = v.nodes[id];
     if (n.t === 'hear' && n.easy) (n.q || []).forEach(q => { if (!q.ke && n.easy.c.includes(q.k)) q.ke = q.k; }); } }); });
 })();
-const VAR = {}; TASKS.forEach(t => { for (let lv = 1; lv <= 5; lv++) t.v[lv].forEach(v => { VAR[v.id] = v; }); });
+const VAR = {}; TASKS.forEach(t => { for (let lv = 1; lv <= t.levels; lv++) t.v[lv].forEach(v => { VAR[v.id] = v; }); });
 
 function plainJp(s) { return String(s).replace(/\{([^|{}]+)\|[^{}]+\}/g, '$1'); }
 function rubyHtml(s) { return esc(s).replace(/\{([^|{}]+)\|([^{}]+)\}/g, '<ruby>$1<rt>$2</rt></ruby>'); }
@@ -53,9 +53,9 @@ function migrateOldDlg() {
 /* ---------- 推薦 ---------- */
 function recommend() {
   const t = Date.now();
-  for (const tk of TASKS) for (let lv = 1; lv <= 5; lv++) { const s = lvPeek(tk.id, lv); if (s && s.rec && lvPassed(tk.id, lv) && s.rec.s < 7 && s.rec.due <= t) return {tid:tk.id, lv, why:'複習'}; }
-  for (let lv = 1; lv <= 5; lv++) for (const tk of TASKS) if (!lvPassed(tk.id, lv)) return {tid:tk.id, lv, why:lvPeek(tk.id, lv) ? '再練一次' : '下一級'};
-  const tk = pick(TASKS); return {tid:tk.id, lv:1 + (Math.random() * 5 | 0), why:'自由練習'};
+  for (const tk of TASKS) for (let lv = 1; lv <= tk.levels; lv++) { const s = lvPeek(tk.id, lv); if (s && s.rec && lvPassed(tk.id, lv) && s.rec.s < 7 && s.rec.due <= t) return {tid:tk.id, lv, why:'複習'}; }
+  for (let lv = 1; lv <= 5; lv++) for (const tk of TASKS) if (lv <= tk.levels && !lvPassed(tk.id, lv)) return {tid:tk.id, lv, why:lvPeek(tk.id, lv) ? '再練一次' : '下一級'};
+  const tk = pick(TASKS); return {tid:tk.id, lv:1 + (Math.random() * tk.levels | 0), why:'自由練習'};
 }
 function pickVariant(tid, lv) {
   const s = lvPeek(tid, lv), seen = new Set(s ? s.seen : []), vs = TASK[tid].v[lv];
@@ -71,7 +71,7 @@ function startRun(tid, lv, vid) {
   closeSheet();
   const v = vid ? VAR[vid] : pickVariant(tid, lv);
   S.run = {tid, lv:v.lv, vid:v.id, node:null, cq:{}, vis:{}, ans:{}, ord:{}, easy:{}, pick:{}, said:{}, zh:{}, rep:0, path:[],
-    flags:{text:false, hint:false, help:false, bad:false, crit:false, noAudio:!canSpeak}, board:{known:[], todo:'問清楚怎麼去'}, wrong:[], t0:Date.now()};
+    flags:{text:false, hint:false, help:false, bad:false, crit:false, noAudio:!canSpeak}, board:{known:[], todo:TASK[tid].todo0 || '問清楚怎麼去'}, wrong:[], t0:Date.now()};
   RUN_END = null;
   openRunView(); enterNode(v.start);
 }
@@ -171,7 +171,7 @@ function closeRunView(silent) {
 function boardHtml(r) {
   const t = TASK[r.tid];
   return `<div class="board" aria-label="任務板">
-    <div><span class="bk">目的地</span><span>${esc(t.dest)}</span></div>
+    <div><span class="bk">${esc(t.dk || '目的地')}</span><span>${esc(t.dest)}</span></div>
     <div><span class="bk">已確認</span><span>${r.board.known.length ? esc(r.board.known.slice(-3).join('；')) : '還沒有'}</span></div>
     <div><span class="bk">下一步</span><span>${esc(r.board.todo || '—')}</span></div></div>`;
 }
@@ -225,6 +225,7 @@ function hearHtml(n) {
   let newCks = vis === 'full' && !allDone ? n.c.filter(id => !S.ck[id] && CRIT.has(CK[id].cat)).slice(0, 2) : [];
   if (newCks.length >= n.c.length) newCks = [];
   let b = '';
+  if (r.path.length === 1) b += `<p class="small muted">${esc(TASK[r.tid].place)}</p><p style="font-size:16px">${esc(curVar().setup || TASK[r.tid].setup)}</p>`;
   if (n.point) b += `<div class="point"><span class="bk">手勢</span>${esc(n.point)}</div>`;
   if (newCks.length) b += `<section class="newck"><p class="sec-title" style="margin:0">這段的新句塊（先看一眼）</p>${newCks.map(id => `<div class="row"><div style="flex:1;min-width:0">${lineHtml([id])}<p class="small muted">${esc(CK[id].zh)}</p></div>${spkBtn(plainJp(CK[id].jp), 'ja-JP')}</div>`).join('')}</section>`;
   b += `<div class="bubble"><div class="grow"><p class="who">${esc(nodeWho(n))}</p>
@@ -232,7 +233,10 @@ function hearHtml(n) {
     ${allDone || r.zh[n.id] ? `<p class="small muted" style="margin-top:4px">${esc(n.zh)}</p>` : ''}
     ${easy ? `<p class="small" style="margin-top:8px">你請他說簡單一點，他改說：</p>${showText ? lineHtml(n.easy.c, {mask, tap:allDone}) : ''}${allDone ? `<p class="small muted">${esc(n.easy.zh)}</p>` : ''}` : ''}
     </div></div>`;
-  if (canSpeak) b += `<button class="btn jp-b block" data-a="hearPlay">${IC.speak}再聽一次</button>
+  if (canSpeak && n.bc) b += `<button class="btn jp-b block" data-a="hearPlay">${IC.speak}再聽一次</button>
+    <div class="row"><button class="btn ghost" style="flex:1" data-a="hearRep" data-v="slow">放慢重播</button></div>
+    <p class="small muted">廣播沒辦法請它重說。聽不懂可以重播，或在下一步問旁邊的人、站員。</p>`;
+  else if (canSpeak) b += `<button class="btn jp-b block" data-a="hearPlay">${IC.speak}再聽一次</button>
     <div class="repair3">${['again', 'slow', 'easy'].map(k => `<button class="rep" data-a="hearRep" data-v="${k}"><span class="jpf">${rubyHtml(REP[k].jp)}</span><span class="small muted"><span class="xro">${esc(REP[k].ro)}・</span>${esc(REP[k].zh)}</span></button>`).join('')}</div>`;
   else b += `<p class="small muted">這台裝置不能播放聲音，先用看的練習（這次會記成「看字完成」）。</p>`;
   if (!allDone && canSpeak) b += `<div class="row wrap" style="justify-content:center">${vis === 'listen' ? '<button class="btn ghost sm" data-a="hearVis" data-v="part">給我提示</button>' : ''}${vis !== 'full' ? '<button class="btn ghost sm" data-a="hearVis" data-v="full">顯示全文</button>' : ''}${!r.zh[n.id] ? '<button class="btn ghost sm" data-a="hearZh">看中文</button>' : ''}</div>`;
@@ -297,7 +301,7 @@ function runEndHtml() {
 }
 function recapText(r) {
   const t = TASK[r.tid];
-  return `${t.name}・第 ${r.lv} 級。目的地：${t.dest}。${r.board.known.length ? '已確認：' + r.board.known.slice(-2).join('；') + '。' : ''}${r.board.todo ? '下一步：' + r.board.todo + '。' : ''}`;
+  return `${t.name}・第 ${r.lv} 級。${t.dk || '目的地'}：${t.dest}。${r.board.known.length ? '已確認：' + r.board.known.slice(-2).join('；') + '。' : ''}${r.board.todo ? '下一步：' + r.board.todo + '。' : ''}`;
 }
 function resumeRun() { if (!S.run || !VAR[S.run.vid]) { S.run = null; return; } RUN_END = null; openRunView(); renderRun(); }
 
@@ -312,7 +316,7 @@ function runAction(a, v) {
       r.rep++;
       if (v === 'easy') { if (n.easy) { r.easy[n.id] = true; toast('你說：' + plainJp(REP.easy.jp)); playNode(n, 'easy'); }
         else { toast('他已經說得很簡單了，可以請他說慢一點'); playNode(n, 'slow'); } }
-      else { toast('你說：' + plainJp(REP[v].jp)); playNode(n, v === 'slow' ? 'slow' : ''); }
+      else { toast(n.bc ? '放慢重播' : '你說：' + plainJp(REP[v].jp)); playNode(n, v === 'slow' ? 'slow' : ''); }
       persist(); renderRun(); return true;
     }
     case 'hearVis': r.vis[n.id] = v; if (v === 'full') r.flags.text = true; else r.flags.hint = true; persist(); renderRun(); return true;
@@ -340,7 +344,7 @@ function runAction(a, v) {
 
 /* ---------- 句塊說明 ---------- */
 function exampleOf(id) {
-  for (const t of TASKS) for (let lv = 1; lv <= 5; lv++) for (const v of t.v[lv]) for (const nid in v.nodes) { const n = v.nodes[nid];
+  for (const t of TASKS) for (let lv = 1; lv <= t.levels; lv++) for (const v of t.v[lv]) for (const nid in v.nodes) { const n = v.nodes[nid];
     if (n.t === 'hear' && n.c.includes(id)) return {c:n.c, zh:n.zh}; if (n.t === 'hear' && n.easy && n.easy.c.includes(id)) return {c:n.easy.c, zh:n.easy.zh}; }
   return null;
 }
