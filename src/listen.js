@@ -35,7 +35,7 @@ function lsBuild() {
     const lines = goldenPath(v);
     if (p.mode === 'teach') {
       const weak = [...new Set(lines.filter(l => !l.me).flatMap(l => l.c))].filter(id => CRIT.has(CK[id].cat) && (!S.ck[id] || S.ck[id].l.s < 2)).slice(0, 4);
-      weak.forEach(id => { say(plainJp(CK[id].jp), 'ja-JP', 0.85, 400, {c:[id], zh:CK[id].zh, who:'句塊'}); say(CK[id].zh, 'zh-TW', 1, 600, {c:[id], zh:CK[id].zh, who:'句塊'}); });
+      weak.forEach(id => { say(spokenJp(CK[id].jp), 'ja-JP', 0.85, 400, {c:[id], zh:CK[id].zh, who:'句塊'}); say(CK[id].zh, 'zh-TW', 1, 600, {c:[id], zh:CK[id].zh, who:'句塊'}); });
     }
     lines.forEach(l => {
       const show = {c:l.c, zh:l.zh, who:l.who}, text = lineText(l.c);

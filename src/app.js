@@ -631,7 +631,7 @@ function autoSpeakCard() {
   const c = curCard(); if (!c || !S.settings.autoSpeak) return;
   if (c.t === 'teach') speak(getEn(c.id).w, 'en-US');
   if (c.t === 'wq') speak(c.jp.replace(/^〜/, ''), 'ja-JP', 0.85);
-  if (c.t === 'ck' && c.mode === 'l') speak(plainJp(CK[c.id].jp), 'ja-JP', 0.9);
+  if (c.t === 'ck' && c.mode === 'l') speak(spokenJp(CK[c.id].jp), 'ja-JP', 0.9);
 }
 
 function renderSes() {

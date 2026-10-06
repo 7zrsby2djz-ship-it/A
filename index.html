@@ -2357,7 +2357,9 @@ const VAR = {}; TASKS.forEach(t => { for (let lv = 1; lv <= t.levels; lv++) t.v[
 
 function plainJp(s) { return String(s).replace(/\{([^|{}]+)\|[^{}]+\}/g, '$1'); }
 function rubyHtml(s) { return esc(s).replace(/\{([^|{}]+)\|([^{}]+)\}/g, '<ruby>$1<rt>$2</rt></ruby>'); }
-function lineText(c) { return c.map(id => plainJp(CK[id].jp)).join(''); }
+/* 發音用：漢字一律改念標好的假名讀音，避免手機把「道」等字念錯（例：金閣寺道 → きんかくじみち） */
+function spokenJp(s) { return String(s).replace(/\{[^|{}]+\|([^{}]+)\}/g, '$1'); }
+function lineText(c) { return c.map(id => spokenJp(CK[id].jp)).join(''); }
 function lineRo(c) { return c.map(id => CK[id].ro).join(' '); }
 function lineHtml(c, o = {}) {
   const mask = o.mask || new Set();
@@ -2562,7 +2564,7 @@ function hearHtml(n) {
   let b = '';
   if (r.path.length === 1) b += `<p class="small muted">${esc(TASK[r.tid].place)}</p><p style="font-size:16px">${esc(curVar().setup || TASK[r.tid].setup)}</p>`;
   if (n.point) b += `<div class="point"><span class="bk">手勢</span>${esc(n.point)}</div>`;
-  if (newCks.length) b += `<section class="newck"><p class="sec-title" style="margin:0">這段的新句塊（先看一眼）</p>${newCks.map(id => `<div class="row"><div style="flex:1;min-width:0">${lineHtml([id])}<p class="small muted">${esc(CK[id].zh)}</p></div>${spkBtn(plainJp(CK[id].jp), 'ja-JP')}</div>`).join('')}</section>`;
+  if (newCks.length) b += `<section class="newck"><p class="sec-title" style="margin:0">這段的新句塊（先看一眼）</p>${newCks.map(id => `<div class="row"><div style="flex:1;min-width:0">${lineHtml([id])}<p class="small muted">${esc(CK[id].zh)}</p></div>${spkBtn(spokenJp(CK[id].jp), 'ja-JP')}</div>`).join('')}</section>`;
   b += `<div class="bubble"><div class="grow"><p class="who">${esc(nodeWho(n))}</p>
     ${showText ? lineHtml(n.c, {mask, tap:allDone}) : '<p class="muted" style="padding-block:6px">只用聽的。聽不懂可以用下面的說法求助。</p>'}
     ${allDone || r.zh[n.id] ? `<p class="small muted" style="margin-top:4px">${esc(n.zh)}</p>` : ''}
@@ -2686,7 +2688,7 @@ function exampleOf(id) {
 function ckSheet(id) {
   const k = CK[id], st = S.ck[id], ex = exampleOf(id);
   const dots = rec => rec ? '●'.repeat(Math.min(4, rec.s)) + '○'.repeat(Math.max(0, 4 - Math.min(4, rec.s))) : '○○○○';
-  return `<div class="row"><div style="flex:1;min-width:0">${lineHtml([id], {big:true})}</div>${spkBtn(plainJp(k.jp), 'ja-JP')}</div>
+  return `<div class="row"><div style="flex:1;min-width:0">${lineHtml([id], {big:true})}</div>${spkBtn(spokenJp(k.jp), 'ja-JP')}</div>
     <p style="font-size:20px;font-weight:800">${esc(k.zh)}</p><p class="small muted">${esc(CAT[k.cat])}${CRIT.has(k.cat) ? '・會影響行動的資訊' : ''}</p>
     ${k.note ? `<p class="rule j">${esc(k.note)}</p>` : ''}
     ${st ? `<p class="small">看字 <span class="tnum">${dots(st.t)}</span>　聽音 <span class="tnum">${dots(st.l)}</span></p>` : '<p class="small muted">還沒在對話裡遇過</p>'}
@@ -2722,7 +2724,7 @@ function sesCk(c) {
   let b = `<p class="small muted">${c.mode === 'l' ? '只用聽的' : '看字'}・${esc(CAT[k.cat])}・意思是？</p>
     <div class="card stack" style="align-items:center;gap:10px;padding:22px">
       ${show ? lineHtml([c.id], {big:true}) : '<p class="muted">先聽，不看字</p>'}
-      ${canSpeak ? `<button class="btn jp-b" data-a="speak" data-v="${esc(plainJp(k.jp))}" data-l="ja-JP">${IC.speak}再聽一次</button>` : ''}
+      ${canSpeak ? `<button class="btn jp-b" data-a="speak" data-v="${esc(spokenJp(k.jp))}" data-l="ja-JP">${IC.speak}再聽一次</button>` : ''}
     </div>
     <div class="opts">${c.opts.map((o, i) => `<button class="opt ${res ? (o === k.zh ? 'correct' : i === res.chosen ? 'wrong' : '') : ''}" data-a="ckq" data-v="${i}" ${res ? 'disabled' : ''}>${esc(o)}</button>`).join('')}</div>`;
   if (res) b += `<div class="${res.ok ? 'fb ok' : 'fb no'}"><h3>${res.ok ? '對了' : '是「' + esc(k.zh) + '」'}</h3>${k.note ? `<p class="small">${esc(k.note)}</p>` : ''}
@@ -2738,7 +2740,7 @@ function answerCk(i) {
   SES.stats.n++; if (ok) SES.stats.ok++;
   const lg = L(); lg.jp++; if (ok) lg.jpOk++;
   touchStreak(); addXp(ok ? 4 : 1); persist(); renderSes();
-  speak(plainJp(k.jp), 'ja-JP', 0.9);
+  speak(spokenJp(k.jp), 'ja-JP', 0.9);
 }
 function ckListHtml() {
   const ids = Object.keys(S.ck).filter(id => CK[id] && !['ask', 'polite', 'topic'].includes(CK[id].cat));
@@ -2887,7 +2889,7 @@ function lsBuild() {
     const lines = goldenPath(v);
     if (p.mode === 'teach') {
       const weak = [...new Set(lines.filter(l => !l.me).flatMap(l => l.c))].filter(id => CRIT.has(CK[id].cat) && (!S.ck[id] || S.ck[id].l.s < 2)).slice(0, 4);
-      weak.forEach(id => { say(plainJp(CK[id].jp), 'ja-JP', 0.85, 400, {c:[id], zh:CK[id].zh, who:'句塊'}); say(CK[id].zh, 'zh-TW', 1, 600, {c:[id], zh:CK[id].zh, who:'句塊'}); });
+      weak.forEach(id => { say(spokenJp(CK[id].jp), 'ja-JP', 0.85, 400, {c:[id], zh:CK[id].zh, who:'句塊'}); say(CK[id].zh, 'zh-TW', 1, 600, {c:[id], zh:CK[id].zh, who:'句塊'}); });
     }
     lines.forEach(l => {
       const show = {c:l.c, zh:l.zh, who:l.who}, text = lineText(l.c);
@@ -3949,7 +3951,7 @@ function autoSpeakCard() {
   const c = curCard(); if (!c || !S.settings.autoSpeak) return;
   if (c.t === 'teach') speak(getEn(c.id).w, 'en-US');
   if (c.t === 'wq') speak(c.jp.replace(/^〜/, ''), 'ja-JP', 0.85);
-  if (c.t === 'ck' && c.mode === 'l') speak(plainJp(CK[c.id].jp), 'ja-JP', 0.9);
+  if (c.t === 'ck' && c.mode === 'l') speak(spokenJp(CK[c.id].jp), 'ja-JP', 0.9);
 }
 
 function renderSes() {

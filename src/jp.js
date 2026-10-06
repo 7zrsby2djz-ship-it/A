@@ -27,7 +27,7 @@ function sesCk(c) {
   let b = `<p class="small muted">${c.mode === 'l' ? '只用聽的' : '看字'}・${esc(CAT[k.cat])}・意思是？</p>
     <div class="card stack" style="align-items:center;gap:10px;padding:22px">
       ${show ? lineHtml([c.id], {big:true}) : '<p class="muted">先聽，不看字</p>'}
-      ${canSpeak ? `<button class="btn jp-b" data-a="speak" data-v="${esc(plainJp(k.jp))}" data-l="ja-JP">${IC.speak}再聽一次</button>` : ''}
+      ${canSpeak ? `<button class="btn jp-b" data-a="speak" data-v="${esc(spokenJp(k.jp))}" data-l="ja-JP">${IC.speak}再聽一次</button>` : ''}
     </div>
     <div class="opts">${c.opts.map((o, i) => `<button class="opt ${res ? (o === k.zh ? 'correct' : i === res.chosen ? 'wrong' : '') : ''}" data-a="ckq" data-v="${i}" ${res ? 'disabled' : ''}>${esc(o)}</button>`).join('')}</div>`;
   if (res) b += `<div class="${res.ok ? 'fb ok' : 'fb no'}"><h3>${res.ok ? '對了' : '是「' + esc(k.zh) + '」'}</h3>${k.note ? `<p class="small">${esc(k.note)}</p>` : ''}
@@ -43,7 +43,7 @@ function answerCk(i) {
   SES.stats.n++; if (ok) SES.stats.ok++;
   const lg = L(); lg.jp++; if (ok) lg.jpOk++;
   touchStreak(); addXp(ok ? 4 : 1); persist(); renderSes();
-  speak(plainJp(k.jp), 'ja-JP', 0.9);
+  speak(spokenJp(k.jp), 'ja-JP', 0.9);
 }
 function ckListHtml() {
   const ids = Object.keys(S.ck).filter(id => CK[id] && !['ask', 'polite', 'topic'].includes(CK[id].cat));

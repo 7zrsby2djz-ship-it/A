@@ -22,7 +22,9 @@ const VAR = {}; TASKS.forEach(t => { for (let lv = 1; lv <= t.levels; lv++) t.v[
 
 function plainJp(s) { return String(s).replace(/\{([^|{}]+)\|[^{}]+\}/g, '$1'); }
 function rubyHtml(s) { return esc(s).replace(/\{([^|{}]+)\|([^{}]+)\}/g, '<ruby>$1<rt>$2</rt></ruby>'); }
-function lineText(c) { return c.map(id => plainJp(CK[id].jp)).join(''); }
+/* 發音用：漢字一律改念標好的假名讀音，避免手機把「道」等字念錯（例：金閣寺道 → きんかくじみち） */
+function spokenJp(s) { return String(s).replace(/\{[^|{}]+\|([^{}]+)\}/g, '$1'); }
+function lineText(c) { return c.map(id => spokenJp(CK[id].jp)).join(''); }
 function lineRo(c) { return c.map(id => CK[id].ro).join(' '); }
 function lineHtml(c, o = {}) {
   const mask = o.mask || new Set();
@@ -227,7 +229,7 @@ function hearHtml(n) {
   let b = '';
   if (r.path.length === 1) b += `<p class="small muted">${esc(TASK[r.tid].place)}</p><p style="font-size:16px">${esc(curVar().setup || TASK[r.tid].setup)}</p>`;
   if (n.point) b += `<div class="point"><span class="bk">手勢</span>${esc(n.point)}</div>`;
-  if (newCks.length) b += `<section class="newck"><p class="sec-title" style="margin:0">這段的新句塊（先看一眼）</p>${newCks.map(id => `<div class="row"><div style="flex:1;min-width:0">${lineHtml([id])}<p class="small muted">${esc(CK[id].zh)}</p></div>${spkBtn(plainJp(CK[id].jp), 'ja-JP')}</div>`).join('')}</section>`;
+  if (newCks.length) b += `<section class="newck"><p class="sec-title" style="margin:0">這段的新句塊（先看一眼）</p>${newCks.map(id => `<div class="row"><div style="flex:1;min-width:0">${lineHtml([id])}<p class="small muted">${esc(CK[id].zh)}</p></div>${spkBtn(spokenJp(CK[id].jp), 'ja-JP')}</div>`).join('')}</section>`;
   b += `<div class="bubble"><div class="grow"><p class="who">${esc(nodeWho(n))}</p>
     ${showText ? lineHtml(n.c, {mask, tap:allDone}) : '<p class="muted" style="padding-block:6px">只用聽的。聽不懂可以用下面的說法求助。</p>'}
     ${allDone || r.zh[n.id] ? `<p class="small muted" style="margin-top:4px">${esc(n.zh)}</p>` : ''}
@@ -351,7 +353,7 @@ function exampleOf(id) {
 function ckSheet(id) {
   const k = CK[id], st = S.ck[id], ex = exampleOf(id);
   const dots = rec => rec ? '●'.repeat(Math.min(4, rec.s)) + '○'.repeat(Math.max(0, 4 - Math.min(4, rec.s))) : '○○○○';
-  return `<div class="row"><div style="flex:1;min-width:0">${lineHtml([id], {big:true})}</div>${spkBtn(plainJp(k.jp), 'ja-JP')}</div>
+  return `<div class="row"><div style="flex:1;min-width:0">${lineHtml([id], {big:true})}</div>${spkBtn(spokenJp(k.jp), 'ja-JP')}</div>
     <p style="font-size:20px;font-weight:800">${esc(k.zh)}</p><p class="small muted">${esc(CAT[k.cat])}${CRIT.has(k.cat) ? '・會影響行動的資訊' : ''}</p>
     ${k.note ? `<p class="rule j">${esc(k.note)}</p>` : ''}
     ${st ? `<p class="small">看字 <span class="tnum">${dots(st.t)}</span>　聽音 <span class="tnum">${dots(st.l)}</span></p>` : '<p class="small muted">還沒在對話裡遇過</p>'}
