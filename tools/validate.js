@@ -4,7 +4,7 @@
 const fs = require('fs'), vm = require('vm'), path = require('path');
 const ctx = {console};
 vm.createContext(ctx);
-vm.runInContext(['data_tasks.js', 'data_life.js'].map(f => fs.readFileSync(path.join(__dirname, '../src', f), 'utf8')).join('\n') + '\n;this.CK=CK;this.TASKS=TASKS;this.CRIT=CRIT;this.SKEL=SKEL;', ctx);
+vm.runInContext(['data_tasks.js', 'data_life.js', 'data_game.js'].map(f => fs.readFileSync(path.join(__dirname, '../src', f), 'utf8')).join('\n') + '\n;this.CK=CK;this.TASKS=TASKS;this.GSHOP=GSHOP;this.CRIT=CRIT;this.SKEL=SKEL;', ctx);
 const {CK, TASKS, CRIT, SKEL} = ctx;
 const errs = [], warns = [], used = new Set();
 const ruby = /\{([^|{}]+)\|([^|{}]+)\}/g;
@@ -65,6 +65,16 @@ for (const t of TASKS) {
     }
   }
 }
+// 小店遊戲：句塊都要存在
+const GSHOP = ctx.GSHOP, gref = (c, w) => (Array.isArray(c) ? c : [c]).forEach(id => { if (!CK[id]) errs.push(`遊戲 ${w} 用到不存在的句塊 ${id}`); else used.add(id); });
+for (const sid in GSHOP) { const s = GSHOP[sid]; gref(s.nm, sid); gref(s.entry, sid); gref(s.greet, sid); gref('g_arigatou', sid); gref('g_sakki', sid); gref('g_e', sid); gref('g_mada', sid); gref('g_mou_ii', sid);
+  if (!TASKS.some(t => t.id === s.task)) errs.push(`遊戲 ${sid} 連到不存在的對話 ${s.task}`);
+  for (const k in s.items || {}) gref(s.items[k].c, sid + '.item');
+  for (const t of s.topics) { const w = sid + '.' + t.id; gref(t.ask, w); if (t.remind) gref(t.remind, w);
+    if (t.kind === 'act') { gref(t.react.e, w); if (t.react.h) gref(t.react.h, w); }
+    else { for (const v in t.ans) { gref(t.ans[v].e.flat(), w); if (t.ans[v].h) gref(t.ans[v].h.flat(), w); if (t.kind === 'pick' && !t.opts[v]) errs.push(`遊戲 ${w} 回答 ${v} 沒有選項`); }
+      if (t.opts) Object.values(t.opts).forEach(x => gref(x, w)); if (t.vol) Object.values(t.vol).forEach(x => gref(x.flat(), w)); }
+    (t.after || []).forEach(a => { if (!s.topics.some(x => x.id === a)) errs.push(`遊戲 ${w} after ${a} 不存在`); }); } }
 for (const id in CK) if (!used.has(id)) warns.push(`句塊 ${id} 沒被用到`);
 console.log(`變體 ${nVar} 個，句塊 ${Object.keys(CK).length} 個`);
 warns.forEach(w => console.log('提醒：' + w));

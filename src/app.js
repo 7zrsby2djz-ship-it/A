@@ -40,7 +40,7 @@ const SCENE_MAP = Object.fromEntries(SCENES.map(s => [s.id, s]));
 /* ================= state ================= */
 const LSK = 'bnk-state-v1';
 const DEF = () => ({v:1, updatedAt:0, created:Date.now(), settings:{romaji:true, read:'furi', dlgLen:1, dailyNew:5, rate:1, autoSpeak:true},
-  en:{}, custom:{}, jp:{}, dlg:{}, dlgMiss:{}, jpw:{}, ck:{}, tk:{}, run:null, lsp:null, migDlg:0, jpConf:{}, scenes:{}, favs:[], pastes:[], log:{}, xp:0, streak:{n:0, last:''}, newDay:{d:'', n:0}, boost:[], again:{d:'', ids:[]}});
+  en:{}, custom:{}, gm:{}, jp:{}, dlg:{}, dlgMiss:{}, jpw:{}, ck:{}, tk:{}, run:null, lsp:null, migDlg:0, jpConf:{}, scenes:{}, favs:[], pastes:[], log:{}, xp:0, streak:{n:0, last:''}, newDay:{d:'', n:0}, boost:[], again:{d:'', ids:[]}});
 function migrate(o) { const d = DEF(); if (!o || typeof o !== 'object') return d; for (const k in d) if (o[k] === undefined) o[k] = d[k];
   const had = o.settings || {}; o.settings = Object.assign(d.settings, had); if (had.read === undefined) o.settings.read = had.romaji === false ? 'none' : 'furi'; return o; }
 let S = DEF();
@@ -364,6 +364,7 @@ function vHome() {
       ${learnedIds().length ? `<button class="btn block" style="background:rgba(255,255,255,.14);color:#fff;border-color:rgba(255,255,255,.45)" data-a="review">複習學過的字（${learnedIds().length} 個）</button>` : ''}
     </section>
     <section class="card hero-jp stack" aria-label="日文">${jpNextHtml(true)}</section>
+    ${gmCardHtml()}
     ${again.length ? `<section class="stack" style="gap:8px"><p class="sec-title">今天再遇到</p><div class="chips">${again.map(id => `<button class="chip en" data-a="word" data-v="${id}">${esc(getEn(id).w)}</button>`).join('')}</div><p class="small muted">今天答錯或在 Claude 裡查過的字。它們會在 10 分鐘後的練習裡再出現。</p></section>` : ''}
     <div class="kpis">
       <div class="kpi"><span class="small muted">本週查字次數</span><b class="tnum">${lw}</b><span class="small muted">上週 ${pw} 次${pw && lw < pw ? '，變少了' : ''}</span></div>
@@ -471,6 +472,7 @@ function vJp() {
   }
   return topbar('日文') + `<div class="stack">
     <section class="card hero-jp stack">${jpNextHtml(true)}</section>
+    ${gmCardHtml()}
     <div class="row" style="gap:10px"><span class="small muted" style="flex:none">讀音</span><div style="flex:1;min-width:0">${readSegHtml()}</div></div>
     <div class="seg" role="group"><button data-a="jpSeg" data-v="dlg" aria-pressed="${UI.jpSeg === 'dlg'}">對話</button><button data-a="jpSeg" data-v="ck" aria-pressed="${UI.jpSeg === 'ck' || UI.jpSeg === 'w'}">句塊</button><button data-a="jpSeg" data-v="scene" aria-pressed="${UI.jpSeg === 'scene'}">開口</button><button data-a="jpSeg" data-v="pat" aria-pressed="${UI.jpSeg === 'pat'}">句型</button><button data-a="jpSeg" data-v="pt" aria-pressed="${UI.jpSeg === 'pt'}">助詞</button></div>
     ${body}</div>`;
@@ -887,6 +889,7 @@ document.addEventListener('click', e => {
     case 'lsSkip': lsSkip(+v); break;
     case 'lsSet': lsSet(t.dataset.k, v); break;
     case 'lsClose': lsClose(); break;
+    case 'gmOpen': gmOpen(v); break;
     default: if (S.run) runAction(a, v); break;
     case 'review': startReview(); break;
     case 'reviewAgain': endSession(); startReview(); break;

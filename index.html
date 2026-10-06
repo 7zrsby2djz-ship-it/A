@@ -314,6 +314,31 @@ rt{font-size:.5em;font-weight:500;color:var(--muted);font-family:var(--f-body)}
 .sdots{display:inline-flex;gap:2px;vertical-align:middle}
 .sdots i{width:7px;height:7px;border-radius:50%;background:var(--line)}
 .sdots i.on{background:var(--jp)}
+.ggame .gface.mid{width:64px;height:74px;color:var(--jp-ink);flex:none}
+.gstar{font-size:14px;color:var(--warn);font-weight:800;white-space:nowrap}
+.gcust{display:flex;flex-direction:column;gap:10px;background:var(--surface);border-radius:18px;padding:14px;box-shadow:var(--shadow)}
+.gwho{display:flex;align-items:center;gap:14px}
+.gface.big{width:92px;height:106px;color:var(--ink);flex:none}
+.gface.mini{width:40px;height:46px;color:var(--ink)}
+.gfaces{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+.gpat{display:inline-flex;gap:4px}.gpat i{width:14px;height:14px;border-radius:50%;background:var(--line)}.gpat i.on{background:var(--ok)}
+.gitems{display:flex;flex-wrap:wrap;gap:8px}
+.glog{display:flex;flex-direction:column;gap:6px}
+.gln{display:flex;gap:8px;align-items:baseline;font-size:15px;color:var(--muted)}
+.gln.me{justify-content:flex-end;text-align:right}
+.gln.last{color:var(--ink);font-size:20px;font-weight:700}
+.gsp{flex:none;font-size:11px;font-weight:700;background:var(--surface2);border:1px solid var(--line);border-radius:6px;padding:0 6px;color:var(--muted)}
+.gln.me .gsp{order:2;background:var(--jp-soft);color:var(--jp-ink);border-color:transparent}
+.gl{font-family:var(--f-jp);line-height:1.9}
+.gck{font:inherit;color:inherit;background:none;border:0;padding:0 1px;border-bottom:2px dotted var(--jp);cursor:pointer}
+.gbtns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.gbtn{position:relative;min-height:58px;padding:8px 10px;border-radius:14px;background:var(--surface);border:2px solid var(--line);text-align:left;font-size:15px;font-weight:700;line-height:1.5}
+.gbtn:active{transform:scale(.98)}
+.gbtn.done{opacity:.55;border-style:dashed}
+.gok{position:absolute;top:4px;right:8px;color:var(--ok);font-size:14px}
+.gopts .opt{justify-content:center;font-weight:800;font-size:18px}
+.gset{width:100%;text-align:left;background:none;padding:10px 0;border-bottom:1px solid var(--line)}
+.gset:last-child{border-bottom:0}
 @media (prefers-reduced-motion: reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 </style>
 <style>
@@ -2333,6 +2358,175 @@ V('shop', 3, 'sh3t', {who:'店員', tr:true, note:'換說法：防妝套、叫�
     O(['sh_chodo_ii'], '剛剛好。', 'ok', '很清楚。', 'n7'),
     O(['sh_chotto_ookii'], '有點大。', 'part', '其實剛好。這樣他會去拿小一號的。', null)]},
   {id:'n7', t:'end', res:'ok', text:'毛衣剛剛好，你拿去結帳。'}]);
+/* ============================================================
+   小店遊戲的資料（你是日本小店的店長）
+   ------------------------------------------------------------
+   - 按鈕上的「店員說的話」和客人的回答，大多直接用對話教材的句塊（CK），所以玩遊戲＝預習對話。
+   - 這裡另外補：商品名稱、選項標籤、客人的回答與反應（id 都以 g_ 開頭）。
+   - 話題 topic：
+       ask   店員說的句子（按鈕）
+       kind  yn 問要不要 → 你判斷「要／不要」；pick 問選哪個 → 你選選項；act 說了就好（客人只會回應）
+       ans   客人的回答：{值: {e:[簡單說法...], h:[比較難的說法...]}}；每個說法是句塊 id，或句塊 id 陣列
+       vol   客人可能主動先說（第 2 天起）
+       after 要先處理完哪些話題（只算這位客人有的）
+       always 一定要問（yn 的值是「不要」也要問）；沒有 always 的 yn，只有客人「要」的時候才一定要問
+       optional 問不問都可以（例如集點卡）；bonus 問了有小費
+       remind 漏問就按「謝謝光臨」時，客人會說的話
+   ============================================================ */
+CAT.item = '物品・選項';
+
+/* ---------- 共用 ---------- */
+K('g_arigatou', 'ありがとうございました。', 'arigatō gozaimashita', '謝謝光臨（客人要走時）', 'polite', '送客時用過去式「ございました」。');
+K('g_hai_onegai', 'はい、お{願|ねが}いします。', 'hai, onegai shimasu', '好，麻煩你（＝要）', 'concl');
+K('g_iranai', 'いらないです。', 'iranai desu', '不需要', 'neg', 'いる＝需要；いらない＝不需要。');
+K('g_ii_desu', 'あ、いいです。', 'a, ii desu', '啊，不用了', 'neg', '這裡的「いいです」＝不需要（配合手輕輕揮）。不是「好」。最容易聽反的一句。');
+K('g_e', 'え？', 'e?', '欸？（客人不需要這個）', 'filler');
+K('g_sakki', 'さっき{言|い}いましたよ。', 'sakki iimashita yo', '剛剛說過了喔', 'filler');
+K('g_mada', 'えっと…まだです。', 'etto… mada desu', '呃……還沒（順序不對）', 'filler');
+K('g_ano', 'あのー…', 'anō…', '那個……（客人在等你問）', 'filler');
+K('g_mou_ii', 'もういいです。', 'mō ii desu', '算了（客人生氣走了）', 'neg');
+K('g_genkin', '{現金|げんきん}', 'genkin', '現金', 'item');
+K('g_card', 'カード', 'kādo', '信用卡', 'item');
+K('g_ic', '{交通系|こうつうけい}IC', 'kōtsūkei aishī', '交通卡（Suica、PASMO 等）', 'item');
+
+/* ---------- 便利商店 ---------- */
+K('g_konbini', 'コンビニ', 'konbini', '便利商店', 'item');
+K('g_kore_onegai', 'これ、お{願|ねが}いします。', 'kore, onegai shimasu', '這個，麻煩你（結帳）', 'ask');
+K('g_bento', 'お{弁当|べんとう}', 'obentō', '便當', 'item');
+K('g_onigiri', 'おにぎり', 'onigiri', '飯糰', 'item');
+K('g_ocha', 'お{茶|ちゃ}', 'ocha', '茶', 'item');
+K('g_beer', 'ビール', 'bīru', '啤酒', 'item');
+K('g_cupmen', 'カップ{麺|めん}', 'kappu-men', '杯麵', 'item');
+K('g_atatame_nashi', '{温|あたた}めなくていいです。', 'atatamenakute ii desu', '不用加熱', 'neg', '〜なくていいです＝不用〜。');
+K('g_sono_mama', 'そのままで。', 'sono mama de', '就這樣（不用加熱）', 'neg', 'そのまま＝保持原樣。');
+K('g_hashi_iranai', 'お{箸|はし}はいらないです。', 'ohashi wa iranai desu', '筷子不用', 'neg');
+K('g_fukuro_kudasai', '{袋|ふくろ}ください。', 'fukuro kudasai', '請給我袋子', 'ask');
+K('g_atatame_hoshii', 'あの、{温|あたた}めてもらえますか。', 'ano, atatamete moraemasu ka', '那個，可以幫我加熱嗎？', 'ask');
+K('g_hashi_hoshii', 'あの、お{箸|はし}もらえますか。', 'ano, ohashi moraemasu ka', '那個，可以給我筷子嗎？', 'ask');
+K('g_fukuro_wa', 'あの、{袋|ふくろ}は…？', 'ano, fukuro wa…?', '那個，袋子呢……？', 'ask');
+K('g_okaikei_wa', 'あの、お{会計|かいけい}は？', 'ano, okaikei wa?', '那個，結帳呢？', 'ask');
+K('g_genkin_de_onegai', '{現金|げんきん}でお{願|ねが}いします。', 'genkin de onegai shimasu', '用現金，麻煩你', 'ask');
+K('g_card_de_ii', 'カードでいいですか。', 'kādo de ii desu ka', '用卡可以嗎？（＝要刷卡）', 'ask');
+K('g_pasmo_de', 'PASMOで。', 'pasumo de', '用 PASMO（東京的交通卡）', 'ask', 'PASMO 和 Suica 一樣是交通系 IC 卡。');
+
+/* ---------- 居酒屋 ---------- */
+K('g_izakaya', '{居酒屋|いざかや}', 'izakaya', '居酒屋', 'item');
+K('g_hairemasu', 'すみません、{入|はい}れますか。', 'sumimasen, hairemasu ka', '不好意思，可以進去嗎？（有位子嗎）', 'ask');
+K('g_p1', '{一人|ひとり}', 'hitori', '一位', 'item');
+K('g_p2', '{二人|ふたり}', 'futari', '兩位', 'item');
+K('g_p3', '{三人|さんにん}', 'sannin', '三位', 'item');
+K('g_hitori_nan', '{一人|ひとり}なんですけど。', 'hitori nan desu kedo', '我一個人……（可以嗎）', 'num');
+K('g_futari_desu', '{二人|ふたり}です。', 'futari desu', '兩個人', 'num');
+K('g_sannin_desu', '{三人|さんにん}です。', 'sannin desu', '三個人', 'num');
+K('g_futari_nan', '{二人|ふたり}なんですけど。', 'futari nan desu kedo', '我們兩個人……', 'num');
+K('g_counter_ii', 'カウンターでいいですよ。', 'kauntā de ii desu yo', '吧台就可以', 'concl');
+K('g_table_ii', 'テーブルがいいです。', 'tēburu ga ii desu', '想坐桌子', 'neg');
+K('g_table_dekireba', 'できれば、テーブルで…。', 'dekireba, tēburu de…', '可以的話，想坐桌子……', 'neg', 'できれば＝可以的話。話沒說完＝客氣地表示「不要吧台」。');
+K('g_nama', '{生|なま}ビール', 'nama bīru', '生啤酒', 'item');
+K('g_oolong', 'ウーロン{茶|ちゃ}', 'ūron-cha', '烏龍茶', 'item');
+K('g_sake', '{日本酒|にほんしゅ}', 'nihonshu', '日本酒', 'item');
+K('g_oolong_kudasai', 'ウーロン{茶|ちゃ}ください。', 'ūron-cha kudasai', '請給我烏龍茶', 'ask');
+K('g_oolong_de', 'ウーロン{茶|ちゃ}で。', 'ūron-cha de', '烏龍茶', 'ask');
+K('g_sake_kudasai', '{日本酒|にほんしゅ}をください。', 'nihonshu o kudasai', '請給我日本酒', 'ask');
+K('g_sake_de', '{日本酒|にほんしゅ}で。', 'nihonshu de', '日本酒', 'ask');
+K('g_chuu', '{中|ちゅう}', 'chū', '中杯', 'item');
+K('g_dai', '{大|だい}', 'dai', '大杯', 'item');
+K('g_dai_de', '{大|だい}で。', 'dai de', '大杯', 'ask');
+K('g_chuu_onegai', '{中|ちゅう}でお{願|ねが}いします。', 'chū de onegai shimasu', '中杯，麻煩你', 'ask');
+K('g_dai_onegai', '{大|だい}でお{願|ねが}いします。', 'dai de onegai shimasu', '大杯，麻煩你', 'ask');
+
+/* ---------- 拉麵店 ---------- */
+K('g_ramenya', 'ラーメン{屋|や}', 'rāmen-ya', '拉麵店', 'item');
+K('g_hai_douzo', 'はい、どうぞ。', 'hai, dōzo', '好，給你（遞出餐券）', 'polite');
+K('g_ramen', 'ラーメン', 'rāmen', '拉麵', 'item');
+K('g_miso_ramen', '{味噌|みそ}ラーメン', 'miso rāmen', '味噌拉麵', 'item');
+K('g_futsuu', '{普通|ふつう}', 'futsū', '一般', 'item');
+K('g_katame', 'かため', 'katame', '硬一點', 'item');
+K('g_yawarakame', 'やわらかめ', 'yawarakame', '軟一點', 'item');
+K('g_katame_de', 'かためで。', 'katame de', '硬一點', 'ask');
+K('g_yawarakame_de', '{麺|めん}やわらかめで。', 'men yawarakame de', '麵軟一點', 'ask');
+K('g_yawa_onegai', 'やわらかめでお{願|ねが}いします。', 'yawarakame de onegai shimasu', '軟一點，麻煩你', 'ask');
+K('g_rice_kudasai', 'ライスください。', 'raisu kudasai', '請給我白飯', 'ask');
+
+const GSHOP = {
+  konbini:{id:'konbini', nm:'g_konbini', zh:'便利商店', task:'conv', need:0, entry:['g_kore_onegai'], greet:'l_irasshai',
+    intro:'客人把東西放到櫃台。問他要不要加熱、筷子、袋子，再問怎麼付錢。最後說「ありがとうございました」。',
+    items:{bento:{c:'g_bento', yen:550}, onigiri:{c:'g_onigiri', yen:160}, ocha:{c:'g_ocha', yen:150}, beer:{c:'g_beer', yen:280}, cupmen:{c:'g_cupmen', yen:230}},
+    topics:[
+      {id:'atatame', ask:['cv_atatame_masuka'], kind:'yn', remind:'g_atatame_hoshii',
+        ans:{yes:{e:['l_onegai'], h:['cv_atatame_onegai', 'g_hai_onegai']}, no:{e:['l_daijoubu'], h:['g_ii_desu', 'g_sono_mama']}},
+        vol:{yes:['cv_atatame_onegai'], no:['g_atatame_nashi']}},
+      {id:'hashi', ask:['cv_ohashi'], kind:'yn', remind:'g_hashi_hoshii',
+        ans:{yes:{e:['l_onegai'], h:['g_hai_onegai', 'cv_hashi_onegai']}, no:{e:['l_daijoubu'], h:['g_ii_desu', 'g_iranai']}},
+        vol:{yes:['cv_hashi_onegai'], no:['g_hashi_iranai']}},
+      {id:'fukuro', ask:['cv_fukuro_goriyou'], kind:'yn', always:true, remind:'g_fukuro_wa',
+        ans:{yes:{e:['l_onegai'], h:['g_hai_onegai', 'g_fukuro_kudasai']}, no:{e:['l_daijoubu', 'g_iranai'], h:['g_ii_desu', 'cv_fukuro_iranai']}},
+        vol:{yes:['g_fukuro_kudasai'], no:['cv_fukuro_iranai']}},
+      {id:'point', ask:['cv_point'], kind:'yn', optional:true,
+        ans:{no:{e:['cv_nai_desu'], h:['en_motte_nai', 'l_daijoubu']}}},
+      {id:'age', ask:['cv_nenrei', 'cv_gamen_touch'], kind:'act', react:{e:['l_hai']}, warn:'買酒一定要先做年齡確認（請客人按畫面）。'},
+      {id:'pay', ask:['cv_shiharai'], kind:'pick', always:true, remind:'g_okaikei_wa', opts:{genkin:'g_genkin', card:'g_card', ic:'g_ic'},
+        ans:{genkin:{e:['cv_genkin_de'], h:['g_genkin_de_onegai']}, card:{e:['cv_card_de'], h:['g_card_de_ii']}, ic:{e:['cv_suica_de'], h:['g_pasmo_de']}}},
+    ]},
+  izakaya:{id:'izakaya', nm:'g_izakaya', zh:'居酒屋', task:'izakaya', need:10, entry:['g_hairemasu'], greet:'l_irasshai',
+    intro:'客人進門。先問幾位，再問坐吧台可以嗎，接著先點飲料。上お通し（小菜），最後問怎麼付。順序很重要。',
+    topics:[
+      {id:'nin', ask:['iz_nanmei'], kind:'pick', always:true, remind:'g_ano', opts:{p1:'g_p1', p2:'g_p2', p3:'g_p3'},
+        ans:{p1:{e:['iz_hitori_desu'], h:['g_hitori_nan']}, p2:{e:['g_futari_desu'], h:['g_futari_nan']}, p3:{e:['g_sannin_desu'], h:['g_sannin_desu']}},
+        vol:{p1:['iz_hitori_desu'], p2:['g_futari_desu']}},
+      {id:'seat', ask:['iz_counter_ii'], kind:'yn', always:true, after:['nin'], remind:'g_ano',
+        ans:{yes:{e:['iz_hai_daijoubu'], h:['g_counter_ii']}, no:{e:['g_table_ii'], h:['g_table_dekireba']}}},
+      {id:'drink', ask:['iz_nomimono_saki'], kind:'pick', always:true, after:['nin', 'seat'], remind:'g_ano', opts:{nama:'g_nama', oolong:'g_oolong', sake:'g_sake'},
+        ans:{nama:{e:['iz_nama_hitotsu', 'iz_nama_kudasai'], h:['iz_toriaezu']}, oolong:{e:['g_oolong_kudasai'], h:['g_oolong_de']}, sake:{e:['g_sake_kudasai'], h:['g_sake_de']}}},
+      {id:'size', ask:['iz_chuu_dai'], kind:'pick', always:true, after:['drink'], remind:'g_ano', opts:{chuu:'g_chuu', dai:'g_dai'},
+        ans:{chuu:{e:['iz_chuu_de'], h:['g_chuu_onegai']}, dai:{e:['g_dai_de'], h:['g_dai_onegai']}}},
+      {id:'otooshi', ask:['iz_otooshi'], kind:'act', after:['drink'], remind:'g_ano', react:{e:['arigatou'], h:['iz_tanondenai']}},
+      {id:'pay', ask:['cv_shiharai'], kind:'pick', always:true, after:['otooshi'], remind:'g_okaikei_wa', opts:{genkin:'g_genkin', card:'g_card'},
+        ans:{genkin:{e:['cv_genkin_de'], h:['iz_jaa_genkin']}, card:{e:['cv_card_de'], h:['iz_card_ii']}}},
+    ]},
+  ramen:{id:'ramen', nm:'g_ramenya', zh:'拉麵店', task:'menu', need:22, entry:['sumimasen'], greet:'l_irasshai',
+    intro:'先請客人買餐券、交給你。再問麵的偏好、要不要免費白飯。告訴客人水是自助的，會多拿小費。',
+    items:{ramen:{c:'g_ramen', yen:900}, miso:{c:'g_miso_ramen', yen:1000}},
+    topics:[
+      {id:'ticket', ask:['mn_shokken_saki'], kind:'act', remind:'g_ano', react:{e:['g_hai_douzo']}, reveal:true},
+      {id:'okonomi', ask:['mn_okonomi'], kind:'pick', always:true, after:['ticket'], remind:'g_ano', opts:{futsuu:'g_futsuu', katame:'g_katame', yawa:'g_yawarakame'},
+        ans:{futsuu:{e:['mn_zenbu_futsuu'], h:['mn_futsuu_de']}, katame:{e:['mn_katame'], h:['g_katame_de']}, yawa:{e:['g_yawarakame_de'], h:['g_yawa_onegai']}}},
+      {id:'rice', ask:['mn_rice_muryou', 'mn_dou_saremasu'], kind:'yn', always:true, after:['ticket'], remind:'g_ano',
+        ans:{yes:{e:['l_onegai'], h:['g_hai_onegai', 'g_rice_kudasai']}, no:{e:['l_daijoubu'], h:['g_ii_desu']}}},
+      {id:'water', ask:['mn_omizu_self'], kind:'act', optional:true, bonus:true, after:['ticket'], react:{e:['l_hai']}},
+    ]},
+};
+const GSHOP_ORDER = ['konbini', 'izakaya', 'ramen'];
+
+/* 每位客人要什麼（隨機） */
+function gmPick(a) { return a[Math.random() * a.length | 0]; }
+const GGEN = {
+  konbini(lv) {
+    const pool = ['bento', 'onigiri', 'ocha', 'beer', 'cupmen'], n = lv < 2 ? 1 + (Math.random() < .4) : 1 + (Math.random() * 3 | 0);
+    const items = []; while (items.length < n) { const x = gmPick(pool); if (!items.includes(x)) items.push(x); }
+    const has = x => items.includes(x), need = {};
+    if (has('bento')) need.atatame = Math.random() < .7 ? 'yes' : 'no';
+    if (has('bento') || has('cupmen')) need.hashi = Math.random() < .8 ? 'yes' : 'no';
+    need.fukuro = Math.random() < .5 ? 'yes' : 'no';
+    need.point = 'no';
+    if (has('beer')) need.age = true;
+    need.pay = gmPick(['genkin', 'card', 'ic']);
+    return {items, need, yen:items.reduce((a, x) => a + GSHOP.konbini.items[x].yen, 0)};
+  },
+  izakaya(lv) {
+    const nin = lv < 2 ? gmPick(['p1', 'p1', 'p2']) : gmPick(['p1', 'p2', 'p3']), need = {nin};
+    need.seat = Math.random() < .6 ? 'yes' : 'no';
+    need.drink = gmPick(['nama', 'nama', 'oolong', 'sake']);
+    if (need.drink === 'nama') need.size = Math.random() < .7 ? 'chuu' : 'dai';
+    need.otooshi = true; need.pay = gmPick(['genkin', 'card']);
+    return {items:[], need, yen:{p1:1, p2:2, p3:3}[nin] * 2800 + (Math.random() * 6 | 0) * 100};
+  },
+  ramen(lv) {
+    const item = gmPick(['ramen', 'miso']);
+    const need = {ticket:true, okonomi:gmPick(['futsuu', 'futsuu', 'katame', 'yawa']), rice:Math.random() < .55 ? 'yes' : 'no', water:true};
+    return {items:[item], need, yen:GSHOP.ramen.items[item].yen, hideItems:true};
+  },
+};
 
 /* ================= 把對話走完：執行引擎 =================
    開口 → 聽回答 → 判斷或求助 → 補問 → 再確認 → 行動結果
@@ -2987,6 +3181,345 @@ function lsRender() {
       <div class="list">${LS.list.map((x, i) => { const v = VAR[x.vid]; return `<div class="li" style="${i === di ? 'background:var(--jp-soft)' : ''}"><div class="grow"><div style="font-weight:700">${esc(TASK[v.tid].name)}・第 ${v.lv} 級</div><div class="zh">${esc(v.note || '')}${v.tr ? '・換說法' : ''}</div></div></div>`; }).join('')}</div>
     </div></div>`;
 }
+/* ================= 小店遊戲：你是日本小店的店長 =================
+   一天 5 位客人。按日文按鈕問客人，聽客人回答，判斷他要什麼。
+   點日文 → 看讀音、聽發音、看中文；按「說這句」才真的說出口。
+   玩過的句塊會記成「見過」，對話裡的提示就會變少；聽錯的句塊標成不熟，會優先複習。
+   客人臉孔的畫法改寫自《坊市掌櫃》的 portrait（表情系統）。
+   ================================================================ */
+const G = {view:'shops', shop:null, day:null, cust:null, pop:null, gen:0};
+const G_PER_DAY = 5;
+function gmSt() { if (!S.gm || typeof S.gm !== 'object') S.gm = {}; const g = S.gm;
+  g.star = g.star || 0; g.yen = g.yen || 0; g.days = g.days || {}; g.best = g.best || {}; g.seen = g.seen || {};
+  if (g.fast === undefined) g.fast = false; if (g.listen === undefined) g.listen = false; return g; }
+const gmLv = id => Math.min(3, 1 + Math.floor((gmSt().days[id] || 0) / 2));
+const gmUnlocked = id => gmSt().star >= GSHOP[id].need;
+const gmTopic = (shop, id) => shop.topics.find(t => t.id === id);
+const gmLine = c => (Array.isArray(c) ? c : [c]);
+
+/* ---------- 聲音 ---------- */
+let GAC = null;
+function sfx(k) {
+  try {
+    GAC = GAC || new (window.AudioContext || window.webkitAudioContext)();
+    const notes = {ok:[784, 1175], bad:[262, 196], coin:[988, 1568], door:[659, 880], star:[1047, 1319]}[k] || [600, 800];
+    notes.forEach((f, i) => { const o = GAC.createOscillator(), g = GAC.createGain(), t = GAC.currentTime + i * .09;
+      o.type = k === 'bad' ? 'triangle' : 'sine'; o.frequency.setValueAtTime(f, t);
+      g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.09, t + .01); g.gain.exponentialRampToValueAtTime(.0001, t + .22);
+      o.connect(g).connect(GAC.destination); o.start(t); o.stop(t + .24); });
+  } catch (e) {}
+}
+/* 依序念：先念你說的，再念客人說的 */
+function gmSpeak(seq) {
+  const gen = ++G.gen;
+  const step = i => {
+    if (gen !== G.gen || i >= seq.length) return;
+    const [c, rate] = seq[i]; let done = false; const next = () => { if (done) return; done = true; setTimeout(() => step(i + 1), 250); };
+    const text = lineText(gmLine(c)); speak(text, 'ja-JP', rate, next);
+    setTimeout(next, 1200 + text.length * 260 / rate);
+  };
+  if (!canSpeak) return; step(0);
+}
+
+/* ---------- 客人的臉（改寫自《坊市掌櫃》） ---------- */
+const G_FACES = ['neutral', 'smile', 'laugh', 'angry', 'shock', 'sad', 'uneasy', 'think', 'sweat'];
+function gmLook() {
+  return {head:gmPick(['round', 'long', 'square', 'thin']), hair:gmPick(['messy', 'bun', 'bald', 'cap', 'long', 'short', 'short']),
+    glasses:Math.random() < .3, beard:Math.random() < .2 ? gmPick(['goatee', 'stubble']) : '', age:Math.random() < .2 ? 'old' : '', blush:Math.random() < .4};
+}
+function gmFace(L, f = 'neutral', cls = '') {
+  if (!G_FACES.includes(f)) f = 'neutral';
+  const P = [], A = (d, extra = '') => P.push(`<path d="${d}" ${extra}/>`);
+  const head = {round:'M19 34c0-10 6-17 13-17s13 7 13 17-6 18-13 18-13-8-13-18z', long:'M20 33c0-11 5-17 12-17s12 6 12 17c0 11-5 20-12 20s-12-9-12-20z',
+    square:'M19 30c0-9 6-14 13-14s13 5 13 14v8c0 9-6 14-13 14s-13-5-13-14z', thin:'M21 33c0-10 5-16 11-16s11 6 11 16-5 19-11 19-11-9-11-19z'}[L.head] || '';
+  A('M13 64c2-7 9-11 19-11s17 4 19 11'); A('M27 53l5 5 5-5', 'stroke-width="1.3"');
+  A(head, 'fill="var(--surface)"');
+  const hair = {messy:'M19 31c0-9 5-14 13-14s13 5 13 14M19 27l3-6 2 4 3-7 3 5 3-6 3 5 3-4 2 5 3-1',
+    bun:'M19 32c0-10 6-15 13-15s13 5 13 15c-3-6-8-9-13-9s-10 3-13 9zM38 16a5 5 0 1 0 0.1 0', bald:'M25 21c2-1 4-1 5 0',
+    cap:'M18 27c0-7 6-11 14-11s14 4 14 11zM46 27h7', long:'M17 30c0-11 7-16 15-16s15 5 15 16v20M17 30v20M19 27c4-5 9-6 13-6s9 1 13 6',
+    short:'M19 30c1-9 6-13 13-13s12 4 13 13c-4-5-9-7-13-7s-9 2-13 7z'}[L.hair];
+  if (hair) A(hair, L.hair === 'bun' ? 'fill="none"' : '');
+  if (L.age === 'old') A('M24 26h5M35 26h5', 'stroke-width="1" opacity=".6"');
+  const BR = {neutral:['M24 31h5', 'M35 31h5'], smile:['M24 30q2.5-1.5 5 0', 'M35 30q2.5-1.5 5 0'], laugh:['M24 29q2.5-2 5 0', 'M35 29q2.5-2 5 0'],
+    angry:['M24 29l5 3', 'M40 29l-5 3'], shock:['M24 28q2.5-2.5 5 0', 'M35 28q2.5-2.5 5 0'], sad:['M24 31l5-2', 'M40 31l-5-2'],
+    uneasy:['M24 31q1.2-1.6 2.5 0t2.5 0', 'M35 31q1.2-1.6 2.5 0t2.5 0'], think:['M24 30l5 1', 'M35 31l5-1.5'], sweat:['M24 31l5-1', 'M40 31l-5-1']}[f];
+  BR.forEach(b => A(b, `stroke-width="${f === 'angry' ? 2.4 : 1.7}"`));
+  const dot = (x, y, r = 1.3) => P.push(`<circle cx="${x}" cy="${y}" r="${r}" fill="currentColor" stroke="none"/>`);
+  if (f === 'smile' || f === 'laugh') A('M24.5 36q2.25-2.5 4.5 0M35 36q2.25-2.5 4.5 0');
+  else if (f === 'shock') { P.push('<circle cx="26.7" cy="35.5" r="2.4"/><circle cx="37.3" cy="35.5" r="2.4"/>'); dot(26.7, 35.5, .9); dot(37.3, 35.5, .9); }
+  else if (f === 'uneasy') { dot(28.2, 35.8); dot(38.8, 35.8); }
+  else if (f === 'think') { dot(27.5, 34.6); dot(38, 34.6); }
+  else if (f === 'sad') A('M24.5 35.5q2.25 1.5 4.5 0M35 35.5q2.25 1.5 4.5 0');
+  else if (f === 'sweat') A('M24.5 35.8l2.2-1 2.3 1M35 35.8l2.2-1 2.3 1');
+  else { dot(26.7, 35.6); dot(37.3, 35.6); }
+  if (L.glasses) A('M23 35.5a3.6 3.2 0 1 0 7.2 0a3.6 3.2 0 1 0 -7.2 0M33.8 35.5a3.6 3.2 0 1 0 7.2 0a3.6 3.2 0 1 0 -7.2 0M30.2 35.2h3.6', 'stroke-width="1.2"');
+  const MO = {neutral:'M29.5 45h5', smile:'M28.5 44q3.5 3 7 0', laugh:'M28 43.5q4 6 8 0z', angry:'M28.5 46.5q3.5-3 7 0',
+    shock:'M30.5 46a1.6 2.2 0 1 0 3.2 0a1.6 2.2 0 1 0 -3.2 0', sad:'M29 46.5q3-2 6 0', uneasy:'M28.5 45.5q1.2-1.4 2.4 0t2.3 0t2.3 0', think:'M31 45.5h4', sweat:'M28.5 45q1.8 1.6 3.5 0t3.5 0'}[f];
+  A(MO, f === 'laugh' ? 'fill="var(--surface)"' : '');
+  if (L.beard === 'goatee') A('M30 49c1 4 3 5 4 0', 'stroke-width="1.3"');
+  if (L.beard === 'stubble') A('M27 49.5h.1M30 50.5h.1M33 50.5h.1M36 49.5h.1', 'stroke-width="1.4"');
+  if (f === 'angry') A('M45 22l3-1-1 3M48 25l1 3-3-1', 'stroke="var(--bad)" stroke-width="1.5"');
+  if (f === 'shock') A('M14 22l3 3M12 30h4M50 22l-3 3M52 30h-4', 'stroke-width="1.3"');
+  if (f === 'uneasy' || f === 'sweat') A('M46 24c-2 3-2 5 0 6 2-1 2-3 0-6z', 'stroke="var(--jp)" stroke-width="1.3"');
+  if ((f === 'smile' || f === 'laugh') && L.blush) A('M22 40h3M39 40h3', 'stroke="var(--bad)" stroke-width="1" opacity=".7"');
+  return `<svg class="gface ${cls}" viewBox="8 8 48 56" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${P.join('')}</svg>`;
+}
+
+/* ---------- 一天、一位客人 ---------- */
+function gmOpen(shopId) {
+  closeSheet();
+  let el = $('#gm');
+  if (!el) { el = document.createElement('div'); el.id = 'gm'; el.className = 'overlay jpmode'; document.body.append(el); }
+  el.hidden = false; document.body.style.overflow = 'hidden';
+  G.view = 'shops'; G.pop = null;
+  if (shopId && GSHOP[shopId] && gmUnlocked(shopId)) gmStartDay(shopId); else gmRender();
+}
+function gmClose() {
+  G.gen++; try { speechSynthesis.cancel(); } catch (e) {}
+  const el = $('#gm'); if (el) el.hidden = true; document.body.style.overflow = ''; G.pop = null; render();
+}
+function gmStartDay(id) {
+  const shop = GSHOP[id], lv = gmLv(id);
+  G.shop = id; G.view = 'play'; G.pop = null;
+  G.day = {n:(gmSt().days[id] || 0) + 1, lv, i:0, yen:0, star:0, list:[], used:{}, wrong:{}, tip:0};
+  gmNextCust();
+}
+function gmNextCust() {
+  const shop = GSHOP[G.shop], lv = G.day.lv, base = GGEN[G.shop](lv);
+  const c = Object.assign(base, {look:gmLook(), face:'neutral', pat:4, mood:0, done:{}, pending:null, said:[], ans:{}, miss:0, greeted:null, acts:0,
+    hard:lv >= 3 ? .5 : lv === 2 ? .25 : 0, shown:!base.hideItems, peek:{}});
+  G.cust = c; G.day.i++;
+  c.said.push({who:'c', c:shop.entry}); gmSeen(shop.entry);
+  sfx('door');
+  // 第 2 級起，客人有時會先說自己要什麼
+  if (lv >= 2 && Math.random() < .4) {
+    const vt = shop.topics.filter(t => t.vol && c.need[t.id] !== undefined && t.vol[c.need[t.id]] && !(t.after || []).some(a => c.need[a] !== undefined));
+    if (vt.length) { const t = gmPick(vt), line = gmPick(t.vol[c.need[t.id]]); c.said.push({who:'c', c:line}); c.ans[t.id] = line; c.pending = t.id; gmSeen(line); }
+  }
+  gmRender();
+  gmSpeak(c.said.map(x => [x.c, 0.95]));
+}
+function gmSeen(c) { gmLine(c).forEach(id => { if (!CK[id]) return; ckSt(id, true); G.day && (G.day.used[id] = (G.day.used[id] || 0) + 1); }); }
+function gmRequired(shop, c) {
+  return shop.topics.filter(t => c.need[t.id] !== undefined && !t.optional && (t.kind !== 'yn' || t.always || c.need[t.id] === 'yes'));
+}
+function gmHurt(n, face) {
+  const c = G.cust; c.pat = Math.max(0, c.pat - n); c.miss += n; c.face = face || (c.pat <= 1 ? 'angry' : 'uneasy'); sfx('bad');
+  if (c.pat <= 0) { c.said.push({who:'c', c:'g_mou_ii'}); gmSeen('g_mou_ii'); gmSpeak([['g_mou_ii', .95]]); gmLeave(true); return true; }
+  return false;
+}
+/* 你說了一句（按鈕） */
+function gmSay(key) {
+  const shop = GSHOP[G.shop], c = G.cust; if (!c || c.left) return;
+  G.pop = null;
+  if (key === 'greet') {
+    const line = shop.greet; c.said.push({who:'me', c:line}); gmSeen(line);
+    if (c.greeted === null && c.acts === 0) { c.greeted = true; c.face = 'smile'; sfx('ok'); } else c.greeted = c.greeted || false;
+    c.acts++; gmRender(); gmSpeak([[line, 1]]); return;
+  }
+  if (c.pending) { toast('先判斷客人剛剛說了什麼'); return; }
+  if (key === 'close') return gmCloseCust();
+  const t = gmTopic(shop, key); c.acts++;
+  c.said.push({who:'me', c:t.ask}); gmSeen(t.ask);
+  const reply = line => { c.said.push({who:'c', c:line}); gmSeen(line); gmRender(); gmSpeak([[t.ask, 1], [line, LVR[Math.min(5, 1 + G.day.lv)]]]); };
+  const has = c.need[t.id] !== undefined;
+  if (c.done[t.id]) { reply('g_sakki'); if (!gmHurt(1)) gmRender(); return; }
+  if (!has) { reply('g_e'); toast('這位客人不需要這個'); if (!gmHurt(1)) gmRender(); return; }
+  const blocked = (t.after || []).filter(a => c.need[a] !== undefined && !c.done[a]);
+  if (blocked.length) { reply('g_mada'); toast('順序不對：先處理「' + plainJp(CK[gmTopic(shop, blocked[0]).ask[0]].jp) + '」'); if (!gmHurt(1)) gmRender(); return; }
+  if (t.kind === 'act') {
+    const pool = t.react; const line = gmPick(c.hard && pool.h && Math.random() < c.hard ? pool.h : pool.e);
+    c.done[t.id] = true; c.face = 'smile'; if (t.bonus) { G.day.tip += 50; sfx('coin'); } else sfx('ok');
+    if (t.reveal) c.shown = true;
+    reply(line); return;
+  }
+  const v = c.need[t.id], pool = t.ans[v], line = gmPick(c.hard && pool.h && Math.random() < c.hard ? pool.h : pool.e);
+  c.ans[t.id] = line; c.pending = t.id; c.face = 'think';
+  reply(line);
+}
+/* 你判斷客人的回答 */
+function gmJudge(val) {
+  const shop = GSHOP[G.shop], c = G.cust; if (!c || !c.pending) return;
+  const t = gmTopic(shop, c.pending), right = c.need[t.id], line = c.ans[t.id];
+  const heard = G.day.listen && !c.peek[c.said.length - 1];
+  gmLine(line).forEach(id => { const r = ckSt(id, true); grade(heard ? r.l : r.t, val === right); if (val !== right) r.weak = true; });
+  if (val === right) {
+    c.done[t.id] = true; c.pending = null; c.face = 'smile'; sfx('ok');
+    c.last = {ok:true, t:t.id, line, val};
+  } else {
+    G.day.wrong[gmLine(line).join(',')] = line;
+    c.last = {ok:false, t:t.id, line, val};
+    c.said.push({who:'c', c:line}); gmSpeak([[line, .85]]);
+    if (gmHurt(1, 'shock')) return;
+  }
+  persist(); gmRender();
+}
+function gmCloseCust() {
+  const shop = GSHOP[G.shop], c = G.cust;
+  const miss = gmRequired(shop, c).filter(t => !c.done[t.id]);
+  c.said.push({who:'me', c:'g_arigatou'}); gmSeen('g_arigatou');
+  if (miss.length) {
+    const t = miss[0];
+    if (t.remind) { c.said.push({who:'c', c:t.remind}); gmSeen(t.remind); gmSpeak([['g_arigatou', 1], [t.remind, .95]]); }
+    toast(t.warn || '還有事沒問：客人在等你問「' + plainJp(lineText(t.ask)) + '」');
+    if (!gmHurt(1, 'sweat')) gmRender(); return;
+  }
+  gmSpeak([['g_arigatou', 1]]);
+  gmLeave(false);
+}
+function gmLeave(angry) {
+  const c = G.cust, d = G.day; c.left = true;
+  const star = angry ? 0 : c.pat >= 4 ? 3 : c.pat >= 3 ? 2 : 1;
+  const yen = angry ? 0 : c.yen + (c.greeted ? 30 : 0) + (gmSt().fast && !c.usedCard && star === 3 ? 50 : 0) + d.tip;
+  d.tip = 0; d.yen += yen; d.star += star; d.list.push({star, yen, look:c.look, angry});
+  if (!angry) { c.face = star === 3 ? 'laugh' : 'smile'; sfx(star === 3 ? 'star' : 'coin'); }
+  c.result = {star, yen};
+  gmRender();
+}
+function gmAfterCust() {
+  if (G.day.i >= G_PER_DAY) return gmEndDay();
+  gmNextCust();
+}
+function gmEndDay() {
+  const g = gmSt(), d = G.day, id = G.shop;
+  g.days[id] = (g.days[id] || 0) + 1; g.star += d.star; g.yen += d.yen; g.best[id] = Math.max(g.best[id] || 0, d.star);
+  Object.keys(d.used).forEach(k => { g.seen[k] = (g.seen[k] || 0) + d.used[k]; });
+  touchStreak(); addXp(10 + d.star * 2); L().jp += d.i; L().jpOk += d.list.filter(x => x.star === 3).length;
+  persist(); G.view = 'end'; G.pop = null; gmRender();
+}
+
+/* ---------- 畫面 ---------- */
+function gmJp(c, tap) { // 一句話：每個句塊可以點
+  return `<span class="gl">${gmLine(c).map(id => tap ? `<button class="gck" data-g="peek" data-v="${id}">${rubyHtml(CK[id].jp)}</button>` : `<span>${rubyHtml(CK[id].jp)}</span>`).join('')}</span>`;
+}
+function gmDots(p) { return `<span class="gpat" aria-label="耐心 ${p}/4">${[0, 1, 2, 3].map(i => `<i class="${i < p ? 'on' : ''}"></i>`).join('')}</span>`; }
+function gmRender() {
+  const el = $('#gm'); if (!el || el.hidden) return;
+  let h = '';
+  if (G.view === 'shops') h = gmShopsHtml();
+  else if (G.view === 'end') h = gmEndHtml();
+  else h = gmPlayHtml();
+  el.innerHTML = h + gmPopHtml();
+}
+function gmShopsHtml() {
+  const g = gmSt();
+  return `<div class="ov-head"><button class="icon-btn" data-g="close" aria-label="關閉">${IC.x}</button><div style="flex:1"><div style="font-weight:800">小店遊戲</div><div class="small muted">你是日本小店的店長</div></div><span class="gstar">★ <b class="tnum">${g.star}</b></span></div>
+    <div class="ov-body"><div class="in">
+      <p class="muted">客人用日文跟你說話，你按日文按鈕回應。看不懂就點一下，會念給你聽、告訴你中文。按「說這句」才真的說出口。</p>
+      <div class="list">${GSHOP_ORDER.map(id => { const s = GSHOP[id], ok = gmUnlocked(id);
+        return `<button class="li" data-g="${ok ? 'shop' : 'locked'}" data-v="${id}" ${ok ? '' : 'aria-disabled="true"'}><div class="grow">
+          <div style="font-weight:800"><span class="jpf">${rubyHtml(CK[s.nm].jp)}</span>　${esc(s.zh)}</div>
+          <div class="zh">${ok ? `第 ${gmLv(id)} 級・開店 ${g.days[id] || 0} 天・最佳 ${g.best[id] || 0}★` : `累積 ${s.need}★ 解鎖（還差 ${s.need - g.star}★）`}</div></div>${ok ? IC.chev : '<span class="pill st-new">未解鎖</span>'}</button>`; }).join('')}</div>
+      <section class="card flat stack" style="gap:10px"><p class="sec-title" style="margin:0">玩法設定</p>
+        <button class="set-row gset" data-g="fast"><div class="grow"><b>熟練模式</b><p class="small muted">點日文按鈕就直接說，不先跳出說明。全對的客人多給 50 円。</p></div><span class="switch" role="switch" aria-checked="${g.fast}"></span></button>
+        <button class="set-row gset" data-g="listen"><div class="grow"><b>只聽模式</b><p class="small muted">客人說的話先不顯示文字，聽完再判斷（算聽力）。</p></div><span class="switch" role="switch" aria-checked="${g.listen}"></span></button>
+      </section>
+      <p class="small muted">等級：每開店 2 天升一級。第 2 級起客人會主動先說要什麼；第 3 級起說法變多、變口語。</p>
+      <p class="small muted">金額、商品、各店流程是遊戲用的模擬。</p>
+    </div></div>`;
+}
+function gmPlayHtml() {
+  const shop = GSHOP[G.shop], c = G.cust, d = G.day, g = gmSt();
+  const head = `<div class="ov-head"><button class="icon-btn" data-g="close" aria-label="關閉（這一天不會存）">${IC.x}</button>
+    <div style="flex:1;min-width:0"><div style="font-weight:800"><span class="jpf">${rubyHtml(CK[shop.nm].jp)}</span>・第 ${d.n} 天</div><div class="small muted">客人 ${d.i}/${G_PER_DAY}・第 ${d.lv} 級${g.fast ? '・熟練' : ''}${g.listen ? '・只聽' : ''}</div></div>
+    <span class="gstar"><b class="tnum">${d.yen}</b> 円　★ <b class="tnum">${d.star}</b></span></div>`;
+  let b = '';
+  if (d.n === 1 && d.i === 1 && !c.acts) b += `<div class="point"><span class="bk">玩法</span>${esc(shop.intro)}</div>`;
+  b += `<section class="gcust"><div class="gwho">${gmFace(c.look, c.face, 'big')}<div>${gmDots(c.pat)}<p class="small muted">${c.left ? (c.result.star ? '客人滿意地離開' : '客人生氣走了') : c.pat >= 4 ? '心情很好' : c.pat >= 3 ? '還可以' : c.pat >= 2 ? '有點不耐煩' : '快生氣了'}</p></div></div>`;
+  if (c.items.length) b += `<div class="gitems">${c.shown ? c.items.map(x => `<button class="chip jpf" data-g="peek" data-v="${shop.items[x].c}"><span>${rubyHtml(CK[shop.items[x].c].jp)}</span></button>`).join('') : '<span class="small muted">（客人還沒給你餐券）</span>'}</div>`;
+  // 對話紀錄：只顯示最近 4 句，最後一句客人說的話最大
+  const recent = c.said.slice(-4);
+  b += `<div class="glog">${recent.map((x, k) => { const idx = c.said.length - recent.length + k, isLastC = x.who === 'c' && k === recent.length - 1;
+    const hide = x.who === 'c' && g.listen && !c.peek[idx] && !c.left && idx === c.said.length - 1 && c.pending;
+    return `<div class="gln ${x.who === 'me' ? 'me' : ''} ${isLastC ? 'last' : ''}"><span class="gsp">${x.who === 'me' ? '你' : '客人'}</span>${hide ? `<span class="muted">（只用聽的）</span> <button class="btn ghost sm" data-g="peekLine" data-v="${idx}">看字</button>` : gmJp(x.c, true)}</div>`; }).join('')}</div>
+    <div class="row" style="gap:8px"><button class="btn sm jp-b" style="flex:1" data-g="replay">${IC.speak}再聽客人說</button><button class="btn sm" data-g="slow">慢一點</button></div></section>`;
+  let f = '';
+  if (c.left) {
+    b += `<div class="fb ${c.result.star ? 'ok' : 'no'}"><h3>${c.result.star ? '★'.repeat(c.result.star) + '☆'.repeat(3 - c.result.star) : '客人走了'}</h3><p>${c.result.star ? `收入 ${c.result.yen} 円${c.greeted ? '（有先說いらっしゃいませ，+30）' : ''}` : '耐心用完了。聽不懂時可以按「再聽」「慢一點」，或點客人的話看中文。'}</p></div>`;
+    f = `<button class="btn primary block" data-g="nextCust">${d.i >= G_PER_DAY ? '打烊，看今天的成績' : '下一位客人'}</button>`;
+  } else if (c.pending) {
+    const t = gmTopic(shop, c.pending), last = c.last && !c.last.ok && c.last.t === t.id ? c.last : null;
+    b += `<section class="card stack gjudge" style="gap:10px"><p class="small muted">客人回答了「${gmJp(t.ask, false)}」</p><p class="q" style="font-size:18px">他的意思是？</p>
+      ${last ? `<div class="qfb no">不對喔，再聽一次客人說的話。點客人的話可以看中文。</div>` : ''}
+      <div class="opts gopts">${t.kind === 'yn' ? `<button class="opt" data-g="judge" data-v="yes">要（はい）</button><button class="opt" data-g="judge" data-v="no">不要</button>`
+        : Object.entries(t.opts).map(([v, cid]) => `<button class="opt jpf" data-g="judge" data-v="${v}">${rubyHtml(CK[cid].jp)}</button>`).join('')}</div></section>`;
+    f = `<p class="small muted" style="text-align:center">先判斷，再繼續問</p>`;
+  } else {
+    if (c.last && c.last.ok) { const t = gmTopic(shop, c.last.t), v = c.last.val;
+      b += `<div class="qfb ok">對了：「${gmJp(c.last.line, false)}」＝${esc(t.kind === 'yn' ? (v === 'yes' ? '要' : '不要') : CK[t.opts[v]].zh)}</div>`; c.last = null; }
+    const btn = (key, line, done, extra = '') => `<button class="gbtn ${done ? 'done' : ''}" data-g="${g.fast ? 'say' : 'card'}" data-v="${key}" ${extra}>${gmJp(line, false)}${done ? '<span class="gok">✓</span>' : ''}</button>`;
+    b += `<p class="sec-title">你可以說</p><div class="gbtns">
+      ${btn('greet', shop.greet, c.greeted)}
+      ${shop.topics.map(t => btn(t.id, t.ask, c.done[t.id])).join('')}
+      ${btn('close', 'g_arigatou', false, 'style="grid-column:1/-1"')}</div>
+      <p class="small muted">${g.fast ? '熟練模式：點了就直接說。點客人的話仍可看意思。' : '點按鈕先看意思，再按「說這句」。'}</p>`;
+  }
+  return head + `<div class="ov-body" id="gmBody"><div class="in">${b}</div></div><div class="ov-foot"><div class="in">${f || `<button class="btn block" data-g="peekHelp">這一位該問什麼？（提示）</button>`}</div></div>`;
+}
+function gmPopHtml() {
+  const p = G.pop; if (!p) return '';
+  const shop = GSHOP[G.shop], line = p.key ? (p.key === 'greet' ? shop.greet : p.key === 'close' ? 'g_arigatou' : gmTopic(shop, p.key).ask) : [p.id];
+  const ids = gmLine(line), zh = ids.map(id => CK[id].zh).join('；'), note = ids.map(id => CK[id].note).filter(Boolean).join(' ');
+  return `<div class="scrim" data-g="popClose" style="z-index:45"></div><div class="sheet gpop" style="z-index:46"><div class="in"><div class="grab"></div>
+    <div class="row"><div style="flex:1;min-width:0">${lineHtml(ids, {big:true})}</div>${spkBtn(lineText(ids), 'ja-JP')}</div>
+    <p class="small muted">${esc(ids.map(id => CK[id].ro).join(' '))}</p>
+    <p style="font-size:20px;font-weight:800">${esc(zh)}</p>${note ? `<p class="rule j">${esc(note)}</p>` : ''}
+    ${p.key ? `<button class="btn primary block" data-g="say" data-v="${p.key}">說這句</button>` : ''}<button class="btn block" data-g="popClose">${p.key ? '先不要' : '知道了'}</button></div></div>`;
+}
+function gmEndHtml() {
+  const d = G.day, shop = GSHOP[G.shop], g = gmSt(), t = TASK[shop.task];
+  const lv = (lvList(shop.task).find(l => !lvPassed(shop.task, l))) || 1;
+  const used = Object.keys(d.used).filter(id => CK[id] && !['filler'].includes(CK[id].cat)).sort((a, b) => d.used[b] - d.used[a]).slice(0, 14);
+  const wrong = Object.values(d.wrong);
+  const next = GSHOP_ORDER.find(id => !gmUnlocked(id));
+  return `<div class="ov-head"><button class="icon-btn" data-g="close" aria-label="關閉">${IC.x}</button><div style="flex:1"></div></div>
+    <div class="ov-body"><div class="in">
+      <div class="done-hero"><h2 style="font-size:26px">打烊了</h2><p style="font-size:22px;font-weight:800"><span class="tnum">${d.yen}</span> 円　★ <span class="tnum">${d.star}</span> / ${G_PER_DAY * 3}</p>
+        <div class="gfaces">${d.list.map(x => gmFace(x.look, x.angry ? 'angry' : x.star === 3 ? 'laugh' : 'smile', 'mini')).join('')}</div>
+        <p class="small muted">累積 ★ ${g.star}${next ? `・再 ${GSHOP[next].need - g.star}★ 開「${esc(GSHOP[next].zh)}」` : ''}</p></div>
+      ${wrong.length ? `<section class="stack" style="gap:8px"><p class="sec-title" style="margin:0">今天聽錯的（已排進句塊複習）</p><div class="list">${wrong.map(l => `<button class="li" data-g="peek" data-v="${gmLine(l)[0]}"><div class="grow"><div class="jpf" style="font-weight:700">${gmJp(l, false)}</div><div class="zh">${esc(gmLine(l).map(id => CK[id].zh).join('；'))}</div></div></button>`).join('')}</div></section>` : ''}
+      <section class="stack" style="gap:8px"><p class="sec-title" style="margin:0">今天店裡出現的日文（點了看意思）</p><div class="chips">${used.map(id => `<button class="chip jpf" data-g="peek" data-v="${id}"><span>${rubyHtml(CK[id].jp)}</span></button>`).join('')}</div></section>
+      <section class="card hero-jp stack" style="gap:8px"><p class="small muted">這些句子，對話裡都有</p><p style="font-size:18px;font-weight:800">${esc(t.name)}・第 ${lv} 級</p>
+        <p class="small muted">剛玩過，對話裡的提示會變少。換你當客人，聽店員說。</p>
+        <button class="btn onhero block" data-g="goDlg" data-v="${shop.task}:${lv}">去練這段對話</button></section>
+    </div></div>
+    <div class="ov-foot"><div class="in"><button class="btn primary block" data-g="again">再開一天</button><button class="btn block" data-g="toShops">換一家店</button></div></div>`;
+}
+
+/* ---------- 事件 ---------- */
+document.addEventListener('click', e => {
+  const t = e.target.closest('[data-g]'); if (!t || !$('#gm') || $('#gm').hidden) return;
+  e.stopPropagation();
+  const a = t.dataset.g, v = t.dataset.v, c = G.cust;
+  switch (a) {
+    case 'close': gmClose(); break;
+    case 'shop': gmStartDay(v); break;
+    case 'locked': toast('多賺一些 ★ 就會解鎖'); break;
+    case 'fast': { const g = gmSt(); g.fast = !g.fast; persist(); gmRender(); } break;
+    case 'listen': { const g = gmSt(); g.listen = !g.listen; persist(); gmRender(); } break;
+    case 'card': if (c) c.usedCard = true; G.pop = {key:v}; gmRender(); speak(lineText(gmLine(v === 'greet' ? GSHOP[G.shop].greet : v === 'close' ? 'g_arigatou' : gmTopic(GSHOP[G.shop], v).ask)), 'ja-JP', .9); break;
+    case 'say': gmSay(v); break;
+    case 'peek': G.pop = {id:v}; gmRender(); speak(plainJp(CK[v].jp), 'ja-JP', .9); break;
+    case 'popClose': G.pop = null; gmRender(); break;
+    case 'peekLine': if (c) { c.peek[+v] = true; gmRender(); } break;
+    case 'replay': if (c) { const last = [...c.said].reverse().find(x => x.who === 'c'); if (last) gmSpeak([[last.c, .95]]); } break;
+    case 'slow': if (c) { const last = [...c.said].reverse().find(x => x.who === 'c'); if (last) gmSpeak([[last.c, .7]]); } break;
+    case 'judge': gmJudge(v); break;
+    case 'nextCust': gmAfterCust(); break;
+    case 'peekHelp': if (c && !c.left) { const shop = GSHOP[G.shop], miss = gmRequired(shop, c).filter(x => !c.done[x.id]);
+      const tt = miss.find(x => !(x.after || []).some(y => c.need[y] !== undefined && !c.done[y]));
+      toast(tt ? '試試問：「' + plainJp(lineText(tt.ask)) + '」' : '都問完了，可以說「ありがとうございました」'); } break;
+    case 'again': gmStartDay(G.shop); break;
+    case 'toShops': G.view = 'shops'; gmRender(); break;
+    case 'goDlg': { const [tid, lv] = v.split(':'); G.gen++; const el = $('#gm'); if (el) el.hidden = true; document.body.style.overflow = ''; startRun(tid, +lv); } break;
+  }
+}, true);
+function gmCardHtml() {
+  const g = gmSt(), open = GSHOP_ORDER.filter(gmUnlocked).length;
+  return `<section class="card stack ggame" style="gap:8px"><div class="row"><div style="flex:1"><p class="small muted">邊玩邊學</p><p style="font-size:19px;font-weight:800">小店遊戲：你是店長</p>
+    <p class="small muted">${g.star ? `累積 ★ ${g.star}・開了 ${open} 家店` : '客人用日文跟你說話，一天 5 位，約 3 分鐘'}</p></div>${gmFace({head:'round', hair:'short', blush:true}, 'smile', 'mid')}</div>
+    <button class="btn jp-b block" data-a="gmOpen">開店</button></section>`;
+}
 window.ORAL_EMBEDDED=true;
 const ORAL_SHELL="<div id=\"oral-module\"><nav class=\"nav\" aria-label=\"口語聽力功能\"><a href=\"#home\">練習</a><a href=\"#course\">課程</a><a href=\"#words\">詞義</a><a href=\"#settings\">設定</a></nav><div id=\"oral-app\" tabindex=\"-1\"></div><div id=\"oral-toast\" role=\"status\" aria-live=\"polite\"></div></div>";
 /* 獨立口語聽力教材。內容是原創一般會話；adult 詞條只有中性詞義，沒有影片或劇情。
@@ -3360,7 +3893,7 @@ const SCENE_MAP = Object.fromEntries(SCENES.map(s => [s.id, s]));
 /* ================= state ================= */
 const LSK = 'bnk-state-v1';
 const DEF = () => ({v:1, updatedAt:0, created:Date.now(), settings:{romaji:true, read:'furi', dlgLen:1, dailyNew:5, rate:1, autoSpeak:true},
-  en:{}, custom:{}, jp:{}, dlg:{}, dlgMiss:{}, jpw:{}, ck:{}, tk:{}, run:null, lsp:null, migDlg:0, jpConf:{}, scenes:{}, favs:[], pastes:[], log:{}, xp:0, streak:{n:0, last:''}, newDay:{d:'', n:0}, boost:[], again:{d:'', ids:[]}});
+  en:{}, custom:{}, gm:{}, jp:{}, dlg:{}, dlgMiss:{}, jpw:{}, ck:{}, tk:{}, run:null, lsp:null, migDlg:0, jpConf:{}, scenes:{}, favs:[], pastes:[], log:{}, xp:0, streak:{n:0, last:''}, newDay:{d:'', n:0}, boost:[], again:{d:'', ids:[]}});
 function migrate(o) { const d = DEF(); if (!o || typeof o !== 'object') return d; for (const k in d) if (o[k] === undefined) o[k] = d[k];
   const had = o.settings || {}; o.settings = Object.assign(d.settings, had); if (had.read === undefined) o.settings.read = had.romaji === false ? 'none' : 'furi'; return o; }
 let S = DEF();
@@ -3684,6 +4217,7 @@ function vHome() {
       ${learnedIds().length ? `<button class="btn block" style="background:rgba(255,255,255,.14);color:#fff;border-color:rgba(255,255,255,.45)" data-a="review">複習學過的字（${learnedIds().length} 個）</button>` : ''}
     </section>
     <section class="card hero-jp stack" aria-label="日文">${jpNextHtml(true)}</section>
+    ${gmCardHtml()}
     ${again.length ? `<section class="stack" style="gap:8px"><p class="sec-title">今天再遇到</p><div class="chips">${again.map(id => `<button class="chip en" data-a="word" data-v="${id}">${esc(getEn(id).w)}</button>`).join('')}</div><p class="small muted">今天答錯或在 Claude 裡查過的字。它們會在 10 分鐘後的練習裡再出現。</p></section>` : ''}
     <div class="kpis">
       <div class="kpi"><span class="small muted">本週查字次數</span><b class="tnum">${lw}</b><span class="small muted">上週 ${pw} 次${pw && lw < pw ? '，變少了' : ''}</span></div>
@@ -3791,6 +4325,7 @@ function vJp() {
   }
   return topbar('日文') + `<div class="stack">
     <section class="card hero-jp stack">${jpNextHtml(true)}</section>
+    ${gmCardHtml()}
     <div class="row" style="gap:10px"><span class="small muted" style="flex:none">讀音</span><div style="flex:1;min-width:0">${readSegHtml()}</div></div>
     <div class="seg" role="group"><button data-a="jpSeg" data-v="dlg" aria-pressed="${UI.jpSeg === 'dlg'}">對話</button><button data-a="jpSeg" data-v="ck" aria-pressed="${UI.jpSeg === 'ck' || UI.jpSeg === 'w'}">句塊</button><button data-a="jpSeg" data-v="scene" aria-pressed="${UI.jpSeg === 'scene'}">開口</button><button data-a="jpSeg" data-v="pat" aria-pressed="${UI.jpSeg === 'pat'}">句型</button><button data-a="jpSeg" data-v="pt" aria-pressed="${UI.jpSeg === 'pt'}">助詞</button></div>
     ${body}</div>`;
@@ -4207,6 +4742,7 @@ document.addEventListener('click', e => {
     case 'lsSkip': lsSkip(+v); break;
     case 'lsSet': lsSet(t.dataset.k, v); break;
     case 'lsClose': lsClose(); break;
+    case 'gmOpen': gmOpen(v); break;
     default: if (S.run) runAction(a, v); break;
     case 'review': startReview(); break;
     case 'reviewAgain': endSession(); startReview(); break;
