@@ -1,3 +1,4 @@
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>按鈕與積木</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -339,5 +340,25 @@ rt{font-size:.5em;font-weight:500;color:var(--muted);font-family:var(--f-body)}
 .gopts .opt{justify-content:center;font-weight:800;font-size:18px}
 .gset{width:100%;text-align:left;background:none;padding:10px 0;border-bottom:1px solid var(--line)}
 .gset:last-child{border-bottom:0}
+.kbig{font-family:var(--f-jp);font-size:72px;font-weight:700;line-height:1;min-width:84px;text-align:center}
+.kbig.sm{font-size:30px;min-width:0;color:var(--jp-ink)}.kbig.sm span{font-size:20px;margin-left:4px;opacity:.7}
+.kmid{font-family:var(--f-jp);font-size:34px;font-weight:700;min-width:44px;text-align:center}
+.ktable{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.kcell{min-height:56px;border-radius:12px;background:var(--surface);border:1px solid var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;padding:4px 2px;position:relative}
+.kcell.empty{background:transparent;border:0}
+.kcell:active{transform:scale(.97)}
+.kpair{display:flex;align-items:baseline;gap:2px;line-height:1.1}
+.kg{font-family:var(--f-jp);font-size:26px;font-weight:700}.kg.sm{font-size:16px;color:var(--muted)}.kg.ref{opacity:.6}
+.kst{font-size:10px;font-weight:800;color:var(--muted);min-width:8px}
+.kst.st-ok,.kst.st-solid{color:var(--ok)}.kst.st-review,.kst.st-due{color:var(--warn)}
+.kprog{display:flex;flex-direction:column;gap:2px;color:var(--muted)}
+.kword{display:flex;flex-direction:column;gap:6px;border-top:1px solid var(--line);padding-top:10px}
+.kw{font-size:24px;font-weight:700}.kr{font-size:20px}.kz{font-size:17px;font-weight:700}
+.khl{color:var(--jp-ink);text-decoration:underline;text-decoration-thickness:3px;text-underline-offset:4px;background:var(--jp-soft);border-radius:4px;padding:0 2px}
+.kmask{display:inline-block;min-width:1.1em;text-align:center;border:2px dashed var(--jp);border-radius:6px;color:var(--jp-ink)}
+.kmatch{background:var(--warn-soft);border-radius:8px;padding:4px 8px}
+.kopts{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.kopt{justify-content:center;flex-direction:column;font-family:var(--f-jp);font-size:34px;font-weight:700;min-height:84px;gap:0}
+.kopt .sub{font-family:var(--f-body);font-size:13px}
 @media (prefers-reduced-motion: reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 </style>
