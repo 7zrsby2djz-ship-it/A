@@ -14,9 +14,10 @@ with sync_playwright() as p:
     b=p.chromium.launch()
     def ctx(w=390, dark=False, init=SPY, state=None):
         c=b.new_context(viewport={'width':w,'height':844},device_scale_factor=2,is_mobile=True,has_touch=True,color_scheme='dark' if dark else 'light')
-        s=init
-        if state is not None: s += f";if(!sessionStorage.getItem('seeded')){{localStorage.setItem('bnk-state-v1', {json.dumps(json.dumps(state))});sessionStorage.setItem('seeded','1')}}"
-        c.add_init_script(s); pg=c.new_page(); pg.on('pageerror',lambda e: errs.append(str(e))); pg.goto(URL); pg.wait_for_timeout(300); return c,pg
+        c.add_init_script(init); pg=c.new_page(); pg.on('pageerror',lambda e: errs.append(str(e))); pg.goto(URL); pg.wait_for_timeout(200)
+        if state is not None:
+            pg.evaluate("s => localStorage.setItem('bnk-state-v1', s)", json.dumps(state)); pg.reload(); pg.wait_for_timeout(300)
+        return c,pg
     # old save with romaji on, other progress, no kana
     old={"v":1,"updatedAt":5,"settings":{"read":"ro","romaji":True,"dlgLen":1,"dailyNew":5,"rate":1,"autoSpeak":True},"en":{"allow":{"s":3,"due":0,"ok":3,"ng":0,"lapse":0,"conf":{},"t0":1,"last":1}},"tk":{"bus":{"lv":{"1":{"done":2,"text":0,"listen":2,"repair":0,"transfer":0,"seen":["b1a"],"last":1,"rec":None}}}},"ck":{"hai":{"seen":1,"t":{"s":1,"due":0,"ok":1,"ng":0,"lapse":0,"conf":{},"t0":1,"last":1},"l":{"s":0,"due":0,"ok":0,"ng":0,"lapse":0,"conf":{},"t0":1,"last":0},"weak":False}},"gm":{"star":12,"days":{"konbini":3}},"xp":50}
     c,pg=ctx(state=old)
@@ -87,8 +88,9 @@ with sync_playwright() as p:
     # find next hear later; first test reload resume mid round
     i_before=pg.evaluate("knSt().active.i"); answered=pg.evaluate("Object.keys(knSt().active.ans).length")
     att=pg.evaluate("JSON.stringify(knSt().cards)")
+    pg.wait_for_timeout(300)
     pg.reload(); pg.wait_for_timeout(300)
-    ck('resume same position', pg.evaluate("knSt().active && knSt().active.i")==i_before and pg.evaluate("Object.keys(knSt().active.ans).length")==answered)
+    ck("resume same position", pg.evaluate("knSt().active && knSt().active.i")==i_before and pg.evaluate("Object.keys(knSt().active.ans).length")==answered)
     ck('no double count after reload', pg.evaluate("JSON.stringify(knSt().cards)")==att)
     pg.evaluate("UI.tab='jp';render()"); pg.click('#view [data-a=knOpen][data-v=go]'); pg.wait_for_timeout(100)
     ck('resume opens round', pg.evaluate("KG.view")=='round' and pg.evaluate("KG.play.ok")!=True)
