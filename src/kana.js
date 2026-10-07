@@ -5,6 +5,7 @@
    特殊字：ん 用字中字尾、を 用句子、ム 用ハム 字中、ヲ 只配對認識；不切整詞第一拍當單音。
    ======================================================================== */
 const KD = globalThis.KANA_REBUILD_DATA || {kana:[], words:[], anchors:[], confusables:[]};
+const K_AUDIO = globalThis.KANA_REBUILD_AUDIO || {clips:{}};
 const KN = Object.fromEntries(KD.kana.map(k => [k.id, k]));
 const KW = Object.fromEntries(KD.words.map(w => [w.id, w]));
 const KA = Object.fromEntries(KD.anchors.map(a => [a.key, a]));
@@ -64,6 +65,7 @@ const KN_ST = {new:['', '未練'], seen:['·', '看過'], review:['⟳', '需複
 /* ---------- 發音（分清成功與失敗，過期的回呼一律忽略） ---------- */
 function knJaVoice() { return VOICES.find(v => v.lang && v.lang.replace('_', '-').toLowerCase().startsWith('ja')); }
 function knSay(text, rate, cb) {
+  knStop();
   const tok = ++KG.tok;
   const fin = (ok, why) => { if (tok !== KG.tok || fin.done) return; fin.done = true; cb && cb(ok, why); };
   if (!canSpeak || !text) { fin(false, 'nosupport'); return tok; }
@@ -78,8 +80,38 @@ function knSay(text, rate, cb) {
   } catch (e) { fin(false, 'error'); }
   return tok;
 }
-function knStop() { KG.tok++; try { speechSynthesis.cancel(); } catch (e) {} }
-const KN_FAIL = {nosupport:'這台裝置不能播放聲音。', novoice:'找不到日文語音，可以到手機設定加入日文語音。', timeout:'這次沒有播出聲音。', error:'這次沒有播出聲音。', canceled:'播放被中斷了。', interrupted:'播放被中斷了。'};
+function knStop() {
+  KG.tok++;
+  clearTimeout(KG.audioTimer); KG.audioTimer = null;
+  if (KG.audio) { const a = KG.audio; KG.audio = null; a.onended = a.onerror = null; try { a.pause(); a.currentTime = 0; } catch (e) {} }
+  try { speechSynthesis.cancel(); } catch (e) {}
+}
+// Basic kana always use the bundled human recording. Words retain the existing TTS.
+// No fetch, autoplay or network dependency; play() runs directly in the tap handler.
+function knSayKana(id, slow, cb) {
+  knStop(); const tok = ++KG.tok, src = K_AUDIO.clips[id];
+  let a;
+  const fin = (ok, why) => {
+    if (tok !== KG.tok || fin.done) return;
+    fin.done = true; clearTimeout(KG.audioTimer); KG.audioTimer = null;
+    if (a) { a.onended = a.onerror = null; try { a.pause(); } catch (e) {} }
+    if (KG.audio === a) KG.audio = null;
+    cb && cb(ok, why);
+  };
+  if (!src) { fin(false, 'recording'); return tok; }
+  try {
+    a = new Audio(src); KG.audio = a;
+    a.playbackRate = slow ? .8 : 1;
+    a.preservesPitch = true; a.webkitPreservesPitch = true;
+    a.onended = () => fin(true);
+    a.onerror = () => fin(false, 'recording');
+    KG.audioTimer = setTimeout(() => fin(false, 'timeout'), 12000);
+    const p = a.play();
+    if (p && p.catch) p.catch(() => fin(false, 'recording'));
+  } catch (e) { fin(false, 'recording'); }
+  return tok;
+}
+const KN_FAIL = {nosupport:'這台裝置不能播放聲音。', novoice:'找不到日文語音，可以到手機設定加入日文語音。', recording:'這次沒有播出真人錄音。', timeout:'這次沒有播出聲音。', error:'這次沒有播出聲音。', canceled:'播放被中斷了。', interrupted:'播放被中斷了。'};
 
 /* ---------- 代表詞 ---------- */
 function knRefs(key) {
@@ -124,13 +156,19 @@ function knQuestion(type, key, pool) {
   if (type === 'hear') return {type, key, opts:shuffle([key, ...knDistractors(key, 2, pool)])};
   if (type === 'pair') { const other = s === 'hira' ? 'kata' : 'hira'; return {type, key, from:knKeyOf(other, id), opts:shuffle([key, ...knDistractors(key, 2, pool)])}; }
   if (type === 'wordLink') { const refs = knRefs(key).filter(r => r.eligibleForWordHeadQuestion || r.matchType !== 'head');
-    const ref = refs[0] || knRefs(key)[0]; return {type, key, word:ref.wordId, opts:shuffle([key, ...knDistractors(key, 2, pool)])}; }
+    const preferred = refs.filter(r => knSt().wordFamiliarity[r.wordId] !== 'unfamiliar');
+    const candidates = preferred.length ? preferred : refs;
+    const turn = knCard(key)?.wordLink.attempts || 0;
+    const ref = candidates[turn % candidates.length] || knRefs(key)[0];
+    return {type, key, word:ref.wordId, opts:shuffle([key, ...knDistractors(key, 2, pool)])}; }
   return {type, key};
 }
 function knPlanFor(key) {
   const k = KN[key.split(':')[1]], canHear = k.kind === 'basic' && !!k.speechText;
   const mode = knSt().prefs.script;
-  if (canHear) return ['hear', mode === 'mixed' ? 'pair' : 'wordLink'];
+  // The first mixed round keeps the original pair task; later rounds alternate
+  // with word links so the expanded vocabulary also appears during short rounds.
+  if (canHear) return ['hear', mode === 'mixed' && (knCard(key)?.hear.attempts || 0) % 2 === 0 ? 'pair' : 'wordLink'];
   return ['wordLink', 'pair'];
 }
 function knStartRound() {
@@ -170,9 +208,11 @@ function knAnswer(choice) {
   // 答錯：同一題型至少隔兩題再出現，一輪最多兩次
   const rk = it.key + '|' + it.type;
   if (!ok && (a.requeued[rk] || 0) < 1) { a.requeued[rk] = (a.requeued[rk] || 0) + 1;
-    a.items.splice(Math.min(a.i + 3, a.items.length), 0, knQuestion(it.type, it.key, a.targets)); }
+    const retry = knQuestion(it.type, it.key, a.targets);
+    if (it.word) retry.word = it.word;
+    a.items.splice(Math.min(a.i + 3, a.items.length), 0, retry); }
   persist(); knRender();
-  const k = KN[it.key.split(':')[1]]; if (k.speechText && k.kind === 'basic') knSay(k.speechText, .9);
+  const k = KN[it.key.split(':')[1]]; if (k.speechText && k.kind === 'basic') knSayKana(k.id, false);
 }
 function knSelfRate(good) {
   const a = knSt().active, it = knCur(); if (!a || !it || a.ans[a.i]) return;
@@ -198,7 +238,7 @@ function knPlayItem(slow) {
   const myI = knSt().active.i;
   KG.play = {playing:true};
   knRender();
-  knSay(k.speechText, slow ? .75 : .9, (ok, why) => {
+  knSayKana(k.id, slow, (ok, why) => {
     const a = knSt().active; if (!a || a.i !== myI) return;
     KG.play = ok ? {ok:true, slow:!!slow} : {fail:why || 'error'};
     knRender();
@@ -260,7 +300,9 @@ function knHomeView() {
     <details class="card flat"><summary style="cursor:pointer;font-weight:700">說明與來源</summary><div class="stack small" style="gap:6px;margin-top:8px">
       <p>代表詞先用 App 裡已有的詞，其次是多鄰國截圖確認看過的詞，再補旅行日常詞。來源標籤只代表「接觸過」，不代表已經會。</p>
       <p>這一版練基本 46 組。濁音（が、で…）、拗音（きゃ…）、促音、長音會在代表詞裡自然出現，獨立練習留到下一版。</p>
-      <p>單字難度參考 OpenJLPT（CC BY-SA 4.0），繁中詞義為本 App 編輯。語音是手機內建的日文語音。</p></div></details>
+      <p>每格先看兩個詞，其餘可展開；單字找字練習會輪流使用不同代表詞。ヌ 等少見字首不硬湊陌生詞。</p>
+      <p>基本假名用真人錄音，已包進 App，可離線播放。部分原錄音會重複同一個音，方便跟讀；單字仍用手機內建日文語音。ん／を 保留整詞或句子示範。</p>
+      <p>真人錄音：<a href="${esc(K_AUDIO.collectionUrl || 'https://commons.wikimedia.org')}" target="_blank" rel="noopener">Hakatanoshio117117／Wikimedia Commons</a>（公共領域）。單字難度：<a href="https://github.com/evanclan/OpenJLPT" target="_blank" rel="noopener">OpenJLPT</a>（<a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a>）；繁中詞義為本 App 編輯。</p></div></details>
   </div></div>`;
 }
 function knCardHtml(key, opt = {}) {
@@ -270,21 +312,24 @@ function knCardHtml(key, opt = {}) {
     <div class="kbig" lang="ja">${esc(knGlyph(key))}</div>
     <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:6px">
       <p class="small muted">${KN_SCRIPT[s]}${showRo ? `・<b>${esc(k.romaji)}</b>` : ''}</p>
-      ${k.speechText && k.kind === 'basic' ? `<button class="btn sm jp-b" data-k="sayKana" data-v="${key}">${IC.speak}聽假名</button>` : `<p class="small muted">${k.id === 'n' ? 'ん 要在詞裡聽' : 'を 念 o，用句子聽'}</p>`}
+      ${k.speechText && k.kind === 'basic' ? `<button class="btn sm jp-b" data-k="sayKana" data-v="${key}">${IC.speak}真人發音</button>` : `<p class="small muted">${k.id === 'n' ? 'ん 要在詞裡聽' : 'を 念 o，用句子聽'}</p>`}
       ${st.prefs.script === 'mixed' || opt.showOther ? (opt.inRound ? `<p class="small">${KN_SCRIPT[other.split(':')[0]]}：<span class="jpf" style="font-size:20px">${esc(knGlyph(other))}</span></p>` : `<button class="btn ghost sm" data-k="open" data-v="${other}">${KN_SCRIPT[other.split(':')[0]]}：<span class="jpf" style="font-size:20px">${esc(knGlyph(other))}</span></button>`) : ''}
       ${!showRo && !opt.noPeek ? `<button class="btn ghost sm" data-k="peek">看拼音</button>` : ''}
     </div></div>`;
   if (a && a.status === 'reference_only') {
     h += `<p>ヲ 先認得就好：它和「を」同音（o），一般單字幾乎不用。</p><button class="btn block" data-k="open" data-v="${a.linkedSpecial}">看 を 的例子</button>`;
   } else {
-    h += knRefs(key).map(r => { const w = KW[r.wordId], fam = st.wordFamiliarity[w.id] === 'unfamiliar';
+    const refs = knRefs(key);
+    const wordHtml = r => { const w = KW[r.wordId], fam = st.wordFamiliarity[w.id] === 'unfamiliar';
       return `<div class="kword"><div class="row" style="align-items:flex-start"><div style="flex:1;min-width:0">
         <p class="kw jpf" lang="ja">${esc(w.word)}</p><p class="kr jpf" lang="ja">${knReadingHtml(r)}</p>${showRo ? `<p class="small muted">${esc(w.romaji)}</p>` : ''}
         <p class="kz">${esc(w.meaningZh)}</p>
         <p class="small muted">${esc(KN_EVID[w.familiarityEvidence] || '')}${w.jlptApprox ? '・約 ' + esc(w.jlptApprox) : ''}${fam ? '・你標了不熟' : ''}</p>
         ${KN_MATCH[r.matchType] ? `<p class="small kmatch">${esc(r.note || KN_MATCH[r.matchType])}</p>` : ''}${w.note ? `<p class="small muted">${esc(w.note)}</p>` : ''}</div>
         <button class="icon-btn speak" data-k="sayWord" data-v="${w.id}" aria-label="聽單字">${IC.speak}</button></div>
-        <button class="btn ghost sm" data-k="unfam" data-v="${w.id}">${fam ? '取消「不熟」' : '這個詞我不熟（換到後面）'}</button></div>`; }).join('');
+        <button class="btn ghost sm" data-k="unfam" data-v="${w.id}">${fam ? '取消「不熟」' : '這個詞我不熟（換到後面）'}</button></div>`; };
+    h += refs.slice(0, 2).map(wordHtml).join('');
+    if (refs.length > 2) h += `<details class="kextras"><summary class="small" style="cursor:pointer;font-weight:700;padding:10px 0">再看 ${refs.length - 2} 個代表詞</summary><div class="stack" style="gap:12px;margin-top:8px">${refs.slice(2).map(wordHtml).join('')}</div></details>`;
     if (k.note) h += `<details><summary class="small" style="cursor:pointer">說明</summary><p class="small" style="margin-top:6px">${esc(k.note)}</p></details>`;
   }
   return h + '</section>';
@@ -340,7 +385,7 @@ function knRoundView() {
         ${knOptsHtml(it, r)}`;
     }
     if (r) {
-      const ref = knRefs(it.key)[0], w = ref && KW[ref.wordId];
+      const refs = knRefs(it.key), ref = (it.word && refs.find(x => x.wordId === it.word)) || refs[0], w = ref && KW[ref.wordId];
       b += `<div class="fb ${r.ok ? 'ok' : 'no'}"><h3>${r.ok ? (r.assisted ? '對了（有看提示）' : '對了') : '答案是這個'}</h3>
         <div class="row" style="align-items:center;gap:12px"><span class="kmid jpf" lang="ja">${esc(knGlyph(it.key))}</span><div style="flex:1;min-width:0">
         <p><b>${esc(k.romaji)}</b>${w ? `　<span class="jpf">${w.word === ref.displayedReading ? knReadingHtml(ref) : esc(w.word) + '（' + knReadingHtml(ref) + '）'}</span> ${esc(w.meaningZh)}` : ''}</p>
@@ -396,7 +441,7 @@ document.addEventListener('click', e => {
     case 'words': KG.view = 'words'; knRender(); break;
     case 'open': if (!v) break; knStop(); KG.key = v; KG.view = 'card'; KG.peek = false; { const c = knCard(v, true); c.seen = true; c.lastSeen = Date.now(); persist(); } knRender(); { const b = $('#knBody'); if (b) b.scrollTop = 0; } break;
     case 'peek': KG.peek = true; knRender(); break;
-    case 'sayKana': { const k = KN[v.split(':')[1]]; knSay(k.speechText, .9, ok => { if (!ok) toast('沒有播出聲音'); }); } break;
+    case 'sayKana': { const k = KN[v.split(':')[1]]; knSayKana(k.id, false, ok => { if (!ok) toast('沒有播出真人錄音'); }); } break;
     case 'sayWord': { const w = KW[v]; knSay(w.speechText || w.reading, .9, ok => { if (!ok) toast('沒有播出聲音'); }); } break;
     case 'unfam': st.wordFamiliarity[v] = st.wordFamiliarity[v] === 'unfamiliar' ? undefined : 'unfamiliar'; if (!st.wordFamiliarity[v]) delete st.wordFamiliarity[v]; persist(); knRender(); break;
     case 'play': knPlayItem(false); break;
@@ -404,7 +449,7 @@ document.addEventListener('click', e => {
     case 'noaudio': knStop(); KG.play = {fallback:true}; knRender(); break;
     case 'ans': knAnswer(v); break;
     case 'next': knNext(); break;
-    case 'reveal': KG.reveal = true; knRender(); { const it = knCur(), k = KN[it.key.split(':')[1]]; if (k.speechText && k.kind === 'basic') knSay(k.speechText, .9); } break;
+    case 'reveal': KG.reveal = true; knRender(); { const it = knCur(), k = KN[it.key.split(':')[1]]; if (k.speechText && k.kind === 'basic') knSayKana(k.id, false); } break;
     case 'self': knSelfRate(v === '1'); break;
   }
 }, true);

@@ -209,4 +209,10 @@ const visibleWords = [
   {word:'ケーブル', reading:'ケーブル', meaningOriginal:'电缆', wordId:'cable', visibility:'full'},
   {word:'ワイヤレス', reading:'ワイヤレス', meaningOriginal:null, wordId:'wireless', visibility:'word_only_translation_below_crop'},
 ];
-module.exports = {words, rows, visibleWords};
+// Keep all original IDs/order; the expansion is edited with the same W() contract.
+const expansion = require('./expansion.cjs');
+for (const row of rows) {
+  row[6].push(...(expansion.anchors['hira:' + row[0]] || []));
+  row[7].push(...(expansion.anchors['kata:' + row[0]] || []));
+}
+module.exports = {words:words.concat(expansion.words), rows, visibleWords};

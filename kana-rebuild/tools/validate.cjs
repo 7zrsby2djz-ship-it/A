@@ -26,7 +26,8 @@ for(const a of anchors){
   assert.ok(km[a.kanaId]);assert.equal(a.key,`${a.script}:${a.kanaId}`);
   assert.equal(a.glyph,a.script==='hira'?km[a.kanaId].hiragana:km[a.kanaId].katakana);
   if(a.key==='kata:wo'){assert.equal(a.status,'reference_only');assert.equal(a.wordRefs.length,0);assert.equal(a.linkedSpecial,'hira:wo');continue;}
-  assert.equal(a.status,'trainable');assert.ok(a.wordRefs.length>=1&&a.wordRefs.length<=2,`Need 1–2 anchors: ${a.key}`);
+  assert.equal(a.status,'trainable');assert.ok(a.wordRefs.length>=1&&a.wordRefs.length<=4,`Need 1–4 anchors: ${a.key}`);
+  unique(a.wordRefs.map(r=>r.wordId),'anchor word IDs for '+a.key);
   for(const r of a.wordRefs){
     const w=wm[r.wordId];assert.ok(w,`Missing ${r.wordId}`);
     const chars=Array.from(toHiragana(r.displayedReading));
@@ -62,6 +63,12 @@ assert.equal(runtime.KANA_REBUILD_DATA.sources.duolingo.fullPersonalListAvailabl
 assert.equal(manifest.appCorpusEntries,corpus.length);assert.equal(manifest.curatedWords,words.length);
 assert.equal(manifest.anchorReferences,anchors.reduce((n,a)=>n+a.wordRefs.length,0));
 assert.equal(manifest.openjlptWords,n);assert.equal(manifest.trainableCells,91);
+assert.equal(runtime.KANA_REBUILD_DATA.dataVersion,'1.1.0');
+// The expansion preserves every v1 word/anchor ID and never strips a voiced sound.
+assert.equal(wm.kyanseru.firstMora,'きゃ');
+assert.equal(wm.tisshu.firstMora,'てぃ');
+assert.equal(anchors.find(a=>a.key==='kata:mu').wordRefs.find(r=>r.wordId==='muubii').matchType,'head');
+assert.equal(anchors.find(a=>a.key==='kata:mu').wordRefs.find(r=>r.wordId==='ham').matchType,'contains_rare_katakana');
 // Regression cases exercise the distinctions that can silently teach the wrong sound.
 assert.equal(rubyReading('{駅|えき}'),'えき');assert.equal(plain('{仕事|しごと}'),'仕事');
 assert.equal(analyzeReading(rubyReading('{駅|えき}')).firstKana,'え');

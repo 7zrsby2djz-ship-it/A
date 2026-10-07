@@ -32,6 +32,30 @@
           "eligibleForAudioHead": true,
           "eligibleForWordHeadQuestion": true,
           "note": ""
+        },
+        {
+          "wordId": "ame",
+          "matchType": "head",
+          "displayedReading": "あめ",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "ashita",
+          "matchType": "head",
+          "displayedReading": "あした",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
         }
       ]
     },
@@ -47,6 +71,30 @@
           "wordId": "ice",
           "matchType": "head",
           "displayedReading": "アイス",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "aisukurimu",
+          "matchType": "head",
+          "displayedReading": "アイスクリーム",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "apuri",
+          "matchType": "head",
+          "displayedReading": "アプリ",
           "targetSpan": {
             "start": 0,
             "end": 1
@@ -88,6 +136,30 @@
           "eligibleForAudioHead": true,
           "eligibleForWordHeadQuestion": true,
           "note": ""
+        },
+        {
+          "wordId": "iriguchi",
+          "matchType": "head",
+          "displayedReading": "いりぐち",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "ikura",
+          "matchType": "head",
+          "displayedReading": "いくら",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
         }
       ]
     },
@@ -115,6 +187,30 @@
           "wordId": "internet",
           "matchType": "head",
           "displayedReading": "インターネット",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "ibento",
+          "matchType": "head",
+          "displayedReading": "イベント",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "irasuto",
+          "matchType": "head",
+          "displayedReading": "イラスト",
           "targetSpan": {
             "start": 0,
             "end": 1
@@ -156,6 +252,30 @@
           "eligibleForAudioHead": true,
           "eligibleForWordHeadQuestion": true,
           "note": ""
+        },
+        {
+          "wordId": "ushiro",
+          "matchType": "head",
+          "displayedReading": "うしろ",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "ureshii",
+          "matchType": "head",
+          "displayedReading": "うれしい",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
         }
       ]
     },
@@ -171,6 +291,30 @@
           "wordId": "oolong",
           "matchType": "head",
           "displayedReading": "ウーロンちゃ",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "uisukii",
+          "matchType": "head",
+          "displayedReading": "ウイスキー",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "uesuto",
+          "matchType": "head",
+          "displayedReading": "ウエスト",
           "targetSpan": {
             "start": 0,
             "end": 1
@@ -212,6 +356,30 @@
           "eligibleForAudioHead": true,
           "eligibleForWordHeadQuestion": true,
           "note": ""
+        },
+        {
+          "wordId": "eigo",
+          "matchType": "head",
+          "displayedReading": "えいご",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "en",
+          "matchType": "head",
+          "displayedReading": "えん",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
         }
       ]
     },
@@ -227,6 +395,30 @@
           "wordId": "aircon",
           "matchType": "head",
           "displayedReading": "エアコン",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "erebeetaa",
+          "matchType": "head",
+          "displayedReading": "エレベーター",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "esukareetaa",
+          "matchType": "head",
+          "displayedReading": "エスカレーター",
           "targetSpan": {
             "start": 0,
             "end": 1
@@ -268,6 +460,30 @@
           "eligibleForAudioHead": true,
           "eligibleForWordHeadQuestion": true,
           "note": ""
+        },
+        {
+          "wordId": "ocha",
+          "matchType": "head",
+          "displayedReading": "おちゃ",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "oishii",
+          "matchType": "head",
+          "displayedReading": "おいしい",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
         }
       ]
     },
@@ -283,6 +499,30 @@
           "wordId": "orange",
           "matchType": "head",
           "displayedReading": "オレンジ",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "omuraisu",
+          "matchType": "head",
+          "displayedReading": "オムライス",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "oodaa",
+          "matchType": "head",
+          "displayedReading": "オーダー",
           "targetSpan": {
             "start": 0,
             "end": 1
@@ -324,6 +564,30 @@
           "eligibleForAudioHead": true,
           "eligibleForWordHeadQuestion": true,
           "note": ""
+        },
+        {
+          "wordId": "kasa",
+          "matchType": "head",
+          "displayedReading": "かさ",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "kagi",
+          "matchType": "head",
+          "displayedReading": "かぎ",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
         }
       ]
     },
@@ -339,6 +603,30 @@
           "wordId": "card",
           "matchType": "head",
           "displayedReading": "カード",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "kamera",
+          "matchType": "head",
+          "displayedReading": "カメラ",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "karee",
+          "matchType": "head",
+          "displayedReading": "カレー",
           "targetSpan": {
             "start": 0,
             "end": 1
@@ -380,6 +668,30 @@
           "eligibleForAudioHead": true,
           "eligibleForWordHeadQuestion": true,
           "note": ""
+        },
+        {
+          "wordId": "kinou",
+          "matchType": "head",
+          "displayedReading": "きのう",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "kirei",
+          "matchType": "head",
+          "displayedReading": "きれい",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
         }
       ]
     },
@@ -414,6 +726,30 @@
           "eligibleForAudioHead": true,
           "eligibleForWordHeadQuestion": true,
           "note": ""
+        },
+        {
+          "wordId": "kyanseru",
+          "matchType": "head_extension",
+          "displayedReading": "キャンセル",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": false,
+          "eligibleForWordHeadQuestion": true,
+          "note": "先辨認第一個假名字形；第一拍有小字組合，不拿整詞第一拍考單獨基本音。"
+        },
+        {
+          "wordId": "kyasshuresu",
+          "matchType": "head_extension",
+          "displayedReading": "キャッシュレス",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": false,
+          "eligibleForWordHeadQuestion": true,
+          "note": "先辨認第一個假名字形；第一拍有小字組合，不拿整詞第一拍考單獨基本音。"
         }
       ]
     },
@@ -441,6 +777,30 @@
           "wordId": "kutsu",
           "matchType": "head",
           "displayedReading": "くつ",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "kuukou",
+          "matchType": "head",
+          "displayedReading": "くうこう",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "kuruma",
+          "matchType": "head",
+          "displayedReading": "くるま",
           "targetSpan": {
             "start": 0,
             "end": 1
@@ -482,6 +842,30 @@
           "eligibleForAudioHead": true,
           "eligibleForWordHeadQuestion": true,
           "note": ""
+        },
+        {
+          "wordId": "kuriimu",
+          "matchType": "head",
+          "displayedReading": "クリーム",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "kuriiningu",
+          "matchType": "head",
+          "displayedReading": "クリーニング",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
         }
       ]
     },
@@ -509,6 +893,30 @@
           "wordId": "kekkou",
           "matchType": "head",
           "displayedReading": "けっこうです",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "kesa",
+          "matchType": "head",
+          "displayedReading": "けさ",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "keisatsu",
+          "matchType": "head",
+          "displayedReading": "けいさつ",
           "targetSpan": {
             "start": 0,
             "end": 1
@@ -550,6 +958,30 @@
           "eligibleForAudioHead": true,
           "eligibleForWordHeadQuestion": true,
           "note": ""
+        },
+        {
+          "wordId": "keesu",
+          "matchType": "head",
+          "displayedReading": "ケース",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "kechappu",
+          "matchType": "head",
+          "displayedReading": "ケチャップ",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
         }
       ]
     },
@@ -577,6 +1009,30 @@
           "wordId": "koko",
           "matchType": "head",
           "displayedReading": "ここ",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "konnichiwa",
+          "matchType": "head",
+          "displayedReading": "こんにちは",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "kodomo",
+          "matchType": "head",
+          "displayedReading": "こども",
           "targetSpan": {
             "start": 0,
             "end": 1
@@ -618,6 +1074,30 @@
           "eligibleForAudioHead": true,
           "eligibleForWordHeadQuestion": true,
           "note": ""
+        },
+        {
+          "wordId": "koin",
+          "matchType": "head",
+          "displayedReading": "コイン",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "kopii",
+          "matchType": "head",
+          "displayedReading": "コピー",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
         }
       ]
     },
@@ -645,6 +1125,30 @@
           "wordId": "sakana",
           "matchType": "head",
           "displayedReading": "さかな",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "sakura",
+          "matchType": "head",
+          "displayedReading": "さくら",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "samui",
+          "matchType": "head",
+          "displayedReading": "さむい",
           "targetSpan": {
             "start": 0,
             "end": 1
@@ -686,6 +1190,30 @@
           "eligibleForAudioHead": true,
           "eligibleForWordHeadQuestion": true,
           "note": ""
+        },
+        {
+          "wordId": "sandoicchi",
+          "matchType": "head",
+          "displayedReading": "サンドイッチ",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "saabisu",
+          "matchType": "head",
+          "displayedReading": "サービス",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
         }
       ]
     },
@@ -720,6 +1248,30 @@
           "eligibleForAudioHead": true,
           "eligibleForWordHeadQuestion": true,
           "note": ""
+        },
+        {
+          "wordId": "shiroi",
+          "matchType": "head",
+          "displayedReading": "しろい",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "shashin",
+          "matchType": "head_extension",
+          "displayedReading": "しゃしん",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": false,
+          "eligibleForWordHeadQuestion": true,
+          "note": "先辨認第一個假名字形；第一拍有小字組合，不拿整詞第一拍考單獨基本音。"
         }
       ]
     },
@@ -754,6 +1306,30 @@
           "eligibleForAudioHead": true,
           "eligibleForWordHeadQuestion": true,
           "note": ""
+        },
+        {
+          "wordId": "shawaa",
+          "matchType": "head_extension",
+          "displayedReading": "シャワー",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": false,
+          "eligibleForWordHeadQuestion": true,
+          "note": "先辨認第一個假名字形；第一拍有小字組合，不拿整詞第一拍考單獨基本音。"
+        },
+        {
+          "wordId": "shanpuu",
+          "matchType": "head_extension",
+          "displayedReading": "シャンプー",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": false,
+          "eligibleForWordHeadQuestion": true,
+          "note": "先辨認第一個假名字形；第一拍有小字組合，不拿整詞第一拍考單獨基本音。"
         }
       ]
     },
@@ -781,6 +1357,30 @@
           "wordId": "suki",
           "matchType": "head",
           "displayedReading": "すき",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "sushi",
+          "matchType": "head",
+          "displayedReading": "すし",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "suwaru",
+          "matchType": "head",
+          "displayedReading": "すわる",
           "targetSpan": {
             "start": 0,
             "end": 1
@@ -822,6 +1422,30 @@
           "eligibleForAudioHead": true,
           "eligibleForWordHeadQuestion": true,
           "note": ""
+        },
+        {
+          "wordId": "sumaho",
+          "matchType": "head",
+          "displayedReading": "スマホ",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "suutsukeesu",
+          "matchType": "head",
+          "displayedReading": "スーツケース",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
         }
       ]
     },
@@ -856,6 +1480,30 @@
           "eligibleForAudioHead": true,
           "eligibleForWordHeadQuestion": true,
           "note": ""
+        },
+        {
+          "wordId": "sensei",
+          "matchType": "head",
+          "displayedReading": "せんせい",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "semai",
+          "matchType": "head",
+          "displayedReading": "せまい",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
         }
       ]
     },
@@ -871,6 +1519,30 @@
           "wordId": "set",
           "matchType": "head",
           "displayedReading": "セット",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "seetaa",
+          "matchType": "head",
+          "displayedReading": "セーター",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "serufusaabisu",
+          "matchType": "head",
+          "displayedReading": "セルフサービス",
           "targetSpan": {
             "start": 0,
             "end": 1
@@ -912,6 +1584,30 @@
           "eligibleForAudioHead": true,
           "eligibleForWordHeadQuestion": true,
           "note": ""
+        },
+        {
+          "wordId": "soba",
+          "matchType": "head",
+          "displayedReading": "そば",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "soko",
+          "matchType": "head",
+          "displayedReading": "そこ",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
         }
       ]
     },
@@ -927,6 +1623,30 @@
           "wordId": "sofa",
           "matchType": "head",
           "displayedReading": "ソファ",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "soosu",
+          "matchType": "head",
+          "displayedReading": "ソース",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "sofutokuriimu",
+          "matchType": "head",
+          "displayedReading": "ソフトクリーム",
           "targetSpan": {
             "start": 0,
             "end": 1
@@ -968,6 +1688,30 @@
           "eligibleForAudioHead": true,
           "eligibleForWordHeadQuestion": true,
           "note": ""
+        },
+        {
+          "wordId": "takai",
+          "matchType": "head",
+          "displayedReading": "たかい",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "tanoshii",
+          "matchType": "head",
+          "displayedReading": "たのしい",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
         }
       ]
     },
@@ -995,6 +1739,30 @@
           "wordId": "towel",
           "matchType": "head",
           "displayedReading": "タオル",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "taipu",
+          "matchType": "head",
+          "displayedReading": "タイプ",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "tankutoppu",
+          "matchType": "head",
+          "displayedReading": "タンクトップ",
           "targetSpan": {
             "start": 0,
             "end": 1
@@ -1036,6 +1804,30 @@
           "eligibleForAudioHead": true,
           "eligibleForWordHeadQuestion": true,
           "note": ""
+        },
+        {
+          "wordId": "chikai",
+          "matchType": "head",
+          "displayedReading": "ちかい",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "chiisai",
+          "matchType": "head",
+          "displayedReading": "ちいさい",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
         }
       ]
     },
@@ -1070,6 +1862,30 @@
           "eligibleForAudioHead": true,
           "eligibleForWordHeadQuestion": true,
           "note": ""
+        },
+        {
+          "wordId": "chekkuin",
+          "matchType": "head_extension",
+          "displayedReading": "チェックイン",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": false,
+          "eligibleForWordHeadQuestion": true,
+          "note": "先辨認第一個假名字形；第一拍有小字組合，不拿整詞第一拍考單獨基本音。"
+        },
+        {
+          "wordId": "chekkuauto",
+          "matchType": "head_extension",
+          "displayedReading": "チェックアウト",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": false,
+          "eligibleForWordHeadQuestion": true,
+          "note": "先辨認第一個假名字形；第一拍有小字組合，不拿整詞第一拍考單獨基本音。"
         }
       ]
     },
@@ -1104,6 +1920,30 @@
           "eligibleForAudioHead": true,
           "eligibleForWordHeadQuestion": true,
           "note": ""
+        },
+        {
+          "wordId": "tsukue",
+          "matchType": "head",
+          "displayedReading": "つくえ",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "tsukau",
+          "matchType": "head",
+          "displayedReading": "つかう",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
         }
       ]
     },
@@ -1119,6 +1959,30 @@
           "wordId": "tour",
           "matchType": "head",
           "displayedReading": "ツアー",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "tsuna",
+          "matchType": "head",
+          "displayedReading": "ツナ",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "tsuin",
+          "matchType": "head",
+          "displayedReading": "ツイン",
           "targetSpan": {
             "start": 0,
             "end": 1
@@ -1160,6 +2024,30 @@
           "eligibleForAudioHead": true,
           "eligibleForWordHeadQuestion": true,
           "note": ""
+        },
+        {
+          "wordId": "tenpura",
+          "matchType": "head",
+          "displayedReading": "てんぷら",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "tegami",
+          "matchType": "head",
+          "displayedReading": "てがみ",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
         }
       ]
     },
@@ -1194,6 +2082,30 @@
           "eligibleForAudioHead": true,
           "eligibleForWordHeadQuestion": true,
           "note": ""
+        },
+        {
+          "wordId": "tenisu",
+          "matchType": "head",
+          "displayedReading": "テニス",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "tisshu",
+          "matchType": "head_extension",
+          "displayedReading": "ティッシュ",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": false,
+          "eligibleForWordHeadQuestion": true,
+          "note": "先辨認第一個假名字形；第一拍有小字組合，不拿整詞第一拍考單獨基本音。"
         }
       ]
     },
@@ -1221,6 +2133,30 @@
           "wordId": "tomodachi",
           "matchType": "head",
           "displayedReading": "ともだち",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "toukyou",
+          "matchType": "head",
+          "displayedReading": "とうきょう",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "tokei",
+          "matchType": "head",
+          "displayedReading": "とけい",
           "targetSpan": {
             "start": 0,
             "end": 1
@@ -1262,6 +2198,30 @@
           "eligibleForAudioHead": true,
           "eligibleForWordHeadQuestion": true,
           "note": ""
+        },
+        {
+          "wordId": "tomato",
+          "matchType": "head",
+          "displayedReading": "トマト",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "toreeningu",
+          "matchType": "head",
+          "displayedReading": "トレーニング",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
         }
       ]
     },
@@ -1296,6 +2256,30 @@
           "eligibleForAudioHead": true,
           "eligibleForWordHeadQuestion": true,
           "note": ""
+        },
+        {
+          "wordId": "natsu",
+          "matchType": "head",
+          "displayedReading": "なつ",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "nagai",
+          "matchType": "head",
+          "displayedReading": "ながい",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
         }
       ]
     },
@@ -1311,6 +2295,30 @@
           "wordId": "knife",
           "matchType": "head",
           "displayedReading": "ナイフ",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "napukin",
+          "matchType": "head",
+          "displayedReading": "ナプキン",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "nanbread",
+          "matchType": "head",
+          "displayedReading": "ナン",
           "targetSpan": {
             "start": 0,
             "end": 1
@@ -1352,6 +2360,30 @@
           "eligibleForAudioHead": true,
           "eligibleForWordHeadQuestion": true,
           "note": ""
+        },
+        {
+          "wordId": "nimotsu",
+          "matchType": "head",
+          "displayedReading": "にもつ",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "nichiyoubi",
+          "matchType": "head",
+          "displayedReading": "にちようび",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
         }
       ]
     },
@@ -1367,6 +2399,30 @@
           "wordId": "knit",
           "matchType": "head",
           "displayedReading": "ニット",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "nyuusu",
+          "matchType": "head_extension",
+          "displayedReading": "ニュース",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": false,
+          "eligibleForWordHeadQuestion": true,
+          "note": "先辨認第一個假名字形；第一拍有小字組合，不拿整詞第一拍考單獨基本音。"
+        },
+        {
+          "wordId": "ninjin",
+          "matchType": "head",
+          "displayedReading": "ニンジン",
           "targetSpan": {
             "start": 0,
             "end": 1
@@ -1401,6 +2457,30 @@
           "wordId": "nuno",
           "matchType": "head",
           "displayedReading": "ぬの",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "nurui",
+          "matchType": "head",
+          "displayedReading": "ぬるい",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "nureru",
+          "matchType": "head",
+          "displayedReading": "ぬれる",
           "targetSpan": {
             "start": 0,
             "end": 1
@@ -1464,6 +2544,30 @@
           "eligibleForAudioHead": true,
           "eligibleForWordHeadQuestion": true,
           "note": ""
+        },
+        {
+          "wordId": "nedan",
+          "matchType": "head",
+          "displayedReading": "ねだん",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "nemui",
+          "matchType": "head",
+          "displayedReading": "ねむい",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
         }
       ]
     },
@@ -1479,6 +2583,30 @@
           "wordId": "net",
           "matchType": "head",
           "displayedReading": "ネット",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "nekutai",
+          "matchType": "head",
+          "displayedReading": "ネクタイ",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "neiru",
+          "matchType": "head",
+          "displayedReading": "ネイル",
           "targetSpan": {
             "start": 0,
             "end": 1
@@ -1520,6 +2648,30 @@
           "eligibleForAudioHead": true,
           "eligibleForWordHeadQuestion": true,
           "note": ""
+        },
+        {
+          "wordId": "norikae",
+          "matchType": "head",
+          "displayedReading": "のりかえ",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "nomimono",
+          "matchType": "head",
+          "displayedReading": "のみもの",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
         }
       ]
     },
@@ -1535,6 +2687,30 @@
           "wordId": "notebook",
           "matchType": "head",
           "displayedReading": "ノート",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "nootopasokon",
+          "matchType": "head",
+          "displayedReading": "ノートパソコン",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "nonarukooru",
+          "matchType": "head",
+          "displayedReading": "ノンアルコール",
           "targetSpan": {
             "start": 0,
             "end": 1
@@ -1576,6 +2752,30 @@
           "eligibleForAudioHead": true,
           "eligibleForWordHeadQuestion": true,
           "note": ""
+        },
+        {
+          "wordId": "hayai",
+          "matchType": "head",
+          "displayedReading": "はやい",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "haru",
+          "matchType": "head",
+          "displayedReading": "はる",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
         }
       ]
     },
@@ -1591,6 +2791,30 @@
           "wordId": "hamburger",
           "matchType": "head",
           "displayedReading": "ハンバーガー",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "hankachi",
+          "matchType": "head",
+          "displayedReading": "ハンカチ",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "hangaa",
+          "matchType": "head",
+          "displayedReading": "ハンガー",
           "targetSpan": {
             "start": 0,
             "end": 1
@@ -1632,6 +2856,30 @@
           "eligibleForAudioHead": true,
           "eligibleForWordHeadQuestion": true,
           "note": ""
+        },
+        {
+          "wordId": "hikouki",
+          "matchType": "head",
+          "displayedReading": "ひこうき",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "hiru",
+          "matchType": "head",
+          "displayedReading": "ひる",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
         }
       ]
     },
@@ -1647,6 +2895,30 @@
           "wordId": "heater",
           "matchType": "head",
           "displayedReading": "ヒーター",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "hinto",
+          "matchType": "head",
+          "displayedReading": "ヒント",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "hiiroo",
+          "matchType": "head",
+          "displayedReading": "ヒーロー",
           "targetSpan": {
             "start": 0,
             "end": 1
@@ -1688,6 +2960,30 @@
           "eligibleForAudioHead": true,
           "eligibleForWordHeadQuestion": true,
           "note": ""
+        },
+        {
+          "wordId": "fuyu",
+          "matchType": "head",
+          "displayedReading": "ふゆ",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "fune",
+          "matchType": "head",
+          "displayedReading": "ふね",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
         }
       ]
     },
@@ -1722,6 +3018,30 @@
           "eligibleForAudioHead": true,
           "eligibleForWordHeadQuestion": true,
           "note": ""
+        },
+        {
+          "wordId": "fooku",
+          "matchType": "head_extension",
+          "displayedReading": "フォーク",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": false,
+          "eligibleForWordHeadQuestion": true,
+          "note": "先辨認第一個假名字形；第一拍有小字組合，不拿整詞第一拍考單獨基本音。"
+        },
+        {
+          "wordId": "furaidopoteto",
+          "matchType": "head",
+          "displayedReading": "フライドポテト",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
         }
       ]
     },
@@ -1744,6 +3064,30 @@
           "eligibleForAudioHead": true,
           "eligibleForWordHeadQuestion": true,
           "note": ""
+        },
+        {
+          "wordId": "henji",
+          "matchType": "head",
+          "displayedReading": "へんじ",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "heta",
+          "matchType": "head",
+          "displayedReading": "へた",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
         }
       ]
     },
@@ -1759,6 +3103,30 @@
           "wordId": "helmet",
           "matchType": "head",
           "displayedReading": "ヘルメット",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "heddohon",
+          "matchType": "head",
+          "displayedReading": "ヘッドホン",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "headoraiyaa",
+          "matchType": "head",
+          "displayedReading": "ヘアドライヤー",
           "targetSpan": {
             "start": 0,
             "end": 1
@@ -1800,6 +3168,30 @@
           "eligibleForAudioHead": true,
           "eligibleForWordHeadQuestion": true,
           "note": ""
+        },
+        {
+          "wordId": "hoshii",
+          "matchType": "head",
+          "displayedReading": "ほしい",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "hokkaidou",
+          "matchType": "head",
+          "displayedReading": "ほっかいどう",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
         }
       ]
     },
@@ -1815,6 +3207,30 @@
           "wordId": "hotel",
           "matchType": "head",
           "displayedReading": "ホテル",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "hoomu",
+          "matchType": "head",
+          "displayedReading": "ホーム",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "hotto",
+          "matchType": "head",
+          "displayedReading": "ホット",
           "targetSpan": {
             "start": 0,
             "end": 1
@@ -1856,6 +3272,30 @@
           "eligibleForAudioHead": true,
           "eligibleForWordHeadQuestion": true,
           "note": ""
+        },
+        {
+          "wordId": "mae",
+          "matchType": "head",
+          "displayedReading": "まえ",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "machi",
+          "matchType": "head",
+          "displayedReading": "まち",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
         }
       ]
     },
@@ -1871,6 +3311,30 @@
           "wordId": "mask",
           "matchType": "head",
           "displayedReading": "マスク",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "mafuraa",
+          "matchType": "head",
+          "displayedReading": "マフラー",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "mappu",
+          "matchType": "head",
+          "displayedReading": "マップ",
           "targetSpan": {
             "start": 0,
             "end": 1
@@ -1912,6 +3376,30 @@
           "eligibleForAudioHead": true,
           "eligibleForWordHeadQuestion": true,
           "note": ""
+        },
+        {
+          "wordId": "mise",
+          "matchType": "head",
+          "displayedReading": "みせ",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "miru",
+          "matchType": "head",
+          "displayedReading": "みる",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
         }
       ]
     },
@@ -1927,6 +3415,30 @@
           "wordId": "milk",
           "matchType": "head",
           "displayedReading": "ミルク",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "mineraruwootaa",
+          "matchType": "head",
+          "displayedReading": "ミネラルウォーター",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "mini",
+          "matchType": "head",
+          "displayedReading": "ミニ",
           "targetSpan": {
             "start": 0,
             "end": 1
@@ -1968,6 +3480,30 @@
           "eligibleForAudioHead": true,
           "eligibleForWordHeadQuestion": true,
           "note": ""
+        },
+        {
+          "wordId": "muryou",
+          "matchType": "head",
+          "displayedReading": "むりょう",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "murasaki",
+          "matchType": "head",
+          "displayedReading": "むらさき",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
         }
       ]
     },
@@ -1990,6 +3526,30 @@
           "eligibleForAudioHead": false,
           "eligibleForWordHeadQuestion": false,
           "note": "ム 用 ハム 的字中位置；題目問「找出 ム」，不問第一個音。"
+        },
+        {
+          "wordId": "muubii",
+          "matchType": "head",
+          "displayedReading": "ムービー",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "muudo",
+          "matchType": "head",
+          "displayedReading": "ムード",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
         }
       ]
     },
@@ -2012,6 +3572,30 @@
           "eligibleForAudioHead": true,
           "eligibleForWordHeadQuestion": true,
           "note": ""
+        },
+        {
+          "wordId": "megane",
+          "matchType": "head",
+          "displayedReading": "めがね",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "meshi",
+          "matchType": "head",
+          "displayedReading": "めし",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
         }
       ]
     },
@@ -2027,6 +3611,30 @@
           "wordId": "menu",
           "matchType": "head",
           "displayedReading": "メニュー",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "meeru",
+          "matchType": "head",
+          "displayedReading": "メール",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "memo",
+          "matchType": "head",
+          "displayedReading": "メモ",
           "targetSpan": {
             "start": 0,
             "end": 1
@@ -2068,6 +3676,30 @@
           "eligibleForAudioHead": true,
           "eligibleForWordHeadQuestion": true,
           "note": ""
+        },
+        {
+          "wordId": "momo",
+          "matchType": "head",
+          "displayedReading": "もも",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "motteiru",
+          "matchType": "head",
+          "displayedReading": "もっている",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
         }
       ]
     },
@@ -2083,6 +3715,30 @@
           "wordId": "mobile",
           "matchType": "head",
           "displayedReading": "モバイル",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "moderu",
+          "matchType": "head",
+          "displayedReading": "モデル",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "monitaa",
+          "matchType": "head",
+          "displayedReading": "モニター",
           "targetSpan": {
             "start": 0,
             "end": 1
@@ -2124,6 +3780,30 @@
           "eligibleForAudioHead": true,
           "eligibleForWordHeadQuestion": true,
           "note": ""
+        },
+        {
+          "wordId": "yasumi",
+          "matchType": "head",
+          "displayedReading": "やすみ",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "yasai",
+          "matchType": "head",
+          "displayedReading": "やさい",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
         }
       ]
     },
@@ -2139,6 +3819,18 @@
           "wordId": "yakult",
           "matchType": "head",
           "displayedReading": "ヤクルト",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "yahoo",
+          "matchType": "head",
+          "displayedReading": "ヤフー",
           "targetSpan": {
             "start": 0,
             "end": 1
@@ -2180,6 +3872,30 @@
           "eligibleForAudioHead": true,
           "eligibleForWordHeadQuestion": true,
           "note": ""
+        },
+        {
+          "wordId": "yuubin",
+          "matchType": "head",
+          "displayedReading": "ゆうびん",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "yuki",
+          "matchType": "head",
+          "displayedReading": "ゆき",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
         }
       ]
     },
@@ -2195,6 +3911,30 @@
           "wordId": "uniqlo",
           "matchType": "head",
           "displayedReading": "ユニクロ",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "yunifoomu",
+          "matchType": "head",
+          "displayedReading": "ユニフォーム",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "yuuro",
+          "matchType": "head",
+          "displayedReading": "ユーロ",
           "targetSpan": {
             "start": 0,
             "end": 1
@@ -2236,6 +3976,30 @@
           "eligibleForAudioHead": true,
           "eligibleForWordHeadQuestion": true,
           "note": ""
+        },
+        {
+          "wordId": "yoyaku",
+          "matchType": "head",
+          "displayedReading": "よやく",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "yomu",
+          "matchType": "head",
+          "displayedReading": "よむ",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
         }
       ]
     },
@@ -2251,6 +4015,30 @@
           "wordId": "yogurt",
           "matchType": "head",
           "displayedReading": "ヨーグルト",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "yoga",
+          "matchType": "head",
+          "displayedReading": "ヨガ",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "yooroppa",
+          "matchType": "head",
+          "displayedReading": "ヨーロッパ",
           "targetSpan": {
             "start": 0,
             "end": 1
@@ -2292,6 +4080,30 @@
           "eligibleForAudioHead": true,
           "eligibleForWordHeadQuestion": true,
           "note": ""
+        },
+        {
+          "wordId": "raigetsu",
+          "matchType": "head",
+          "displayedReading": "らいげつ",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "rakuna",
+          "matchType": "head",
+          "displayedReading": "らくな",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
         }
       ]
     },
@@ -2307,6 +4119,30 @@
           "wordId": "ramen",
           "matchType": "head",
           "displayedReading": "ラーメン",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "rajio",
+          "matchType": "head",
+          "displayedReading": "ラジオ",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "ranchi",
+          "matchType": "head",
+          "displayedReading": "ランチ",
           "targetSpan": {
             "start": 0,
             "end": 1
@@ -2348,6 +4184,30 @@
           "eligibleForAudioHead": false,
           "eligibleForWordHeadQuestion": true,
           "note": "先辨認第一個假名字形；第一拍有小字組合，不拿整詞第一拍考單獨基本音。"
+        },
+        {
+          "wordId": "ringo",
+          "matchType": "head",
+          "displayedReading": "りんご",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "ryouri",
+          "matchType": "head_extension",
+          "displayedReading": "りょうり",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": false,
+          "eligibleForWordHeadQuestion": true,
+          "note": "先辨認第一個假名字形；第一拍有小字組合，不拿整詞第一拍考單獨基本音。"
         }
       ]
     },
@@ -2363,6 +4223,30 @@
           "wordId": "remote",
           "matchType": "head",
           "displayedReading": "リモコン",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "rippu",
+          "matchType": "head",
+          "displayedReading": "リップ",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "riidaa",
+          "matchType": "head",
+          "displayedReading": "リーダー",
           "targetSpan": {
             "start": 0,
             "end": 1
@@ -2392,6 +4276,18 @@
           "eligibleForAudioHead": true,
           "eligibleForWordHeadQuestion": true,
           "note": ""
+        },
+        {
+          "wordId": "rusuban",
+          "matchType": "head",
+          "displayedReading": "るすばん",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
         }
       ]
     },
@@ -2414,6 +4310,30 @@
           "eligibleForAudioHead": true,
           "eligibleForWordHeadQuestion": true,
           "note": ""
+        },
+        {
+          "wordId": "ruuru",
+          "matchType": "head",
+          "displayedReading": "ルール",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "ruuto",
+          "matchType": "head",
+          "displayedReading": "ルート",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
         }
       ]
     },
@@ -2429,6 +4349,30 @@
           "wordId": "renshuu",
           "matchType": "head",
           "displayedReading": "れんしゅう",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "renraku",
+          "matchType": "head",
+          "displayedReading": "れんらく",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "reizouko",
+          "matchType": "head",
+          "displayedReading": "れいぞうこ",
           "targetSpan": {
             "start": 0,
             "end": 1
@@ -2470,6 +4414,30 @@
           "eligibleForAudioHead": true,
           "eligibleForWordHeadQuestion": true,
           "note": ""
+        },
+        {
+          "wordId": "resutoran",
+          "matchType": "head",
+          "displayedReading": "レストラン",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "reji",
+          "matchType": "head",
+          "displayedReading": "レジ",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
         }
       ]
     },
@@ -2492,6 +4460,30 @@
           "eligibleForAudioHead": true,
           "eligibleForWordHeadQuestion": true,
           "note": ""
+        },
+        {
+          "wordId": "rouka",
+          "matchType": "head",
+          "displayedReading": "ろうか",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "rokugatsu",
+          "matchType": "head",
+          "displayedReading": "ろくがつ",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
         }
       ]
     },
@@ -2507,6 +4499,30 @@
           "wordId": "lobby",
           "matchType": "head",
           "displayedReading": "ロビー",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "rokkaa",
+          "matchType": "head",
+          "displayedReading": "ロッカー",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "roomaji",
+          "matchType": "head",
+          "displayedReading": "ローマじ",
           "targetSpan": {
             "start": 0,
             "end": 1
@@ -2548,6 +4564,30 @@
           "eligibleForAudioHead": true,
           "eligibleForWordHeadQuestion": true,
           "note": ""
+        },
+        {
+          "wordId": "watashi",
+          "matchType": "head",
+          "displayedReading": "わたし",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "warui",
+          "matchType": "head",
+          "displayedReading": "わるい",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
         }
       ]
     },
@@ -2582,6 +4622,30 @@
           "eligibleForAudioHead": true,
           "eligibleForWordHeadQuestion": true,
           "note": ""
+        },
+        {
+          "wordId": "waishatsu",
+          "matchType": "head",
+          "displayedReading": "ワイシャツ",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "waifai",
+          "matchType": "head",
+          "displayedReading": "ワイファイ",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
         }
       ]
     },
@@ -2600,6 +4664,30 @@
           "targetSpan": {
             "start": 2,
             "end": 3
+          },
+          "eligibleForAudioHead": false,
+          "eligibleForWordHeadQuestion": false,
+          "note": ""
+        },
+        {
+          "wordId": "korewo",
+          "matchType": "particle_context",
+          "displayedReading": "これをください",
+          "targetSpan": {
+            "start": 2,
+            "end": 3
+          },
+          "eligibleForAudioHead": false,
+          "eligibleForWordHeadQuestion": false,
+          "note": ""
+        },
+        {
+          "wordId": "shashinwo",
+          "matchType": "particle_context",
+          "displayedReading": "しゃしんをとります",
+          "targetSpan": {
+            "start": 4,
+            "end": 5
           },
           "eligibleForAudioHead": false,
           "eligibleForWordHeadQuestion": false,
@@ -2647,6 +4735,30 @@
           "eligibleForAudioHead": false,
           "eligibleForWordHeadQuestion": false,
           "note": ""
+        },
+        {
+          "wordId": "jikan",
+          "matchType": "contains_n",
+          "displayedReading": "じかん",
+          "targetSpan": {
+            "start": 2,
+            "end": 3
+          },
+          "eligibleForAudioHead": false,
+          "eligibleForWordHeadQuestion": false,
+          "note": ""
+        },
+        {
+          "wordId": "tenin",
+          "matchType": "contains_n",
+          "displayedReading": "てんいん",
+          "targetSpan": {
+            "start": 1,
+            "end": 2
+          },
+          "eligibleForAudioHead": false,
+          "eligibleForWordHeadQuestion": false,
+          "note": ""
         }
       ]
     },
@@ -2677,6 +4789,30 @@
           "targetSpan": {
             "start": 1,
             "end": 2
+          },
+          "eligibleForAudioHead": false,
+          "eligibleForWordHeadQuestion": false,
+          "note": ""
+        },
+        {
+          "wordId": "pen",
+          "matchType": "contains_n",
+          "displayedReading": "ペン",
+          "targetSpan": {
+            "start": 1,
+            "end": 2
+          },
+          "eligibleForAudioHead": false,
+          "eligibleForWordHeadQuestion": false,
+          "note": ""
+        },
+        {
+          "wordId": "botan",
+          "matchType": "contains_n",
+          "displayedReading": "ボタン",
+          "targetSpan": {
+            "start": 2,
+            "end": 3
           },
           "eligibleForAudioHead": false,
           "eligibleForWordHeadQuestion": false,

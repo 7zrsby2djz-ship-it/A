@@ -2,16 +2,21 @@ from playwright.sync_api import sync_playwright
 import json
 import os
 URL='file://'+os.path.abspath(os.path.join(os.path.dirname(__file__),'..','index.html'))
-SPY="""window.__spoken=[]; window.__mode='ok'; window.__pending=[];
+SPY="""window.__spoken=[]; window.__recorded=[]; window.__mode='ok'; window.__pending=[];
 if(window.speechSynthesis){ speechSynthesis.getVoices=()=>[{lang:'ja-JP',name:'Kyoko',voiceURI:'k'}];
  speechSynthesis.speak=(u)=>{window.__spoken.push(u.text+'@'+u.rate); const m=window.__mode;
   if(m==='ok') setTimeout(()=>u.onend&&u.onend(),20); else if(m==='error') setTimeout(()=>u.onerror&&u.onerror({error:'synthesis-failed'}),20); else window.__pending.push(u); };
- speechSynthesis.cancel=()=>{}; }"""
+ speechSynthesis.cancel=()=>{}; }
+window.Audio=class { constructor(src){this.src=src;this.currentTime=0;}
+ play(){const id=Object.entries(window.KANA_REBUILD_AUDIO.clips).find(x=>x[1]===this.src)[0];window.__recorded.push(id+'@'+this.playbackRate);this.onend=this.onended;
+  if(window.__mode==='ok')setTimeout(()=>this.onended&&this.onended(),20);else if(window.__mode==='error')setTimeout(()=>this.onerror&&this.onerror(),20);else window.__pending.push(this);return Promise.resolve();}
+ pause(){} };"""
 errs=[]; R={}
 def ck(name, cond, info=''):
     R[name]=bool(cond); print(('PASS ' if cond else 'FAIL ')+name, info if not cond else '')
 with sync_playwright() as p:
-    b=p.chromium.launch()
+    b=p.chromium.launch(executable_path=os.environ.get('KANA_CHROMIUM_PATH') or None,
+                       args=['--no-sandbox','--disable-dev-shm-usage'] if os.environ.get('KANA_CHROMIUM_PATH') else [])
     def ctx(w=390, dark=False, init=SPY, state=None):
         c=b.new_context(viewport={'width':w,'height':844},device_scale_factor=2,is_mobile=True,has_touch=True,color_scheme='dark' if dark else 'light')
         c.add_init_script(init); pg=c.new_page(); pg.on('pageerror',lambda e: errs.append(str(e))); pg.goto(URL); pg.wait_for_timeout(200)
@@ -32,7 +37,7 @@ with sync_playwright() as p:
     ck('e card shows 駅 えき 車站', '駅' in t and '車站' in t and pg.evaluate("document.querySelector('#kn .khl').textContent")=='え')
     ck('no romaji before peek', ' e' not in pg.evaluate("document.querySelector('#kn .kcard .small.muted').textContent"))
     pg.click('#kn [data-k=sayKana]'); pg.click('#kn [data-k=sayWord]'); pg.wait_for_timeout(100)
-    sp=pg.evaluate("__spoken.slice(-2)"); ck('speak kana then word reading', sp[0].startswith('え@') and sp[1].startswith('えき@'), sp)
+    sp=pg.evaluate("__spoken"); recorded=pg.evaluate("__recorded"); ck('recorded kana then TTS word reading', recorded[-1]=='e@1' and sp[-1].startswith('えき@') and not any(x.startswith('え@') for x in sp), (recorded,sp))
     pg.click('#kn [data-k=peek]'); ck('peek shows romaji', 'e' in pg.evaluate("document.querySelector('#kn .kcard .small.muted').textContent"))
     pg.click('#kn .ov-foot [data-k=open]:last-child'); pg.wait_for_timeout(100)
     ck('peek cleared on next card', pg.evaluate("KG.peek")==False and pg.evaluate("KG.key")=='hira:o')
@@ -71,7 +76,7 @@ with sync_playwright() as p:
     pg.evaluate("knAnswer(knCur().key)"); ck('blocked before play', pg.evaluate("knSt().active.ans[knSt().active.i]") is None)
     # error playback
     pg.evaluate("__mode='error'"); pg.click('#kn [data-k=play]'); pg.wait_for_timeout(100)
-    ck('error shows retry', '再試一次' in pg.inner_text('#kn') and pg.evaluate("KG.play.fail")=='synthesis-failed')
+    ck('error shows retry', '再試一次' in pg.inner_text('#kn') and pg.evaluate("KG.play.fail")=='recording')
     pg.evaluate("knAnswer(knCur().key)"); ck('still blocked after error', pg.evaluate("knSt().active.ans[knSt().active.i]") is None)
     pg.screenshot(path='/tmp/kana-shot-k_err.png')
     # hang + late onend after moving on
@@ -154,3 +159,5 @@ with sync_playwright() as p:
             if w==390 and dark: pg.screenshot(path='/tmp/kana-shot-k_home_dark.png')
             c.close()
 print('ERR', errs); print('FAILED', [k for k,v in R.items() if not v])
+if errs or not all(R.values()):
+    raise SystemExit(1)
