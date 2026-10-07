@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "preparedOn": "2026-10-07",
+  "app": {
+    "repository": "7zrsby2djz-ship-it/A",
+    "commit": "c762de7fdf3a7988a3ede835852a10ca400e5da9",
+    "files": {
+      "src/data_jp.js": "9f200ded7c6e8380288fd2e179c19fdf1e92f412f620634205f36505805ba04f",
+      "src/data_tasks.js": "b2701caf5d97094cdd55082d9b94e8ea54763ddc0a46a62852abed7aa1a8ef1c",
+      "src/data_life.js": "42e38931a781c8cd01fe668b00f8a37ee1c2a18f2723d3f8d4f862d19e76b504",
+      "src/data_game.js": "039dfa3e09ac6b1d9d4b40aa1c40b3ebed37d5ae0e52a4d733824056e5603000",
+      "listening-jp/src/data.js": "100226f13393b0f4a9c3139439e6ea42b55e5ea337cc298aeb0a34b368fab11b"
+    }
+  },
+  "personalVocabulary": {
+    "status": "not_in_public_package",
+    "extractedCount": 0,
+    "fullPersonalListAvailable": false,
+    "importIntegrationStatus": "planned"
+  },
+  "openjlpt": {
+    "repository": "evanclan/OpenJLPT",
+    "commit": "0d1d3410bec90bd4098a7c72de820543cb4f707c",
+    "license": "CC-BY-SA-4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "counts": {
+      "N5": 674,
+      "N4": 630,
+      "N3": 1659
+    },
+    "use": "optional_expansion_and_approximate_level_metadata",
+    "meaningsLanguage": "en",
+    "zhReviewed": false
+  }
+}

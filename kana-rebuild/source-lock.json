@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "preparedOn": "2026-10-07",
+  "appRepository": "7zrsby2djz-ship-it/A",
+  "appCommit": "c762de7fdf3a7988a3ede835852a10ca400e5da9",
+  "appFiles": {
+    "src/data_jp.js": "9f200ded7c6e8380288fd2e179c19fdf1e92f412f620634205f36505805ba04f",
+    "src/data_tasks.js": "b2701caf5d97094cdd55082d9b94e8ea54763ddc0a46a62852abed7aa1a8ef1c",
+    "src/data_life.js": "42e38931a781c8cd01fe668b00f8a37ee1c2a18f2723d3f8d4f862d19e76b504",
+    "src/data_game.js": "039dfa3e09ac6b1d9d4b40aa1c40b3ebed37d5ae0e52a4d733824056e5603000",
+    "listening-jp/src/data.js": "100226f13393b0f4a9c3139439e6ea42b55e5ea337cc298aeb0a34b368fab11b"
+  },
+  "openjlpt": {
+    "repository": "evanclan/OpenJLPT",
+    "commit": "0d1d3410bec90bd4098a7c72de820543cb4f707c",
+    "files": {
+      "vendor/openjlpt/n5.json": "cbb221c9a3a92108fcd02fb088d9afacc70bc8c96570d5730425de0a49dad5f3",
+      "vendor/openjlpt/n4.json": "b38512a6dc1e06a3615f377b3e58184c4a85b6f769c2e3f58f2a4ef0e1810927",
+      "vendor/openjlpt/n3.json": "17ca6bcbba9d212c3c9d38c38cecc2adef0fd8718cb7157bb48dd9d3a1724948"
+    }
+  }
+}

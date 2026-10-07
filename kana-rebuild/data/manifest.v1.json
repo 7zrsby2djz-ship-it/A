@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "preparedOn": "2026-10-07",
+  "kanaPairs": 46,
+  "scriptCells": 92,
+  "trainableCells": 91,
+  "curatedWords": 146,
+  "anchorReferences": 147,
+  "appCorpusEntries": 732,
+  "appBreakdown": {
+    "legacyBlocks": 79,
+    "chunks": 584,
+    "oralPhrases": 48,
+    "generalGlossary": 21
+  },
+  "appTasks": 9,
+  "personalWordsIncluded": 0,
+  "openjlptWords": 2963,
+  "openjlptCounts": {
+    "N5": 674,
+    "N4": 630,
+    "N3": 1659
+  },
+  "corpusRequiringReadingReview": 74,
+  "runtimeIncludesOpenjlptFullLists": false,
+  "runtimeFile": "generated/kana-data.js"
+}

@@ -4,6 +4,12 @@
 - **英文**：看懂 Claude／AI 工具介面上的英文（按鈕、權限、錯誤訊息），重點是相似字比較、貼上查字。
 - **日文**：去日本獨旅時能**把一段對話走完**——先開口，聽懂日本人的自然回答，卡住時知道怎麼問下去。
 
+## 五十音重建：資料包與 Claude 施工交接
+
+[Claude 從這裡開始](START_HERE_五十音給Claude.md) · [給使用者的閱讀版](kana-rebuild/READING_VERSION.md) · [正式施工企劃](kana-rebuild/CLAUDE_IMPLEMENTATION_PLAN.md) · [資料包](kana-rebuild/README.md)
+
+已備妥同 App 五十音模組的 46 組平片假名、146 個起步詞、732 筆現有教材來源與 2,963 筆 N5～N3 擴充詞。羅馬拼音預設隱藏，依讀音分類，使用熟悉單字建立字形與聲音連結；UI 尚未施工。資料驗證：`node kana-rebuild/tools/validate.cjs`。Claude 已獲授權依企劃直接實作、整合、測試與建置。
+
 ## 同 App 的「口語聽力」分頁
 
 [完整 App](index.html) · [口語教材與開發說明](listening-jp/README.md)

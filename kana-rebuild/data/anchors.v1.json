@@ -1,0 +1,2688 @@
+{
+  "schemaVersion": 1,
+  "anchors": [
+    {
+      "key": "hira:a",
+      "kanaId": "a",
+      "script": "hira",
+      "glyph": "あ",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "arigatou",
+          "matchType": "head",
+          "displayedReading": "ありがとう",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "asa",
+          "matchType": "head",
+          "displayedReading": "あさ",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "kata:a",
+      "kanaId": "a",
+      "script": "kata",
+      "glyph": "ア",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "ice",
+          "matchType": "head",
+          "displayedReading": "アイス",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "hira:i",
+      "kanaId": "i",
+      "script": "hira",
+      "glyph": "い",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "ikitai",
+          "matchType": "head",
+          "displayedReading": "いきたい",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "iie",
+          "matchType": "head",
+          "displayedReading": "いいえ",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "kata:i",
+      "kanaId": "i",
+      "script": "kata",
+      "glyph": "イ",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "iyahon",
+          "matchType": "head",
+          "displayedReading": "イヤホン",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "internet",
+          "matchType": "head",
+          "displayedReading": "インターネット",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "hira:u",
+      "kanaId": "u",
+      "script": "hira",
+      "glyph": "う",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "ue",
+          "matchType": "head",
+          "displayedReading": "うえ",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "umi",
+          "matchType": "head",
+          "displayedReading": "うみ",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "kata:u",
+      "kanaId": "u",
+      "script": "kata",
+      "glyph": "ウ",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "oolong",
+          "matchType": "head",
+          "displayedReading": "ウーロンちゃ",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "hira:e",
+      "kanaId": "e",
+      "script": "hira",
+      "glyph": "え",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "eki",
+          "matchType": "head",
+          "displayedReading": "えき",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "eiga",
+          "matchType": "head",
+          "displayedReading": "えいが",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "kata:e",
+      "kanaId": "e",
+      "script": "kata",
+      "glyph": "エ",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "aircon",
+          "matchType": "head",
+          "displayedReading": "エアコン",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "hira:o",
+      "kanaId": "o",
+      "script": "hira",
+      "glyph": "お",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "okaikei",
+          "matchType": "head",
+          "displayedReading": "おかいけい",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "omoi",
+          "matchType": "head",
+          "displayedReading": "おもい",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "kata:o",
+      "kanaId": "o",
+      "script": "kata",
+      "glyph": "オ",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "orange",
+          "matchType": "head",
+          "displayedReading": "オレンジ",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "hira:ka",
+      "kanaId": "ka",
+      "script": "hira",
+      "glyph": "か",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "kankou",
+          "matchType": "head",
+          "displayedReading": "かんこう",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "kaimono",
+          "matchType": "head",
+          "displayedReading": "かいもの",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "kata:ka",
+      "kanaId": "ka",
+      "script": "kata",
+      "glyph": "カ",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "card",
+          "matchType": "head",
+          "displayedReading": "カード",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "hira:ki",
+      "kanaId": "ki",
+      "script": "hira",
+      "glyph": "き",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "kippu",
+          "matchType": "head",
+          "displayedReading": "きっぷ",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "kita",
+          "matchType": "head",
+          "displayedReading": "きた",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "kata:ki",
+      "kanaId": "ki",
+      "script": "kata",
+      "glyph": "キ",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "keyboard",
+          "matchType": "head",
+          "displayedReading": "キーボード",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "key",
+          "matchType": "head",
+          "displayedReading": "キー",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "hira:ku",
+      "kanaId": "ku",
+      "script": "hira",
+      "glyph": "く",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "kudasai",
+          "matchType": "head",
+          "displayedReading": "ください",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "kutsu",
+          "matchType": "head",
+          "displayedReading": "くつ",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "kata:ku",
+      "kanaId": "ku",
+      "script": "kata",
+      "glyph": "ク",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "creditcard",
+          "matchType": "head",
+          "displayedReading": "クレジットカード",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "class",
+          "matchType": "head",
+          "displayedReading": "クラス",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "hira:ke",
+      "kanaId": "ke",
+      "script": "hira",
+      "glyph": "け",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "keitai",
+          "matchType": "head",
+          "displayedReading": "けいたい",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "kekkou",
+          "matchType": "head",
+          "displayedReading": "けっこうです",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "kata:ke",
+      "kanaId": "ke",
+      "script": "kata",
+      "glyph": "ケ",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "cable",
+          "matchType": "head",
+          "displayedReading": "ケーブル",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "cake",
+          "matchType": "head",
+          "displayedReading": "ケーキ",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "hira:ko",
+      "kanaId": "ko",
+      "script": "hira",
+      "glyph": "こ",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "kore",
+          "matchType": "head",
+          "displayedReading": "これ",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "koko",
+          "matchType": "head",
+          "displayedReading": "ここ",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "kata:ko",
+      "kanaId": "ko",
+      "script": "kata",
+      "glyph": "コ",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "konbini",
+          "matchType": "head",
+          "displayedReading": "コンビニ",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "coffee",
+          "matchType": "head",
+          "displayedReading": "コーヒー",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "hira:sa",
+      "kanaId": "sa",
+      "script": "hira",
+      "glyph": "さ",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "sake",
+          "matchType": "head",
+          "displayedReading": "さけ",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "sakana",
+          "matchType": "head",
+          "displayedReading": "さかな",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "kata:sa",
+      "kanaId": "sa",
+      "script": "kata",
+      "glyph": "サ",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "size",
+          "matchType": "head",
+          "displayedReading": "サイズ",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "salad",
+          "matchType": "head",
+          "displayedReading": "サラダ",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "hira:shi",
+      "kanaId": "shi",
+      "script": "hira",
+      "glyph": "し",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "shigoto",
+          "matchType": "head",
+          "displayedReading": "しごと",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "shio",
+          "matchType": "head",
+          "displayedReading": "しお",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "kata:shi",
+      "kanaId": "shi",
+      "script": "kata",
+      "glyph": "シ",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "seat",
+          "matchType": "head",
+          "displayedReading": "シート",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "single",
+          "matchType": "head",
+          "displayedReading": "シングル",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "hira:su",
+      "kanaId": "su",
+      "script": "hira",
+      "glyph": "す",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "sumimasen",
+          "matchType": "head",
+          "displayedReading": "すみません",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "suki",
+          "matchType": "head",
+          "displayedReading": "すき",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "kata:su",
+      "kanaId": "su",
+      "script": "kata",
+      "glyph": "ス",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "soup",
+          "matchType": "head",
+          "displayedReading": "スープ",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "supermarket",
+          "matchType": "head",
+          "displayedReading": "スーパー",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "hira:se",
+      "kanaId": "se",
+      "script": "hira",
+      "glyph": "せ",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "sentakuki",
+          "matchType": "head",
+          "displayedReading": "せんたくき",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "seki",
+          "matchType": "head",
+          "displayedReading": "せき",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "kata:se",
+      "kanaId": "se",
+      "script": "kata",
+      "glyph": "セ",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "set",
+          "matchType": "head",
+          "displayedReading": "セット",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "hira:so",
+      "kanaId": "so",
+      "script": "hira",
+      "glyph": "そ",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "sore",
+          "matchType": "head",
+          "displayedReading": "それ",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "soto",
+          "matchType": "head",
+          "displayedReading": "そと",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "kata:so",
+      "kanaId": "so",
+      "script": "kata",
+      "glyph": "ソ",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "sofa",
+          "matchType": "head",
+          "displayedReading": "ソファ",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "hira:ta",
+      "kanaId": "ta",
+      "script": "hira",
+      "glyph": "た",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "taiwan",
+          "matchType": "head",
+          "displayedReading": "たいわん",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "taberu",
+          "matchType": "head",
+          "displayedReading": "たべる",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "kata:ta",
+      "kanaId": "ta",
+      "script": "kata",
+      "glyph": "タ",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "taxi",
+          "matchType": "head",
+          "displayedReading": "タクシー",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "towel",
+          "matchType": "head",
+          "displayedReading": "タオル",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "hira:chi",
+      "kanaId": "chi",
+      "script": "hira",
+      "glyph": "ち",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "chizu",
+          "matchType": "head",
+          "displayedReading": "ちず",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "chikatetsu",
+          "matchType": "head",
+          "displayedReading": "ちかてつ",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "kata:chi",
+      "kanaId": "chi",
+      "script": "kata",
+      "glyph": "チ",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "ticket",
+          "matchType": "head",
+          "displayedReading": "チケット",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "cheese",
+          "matchType": "head",
+          "displayedReading": "チーズ",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "hira:tsu",
+      "kanaId": "tsu",
+      "script": "hira",
+      "glyph": "つ",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "tsugi",
+          "matchType": "head",
+          "displayedReading": "つぎ",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "tsumetai",
+          "matchType": "head",
+          "displayedReading": "つめたい",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "kata:tsu",
+      "kanaId": "tsu",
+      "script": "kata",
+      "glyph": "ツ",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "tour",
+          "matchType": "head",
+          "displayedReading": "ツアー",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "hira:te",
+      "kanaId": "te",
+      "script": "hira",
+      "glyph": "て",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "te",
+          "matchType": "head",
+          "displayedReading": "て",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "tenki",
+          "matchType": "head",
+          "displayedReading": "てんき",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "kata:te",
+      "kanaId": "te",
+      "script": "kata",
+      "glyph": "テ",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "tv",
+          "matchType": "head",
+          "displayedReading": "テレビ",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "table",
+          "matchType": "head",
+          "displayedReading": "テーブル",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "hira:to",
+      "kanaId": "to",
+      "script": "hira",
+      "glyph": "と",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "tomarimasu",
+          "matchType": "head",
+          "displayedReading": "とまります",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "tomodachi",
+          "matchType": "head",
+          "displayedReading": "ともだち",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "kata:to",
+      "kanaId": "to",
+      "script": "kata",
+      "glyph": "ト",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "toire",
+          "matchType": "head",
+          "displayedReading": "トイレ",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "toast",
+          "matchType": "head",
+          "displayedReading": "トースト",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "hira:na",
+      "kanaId": "na",
+      "script": "hira",
+      "glyph": "な",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "namae",
+          "matchType": "head",
+          "displayedReading": "なまえ",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "nani",
+          "matchType": "head",
+          "displayedReading": "なに",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "kata:na",
+      "kanaId": "na",
+      "script": "kata",
+      "glyph": "ナ",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "knife",
+          "matchType": "head",
+          "displayedReading": "ナイフ",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "hira:ni",
+      "kanaId": "ni",
+      "script": "hira",
+      "glyph": "に",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "nihon",
+          "matchType": "head",
+          "displayedReading": "にほん",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "niku",
+          "matchType": "head",
+          "displayedReading": "にく",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "kata:ni",
+      "kanaId": "ni",
+      "script": "kata",
+      "glyph": "ニ",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "knit",
+          "matchType": "head",
+          "displayedReading": "ニット",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "hira:nu",
+      "kanaId": "nu",
+      "script": "hira",
+      "glyph": "ぬ",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "nugu",
+          "matchType": "head",
+          "displayedReading": "ぬぐ",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "nuno",
+          "matchType": "head",
+          "displayedReading": "ぬの",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "kata:nu",
+      "kanaId": "nu",
+      "script": "kata",
+      "glyph": "ヌ",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "noodle",
+          "matchType": "head",
+          "displayedReading": "ヌードル",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "hira:ne",
+      "kanaId": "ne",
+      "script": "hira",
+      "glyph": "ね",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "neru",
+          "matchType": "head",
+          "displayedReading": "ねる",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "neko",
+          "matchType": "head",
+          "displayedReading": "ねこ",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "kata:ne",
+      "kanaId": "ne",
+      "script": "kata",
+      "glyph": "ネ",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "net",
+          "matchType": "head",
+          "displayedReading": "ネット",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "hira:no",
+      "kanaId": "no",
+      "script": "hira",
+      "glyph": "の",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "norimasu",
+          "matchType": "head",
+          "displayedReading": "のります",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "nomu",
+          "matchType": "head",
+          "displayedReading": "のむ",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "kata:no",
+      "kanaId": "no",
+      "script": "kata",
+      "glyph": "ノ",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "notebook",
+          "matchType": "head",
+          "displayedReading": "ノート",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "hira:ha",
+      "kanaId": "ha",
+      "script": "hira",
+      "glyph": "は",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "hai",
+          "matchType": "head",
+          "displayedReading": "はい",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "hashi",
+          "matchType": "head",
+          "displayedReading": "はし",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "kata:ha",
+      "kanaId": "ha",
+      "script": "kata",
+      "glyph": "ハ",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "hamburger",
+          "matchType": "head",
+          "displayedReading": "ハンバーガー",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "hira:hi",
+      "kanaId": "hi",
+      "script": "hira",
+      "glyph": "ひ",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "hidari",
+          "matchType": "head",
+          "displayedReading": "ひだり",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "hitori",
+          "matchType": "head",
+          "displayedReading": "ひとり",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "kata:hi",
+      "kanaId": "hi",
+      "script": "kata",
+      "glyph": "ヒ",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "heater",
+          "matchType": "head",
+          "displayedReading": "ヒーター",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "hira:fu",
+      "kanaId": "fu",
+      "script": "hira",
+      "glyph": "ふ",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "fukuro",
+          "matchType": "head",
+          "displayedReading": "ふくろ",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "futari",
+          "matchType": "head",
+          "displayedReading": "ふたり",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "kata:fu",
+      "kanaId": "fu",
+      "script": "kata",
+      "glyph": "フ",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "front",
+          "matchType": "head",
+          "displayedReading": "フロント",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "flight",
+          "matchType": "head",
+          "displayedReading": "フライト",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "hira:he",
+      "kanaId": "he",
+      "script": "hira",
+      "glyph": "へ",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "heya",
+          "matchType": "head",
+          "displayedReading": "へや",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "kata:he",
+      "kanaId": "he",
+      "script": "kata",
+      "glyph": "ヘ",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "helmet",
+          "matchType": "head",
+          "displayedReading": "ヘルメット",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "hira:ho",
+      "kanaId": "ho",
+      "script": "hira",
+      "glyph": "ほ",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "hon",
+          "matchType": "head",
+          "displayedReading": "ほん",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "hontou",
+          "matchType": "head",
+          "displayedReading": "ほんとう",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "kata:ho",
+      "kanaId": "ho",
+      "script": "kata",
+      "glyph": "ホ",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "hotel",
+          "matchType": "head",
+          "displayedReading": "ホテル",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "hira:ma",
+      "kanaId": "ma",
+      "script": "hira",
+      "glyph": "ま",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "matte",
+          "matchType": "head",
+          "displayedReading": "まって",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "mata",
+          "matchType": "head",
+          "displayedReading": "また",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "kata:ma",
+      "kanaId": "ma",
+      "script": "kata",
+      "glyph": "マ",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "mask",
+          "matchType": "head",
+          "displayedReading": "マスク",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "hira:mi",
+      "kanaId": "mi",
+      "script": "hira",
+      "glyph": "み",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "mizu",
+          "matchType": "head",
+          "displayedReading": "みず",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "migi",
+          "matchType": "head",
+          "displayedReading": "みぎ",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "kata:mi",
+      "kanaId": "mi",
+      "script": "kata",
+      "glyph": "ミ",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "milk",
+          "matchType": "head",
+          "displayedReading": "ミルク",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "hira:mu",
+      "kanaId": "mu",
+      "script": "hira",
+      "glyph": "む",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "mukou",
+          "matchType": "head",
+          "displayedReading": "むこう",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "muzukashii",
+          "matchType": "head",
+          "displayedReading": "むずかしい",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "kata:mu",
+      "kanaId": "mu",
+      "script": "kata",
+      "glyph": "ム",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "ham",
+          "matchType": "contains_rare_katakana",
+          "displayedReading": "ハム",
+          "targetSpan": {
+            "start": 1,
+            "end": 2
+          },
+          "eligibleForAudioHead": false,
+          "eligibleForWordHeadQuestion": false,
+          "note": "ム 用 ハム 的字中位置；題目問「找出 ム」，不問第一個音。"
+        }
+      ]
+    },
+    {
+      "key": "hira:me",
+      "kanaId": "me",
+      "script": "hira",
+      "glyph": "め",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "me",
+          "matchType": "head",
+          "displayedReading": "め",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "kata:me",
+      "kanaId": "me",
+      "script": "kata",
+      "glyph": "メ",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "menu",
+          "matchType": "head",
+          "displayedReading": "メニュー",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "hira:mo",
+      "kanaId": "mo",
+      "script": "hira",
+      "glyph": "も",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "mouichido",
+          "matchType": "head",
+          "displayedReading": "もういちど",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "motsu",
+          "matchType": "head",
+          "displayedReading": "もつ",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "kata:mo",
+      "kanaId": "mo",
+      "script": "kata",
+      "glyph": "モ",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "mobile",
+          "matchType": "head",
+          "displayedReading": "モバイル",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "hira:ya",
+      "kanaId": "ya",
+      "script": "hira",
+      "glyph": "や",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "yasui",
+          "matchType": "head",
+          "displayedReading": "やすい",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "yakitori",
+          "matchType": "head",
+          "displayedReading": "やきとり",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "kata:ya",
+      "kanaId": "ya",
+      "script": "kata",
+      "glyph": "ヤ",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "yakult",
+          "matchType": "head",
+          "displayedReading": "ヤクルト",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "hira:yu",
+      "kanaId": "yu",
+      "script": "hira",
+      "glyph": "ゆ",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "yukkuri",
+          "matchType": "head",
+          "displayedReading": "ゆっくり",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "yuugata",
+          "matchType": "head",
+          "displayedReading": "ゆうがた",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "kata:yu",
+      "kanaId": "yu",
+      "script": "kata",
+      "glyph": "ユ",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "uniqlo",
+          "matchType": "head",
+          "displayedReading": "ユニクロ",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "hira:yo",
+      "kanaId": "yo",
+      "script": "hira",
+      "glyph": "よ",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "yoroshiku",
+          "matchType": "head",
+          "displayedReading": "よろしく",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "yoru",
+          "matchType": "head",
+          "displayedReading": "よる",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "kata:yo",
+      "kanaId": "yo",
+      "script": "kata",
+      "glyph": "ヨ",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "yogurt",
+          "matchType": "head",
+          "displayedReading": "ヨーグルト",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "hira:ra",
+      "kanaId": "ra",
+      "script": "hira",
+      "glyph": "ら",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "raishuu",
+          "matchType": "head",
+          "displayedReading": "らいしゅう",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "rainen",
+          "matchType": "head",
+          "displayedReading": "らいねん",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "kata:ra",
+      "kanaId": "ra",
+      "script": "kata",
+      "glyph": "ラ",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "ramen",
+          "matchType": "head",
+          "displayedReading": "ラーメン",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "hira:ri",
+      "kanaId": "ri",
+      "script": "hira",
+      "glyph": "り",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "rikai",
+          "matchType": "head",
+          "displayedReading": "りかい",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "ryokou",
+          "matchType": "head_extension",
+          "displayedReading": "りょこう",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": false,
+          "eligibleForWordHeadQuestion": true,
+          "note": "先辨認第一個假名字形；第一拍有小字組合，不拿整詞第一拍考單獨基本音。"
+        }
+      ]
+    },
+    {
+      "key": "kata:ri",
+      "kanaId": "ri",
+      "script": "kata",
+      "glyph": "リ",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "remote",
+          "matchType": "head",
+          "displayedReading": "リモコン",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "hira:ru",
+      "kanaId": "ru",
+      "script": "hira",
+      "glyph": "る",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "rusu",
+          "matchType": "head",
+          "displayedReading": "るす",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "kata:ru",
+      "kanaId": "ru",
+      "script": "kata",
+      "glyph": "ル",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "roomkey",
+          "matchType": "head",
+          "displayedReading": "ルームキー",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "hira:re",
+      "kanaId": "re",
+      "script": "hira",
+      "glyph": "れ",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "renshuu",
+          "matchType": "head",
+          "displayedReading": "れんしゅう",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "kata:re",
+      "kanaId": "re",
+      "script": "kata",
+      "glyph": "レ",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "receipt",
+          "matchType": "head",
+          "displayedReading": "レシート",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "regibag",
+          "matchType": "head",
+          "displayedReading": "レジぶくろ",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "hira:ro",
+      "kanaId": "ro",
+      "script": "hira",
+      "glyph": "ろ",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "roku",
+          "matchType": "head",
+          "displayedReading": "ろく",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "kata:ro",
+      "kanaId": "ro",
+      "script": "kata",
+      "glyph": "ロ",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "lobby",
+          "matchType": "head",
+          "displayedReading": "ロビー",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "hira:wa",
+      "kanaId": "wa",
+      "script": "hira",
+      "glyph": "わ",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "wakaru",
+          "matchType": "head",
+          "displayedReading": "わかる",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "wakarimashita",
+          "matchType": "head",
+          "displayedReading": "わかりました",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "kata:wa",
+      "kanaId": "wa",
+      "script": "kata",
+      "glyph": "ワ",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "wireless",
+          "matchType": "head",
+          "displayedReading": "ワイヤレス",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        },
+        {
+          "wordId": "wine",
+          "matchType": "head",
+          "displayedReading": "ワイン",
+          "targetSpan": {
+            "start": 0,
+            "end": 1
+          },
+          "eligibleForAudioHead": true,
+          "eligibleForWordHeadQuestion": true,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "hira:wo",
+      "kanaId": "wo",
+      "script": "hira",
+      "glyph": "を",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "mizuwo",
+          "matchType": "particle_context",
+          "displayedReading": "みずをください",
+          "targetSpan": {
+            "start": 2,
+            "end": 3
+          },
+          "eligibleForAudioHead": false,
+          "eligibleForWordHeadQuestion": false,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "kata:wo",
+      "kanaId": "wo",
+      "script": "kata",
+      "glyph": "ヲ",
+      "status": "reference_only",
+      "linkedSpecial": "hira:wo",
+      "wordRefs": []
+    },
+    {
+      "key": "hira:n",
+      "kanaId": "n",
+      "script": "hira",
+      "glyph": "ん",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "hon",
+          "matchType": "contains_n",
+          "displayedReading": "ほん",
+          "targetSpan": {
+            "start": 1,
+            "end": 2
+          },
+          "eligibleForAudioHead": false,
+          "eligibleForWordHeadQuestion": false,
+          "note": ""
+        },
+        {
+          "wordId": "nihon",
+          "matchType": "contains_n",
+          "displayedReading": "にほん",
+          "targetSpan": {
+            "start": 2,
+            "end": 3
+          },
+          "eligibleForAudioHead": false,
+          "eligibleForWordHeadQuestion": false,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "key": "kata:n",
+      "kanaId": "n",
+      "script": "kata",
+      "glyph": "ン",
+      "status": "trainable",
+      "linkedSpecial": null,
+      "wordRefs": [
+        {
+          "wordId": "pan",
+          "matchType": "contains_n",
+          "displayedReading": "パン",
+          "targetSpan": {
+            "start": 1,
+            "end": 2
+          },
+          "eligibleForAudioHead": false,
+          "eligibleForWordHeadQuestion": false,
+          "note": ""
+        },
+        {
+          "wordId": "konbini",
+          "matchType": "contains_n",
+          "displayedReading": "コンビニ",
+          "targetSpan": {
+            "start": 1,
+            "end": 2
+          },
+          "eligibleForAudioHead": false,
+          "eligibleForWordHeadQuestion": false,
+          "note": ""
+        }
+      ]
+    }
+  ]
+}
