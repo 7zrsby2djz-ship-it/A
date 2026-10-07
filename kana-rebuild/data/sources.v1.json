@@ -12,11 +12,20 @@
       "listening-jp/src/data.js": "100226f13393b0f4a9c3139439e6ea42b55e5ea337cc298aeb0a34b368fab11b"
     }
   },
-  "personalVocabulary": {
-    "status": "not_in_public_package",
-    "extractedCount": 0,
+  "duolingo": {
+    "acquisition": "user_uploaded_screenshots",
+    "reportedTotal": 820,
+    "reportedSection": 3,
+    "reportedUnit": 6,
+    "reportedUnitTitle": "買電子產品",
+    "extractedCount": 7,
     "fullPersonalListAvailable": false,
-    "importIntegrationStatus": "planned"
+    "exportIntegrationStatus": "not_tested_with_user_account",
+    "publicationConsent": {
+      "status": "confirmed_by_user",
+      "grantedOn": "2026-10-07",
+      "scope": "seven_visible_words_and_reported_course_progress"
+    }
   },
   "openjlpt": {
     "repository": "evanclan/OpenJLPT",

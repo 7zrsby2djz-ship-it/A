@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "acquisition": "user_uploaded_screenshots",
+  "reportedTotal": 820,
+  "reportedSection": 3,
+  "reportedUnit": 6,
+  "reportedUnitTitle": "買電子產品",
+  "extractedCount": 7,
+  "fullPersonalListAvailable": false,
+  "exportIntegrationStatus": "not_tested_with_user_account",
+  "publicationConsent": {
+    "status": "confirmed_by_user",
+    "grantedOn": "2026-10-07",
+    "scope": "seven_visible_words_and_reported_course_progress"
+  },
+  "words": [
+    {
+      "word": "レジぶくろ",
+      "reading": "レジぶくろ",
+      "meaningOriginal": "购物袋",
+      "wordId": "regibag",
+      "visibility": "full"
+    },
+    {
+      "word": "レシート",
+      "reading": "レシート",
+      "meaningOriginal": "收据",
+      "wordId": "receipt",
+      "visibility": "full"
+    },
+    {
+      "word": "でんち",
+      "reading": "でんち",
+      "meaningOriginal": "电池",
+      "wordId": "battery",
+      "visibility": "full"
+    },
+    {
+      "word": "おもい",
+      "reading": "おもい",
+      "meaningOriginal": "重",
+      "wordId": "omoi",
+      "visibility": "full"
+    },
+    {
+      "word": "グレー",
+      "reading": "グレー",
+      "meaningOriginal": "灰色",
+      "wordId": "grey",
+      "visibility": "full"
+    },
+    {
+      "word": "ケーブル",
+      "reading": "ケーブル",
+      "meaningOriginal": "电缆",
+      "wordId": "cable",
+      "visibility": "full"
+    },
+    {
+      "word": "ワイヤレス",
+      "reading": "ワイヤレス",
+      "meaningOriginal": null,
+      "wordId": "wireless",
+      "visibility": "word_only_translation_below_crop"
+    }
+  ]
+}

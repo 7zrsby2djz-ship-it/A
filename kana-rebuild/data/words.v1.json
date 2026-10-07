@@ -642,7 +642,7 @@
       "reading": "おもい",
       "romaji": "omoi",
       "meaningZh": "重的",
-      "note": "卡片保留常見漢字寫法與讀音。",
+      "note": "截圖寫作「おもい」；卡片保留常見漢字寫法與讀音。",
       "readingHiragana": "おもい",
       "firstKana": "お",
       "firstMora": "お",
@@ -658,12 +658,13 @@
       "basicHeadEligible": true,
       "provenance": [
         {
-          "type": "curated_daily_travel",
-          "relation": "editorial_supplement",
-          "date": "2026-10-07"
+          "type": "duolingo_screenshot",
+          "file": "IMG_6297(2).png",
+          "wordShown": "おもい",
+          "visibility": "full"
         }
       ],
-      "familiarityEvidence": "new_supplement",
+      "familiarityEvidence": "seen_in_duolingo_screenshot",
       "learningStatus": "not_assessed",
       "meaningReview": "editorial_zh_TW",
       "jlptApprox": "N5",
@@ -6648,12 +6649,13 @@
       "basicHeadEligible": true,
       "provenance": [
         {
-          "type": "curated_daily_travel",
-          "relation": "editorial_supplement",
-          "date": "2026-10-07"
+          "type": "duolingo_screenshot",
+          "file": "IMG_6297(2).png",
+          "wordShown": "ケーブル",
+          "visibility": "full"
         }
       ],
-      "familiarityEvidence": "new_supplement",
+      "familiarityEvidence": "seen_in_duolingo_screenshot",
       "learningStatus": "not_assessed",
       "meaningReview": "editorial_zh_TW",
       "jlptApprox": null,
@@ -8491,9 +8493,15 @@
           "ref": "B.receipt",
           "relation": "exact_form",
           "corpusId": "app-b-receipt"
+        },
+        {
+          "type": "duolingo_screenshot",
+          "file": "IMG_6297(2).png",
+          "wordShown": "レシート",
+          "visibility": "full"
         }
       ],
-      "familiarityEvidence": "present_in_existing_app",
+      "familiarityEvidence": "seen_in_duolingo_screenshot",
       "learningStatus": "not_assessed",
       "meaningReview": "editorial_zh_TW",
       "jlptApprox": null,
@@ -8508,7 +8516,7 @@
       "reading": "レジぶくろ",
       "romaji": "reji bukuro",
       "meaningZh": "購物袋",
-      "note": "保留常見漢字寫法，讀音中的片假名仍顯示片假名。",
+      "note": "截圖寫作 レジぶくろ；保留常見漢字寫法，讀音中的片假名仍顯示片假名。",
       "readingHiragana": "れじぶくろ",
       "firstKana": "れ",
       "firstMora": "れ",
@@ -8524,12 +8532,13 @@
       "basicHeadEligible": true,
       "provenance": [
         {
-          "type": "curated_daily_travel",
-          "relation": "editorial_supplement",
-          "date": "2026-10-07"
+          "type": "duolingo_screenshot",
+          "file": "IMG_6297(2).png",
+          "wordShown": "レジぶくろ",
+          "visibility": "full"
         }
       ],
-      "familiarityEvidence": "new_supplement",
+      "familiarityEvidence": "seen_in_duolingo_screenshot",
       "learningStatus": "not_assessed",
       "meaningReview": "editorial_zh_TW",
       "jlptApprox": null,
@@ -8582,7 +8591,7 @@
       "reading": "ワイヤレス",
       "romaji": "waiyaresu",
       "meaningZh": "無線的",
-      "note": "從現有 ワイヤレスの 取出。",
+      "note": "從現有 ワイヤレスの 取出；截圖也確實可見。",
       "readingHiragana": "わいやれす",
       "firstKana": "わ",
       "firstMora": "わ",
@@ -8605,9 +8614,15 @@
           "ref": "B.wireless",
           "relation": "extracted_from_context",
           "corpusId": "app-b-wireless"
+        },
+        {
+          "type": "duolingo_screenshot",
+          "file": "IMG_6297(2).png",
+          "wordShown": "ワイヤレス",
+          "visibility": "word_only_translation_below_crop"
         }
       ],
-      "familiarityEvidence": "present_in_existing_app",
+      "familiarityEvidence": "seen_in_duolingo_screenshot",
       "learningStatus": "not_assessed",
       "meaningReview": "editorial_zh_TW",
       "jlptApprox": null,
@@ -8708,7 +8723,7 @@
       "reading": "でんち",
       "romaji": "denchi",
       "meaningZh": "電池",
-      "note": "屬於 で，不可以把濁音去掉放進 て。第一版收藏庫可存，基本清音表不把它當 て 的字首代表詞。",
+      "note": "截圖寫作 でんち；屬於 で，不可以把濁音去掉放進 て。第一版收藏庫可存，基本清音表不把它當 て 的字首代表詞。",
       "readingHiragana": "でんち",
       "firstKana": "で",
       "firstMora": "で",
@@ -8724,12 +8739,13 @@
       "basicHeadEligible": false,
       "provenance": [
         {
-          "type": "curated_daily_travel",
-          "relation": "editorial_supplement",
-          "date": "2026-10-07"
+          "type": "duolingo_screenshot",
+          "file": "IMG_6297(2).png",
+          "wordShown": "でんち",
+          "visibility": "full"
         }
       ],
-      "familiarityEvidence": "new_supplement",
+      "familiarityEvidence": "seen_in_duolingo_screenshot",
       "learningStatus": "not_assessed",
       "meaningReview": "editorial_zh_TW",
       "jlptApprox": null,
@@ -8762,12 +8778,13 @@
       "basicHeadEligible": false,
       "provenance": [
         {
-          "type": "curated_daily_travel",
-          "relation": "editorial_supplement",
-          "date": "2026-10-07"
+          "type": "duolingo_screenshot",
+          "file": "IMG_6297(2).png",
+          "wordShown": "グレー",
+          "visibility": "full"
         }
       ],
-      "familiarityEvidence": "new_supplement",
+      "familiarityEvidence": "seen_in_duolingo_screenshot",
       "learningStatus": "not_assessed",
       "meaningReview": "editorial_zh_TW",
       "jlptApprox": null,

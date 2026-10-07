@@ -11,7 +11,7 @@ const words = [
   W('eki','駅','えき','eki','車站'),
   W('eiga','映画','えいが','eiga','電影'),
   W('okaikei','お会計','おかいけい','okaikei','結帳'),
-  W('omoi','重い','おもい','omoi','重的','卡片保留常見漢字寫法與讀音。'),
+  W('omoi','重い','おもい','omoi','重的','截圖寫作「おもい」；卡片保留常見漢字寫法與讀音。'),
   W('kankou','観光','かんこう','kankou','觀光'),
   W('kaimono','買い物','かいもの','kaimono','購物'),
   W('kippu','切符','きっぷ','kippu','車票','單字裡的 っ 先聽整詞，不要求第一版另外考促音。'),
@@ -141,12 +141,12 @@ const words = [
   W('remote','リモコン','リモコン','rimokon','遙控器'),
   W('roomkey','ルームキー','ルームキー','ruumu kii','房間鑰匙'),
   W('receipt','レシート','レシート','reshiito','收據'),
-  W('regibag','レジ袋','レジぶくろ','reji bukuro','購物袋','保留常見漢字寫法，讀音中的片假名仍顯示片假名。'),
+  W('regibag','レジ袋','レジぶくろ','reji bukuro','購物袋','截圖寫作 レジぶくろ；保留常見漢字寫法，讀音中的片假名仍顯示片假名。'),
   W('lobby','ロビー','ロビー','robii','大廳'),
-  W('wireless','ワイヤレス','ワイヤレス','waiyaresu','無線的','從現有 ワイヤレスの 取出。'),
+  W('wireless','ワイヤレス','ワイヤレス','waiyaresu','無線的','從現有 ワイヤレスの 取出；截圖也確實可見。'),
   W('wine','ワイン','ワイン','wain','葡萄酒'),
   W('pan','パン','パン','pan','麵包'),
-  W('battery','電池','でんち','denchi','電池','屬於 で，不可以把濁音去掉放進 て。第一版收藏庫可存，基本清音表不把它當 て 的字首代表詞。'),
+  W('battery','電池','でんち','denchi','電池','截圖寫作 でんち；屬於 で，不可以把濁音去掉放進 て。第一版收藏庫可存，基本清音表不把它當 て 的字首代表詞。'),
   W('grey','グレー','グレー','guree','灰色','屬於 グ／ぐ；保留在已見過單字庫，濁音練習留待下一版。'),
 ];
 
@@ -200,4 +200,13 @@ const rows = [
   ['n','ん','ン','n',10,0,['hon','nihon'],['pan','konbini']],
 ];
 
-module.exports = {words, rows};
+const visibleWords = [
+  {word:'レジぶくろ', reading:'レジぶくろ', meaningOriginal:'购物袋', wordId:'regibag', visibility:'full'},
+  {word:'レシート', reading:'レシート', meaningOriginal:'收据', wordId:'receipt', visibility:'full'},
+  {word:'でんち', reading:'でんち', meaningOriginal:'电池', wordId:'battery', visibility:'full'},
+  {word:'おもい', reading:'おもい', meaningOriginal:'重', wordId:'omoi', visibility:'full'},
+  {word:'グレー', reading:'グレー', meaningOriginal:'灰色', wordId:'grey', visibility:'full'},
+  {word:'ケーブル', reading:'ケーブル', meaningOriginal:'电缆', wordId:'cable', visibility:'full'},
+  {word:'ワイヤレス', reading:'ワイヤレス', meaningOriginal:null, wordId:'wireless', visibility:'word_only_translation_below_crop'},
+];
+module.exports = {words, rows, visibleWords};

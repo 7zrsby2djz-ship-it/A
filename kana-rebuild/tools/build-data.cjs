@@ -2,7 +2,7 @@
 // Rebuild the prepared data only. This does not modify the app, build.sh, or index.html.
 const fs = require('fs'), path = require('path'), vm = require('vm'), crypto = require('crypto');
 const root = path.resolve(__dirname, '..'), repo = path.resolve(root, '..');
-const {words:seeds, rows} = require('../curation.cjs');
+const {words:seeds, rows, visibleWords} = require('../curation.cjs');
 const legacyReadings = require('../legacy-readings.cjs');
 const {plain, rubyReading, toHiragana, analyzeReading, findKanaSpan} = require('./kana-utils.cjs');
 const lock = JSON.parse(fs.readFileSync(path.join(root,'source-lock.json'),'utf8'));
@@ -48,15 +48,17 @@ for(const level of ['N5','N4','N3']) {
 }
 const words=seeds.map(w=>{
   const matches=corpus.filter(c=>!c.particle && c.word.includes(w.word) && toHiragana(c.reading).includes(toHiragana(w.reading)));
+  const duo=visibleWords.find(d=>d.wordId===w.id);
   const jlpt=vendor.filter(v=>v.word===w.word && toHiragana(v.reading)===toHiragana(w.reading));
   const provenance=[...matches.map(c=>({...c.source,relation:c.word===w.word?'exact_form':'extracted_from_context',corpusId:c.id}))];
+  if(duo) provenance.push({type:'duolingo_screenshot',file:'IMG_6297(2).png',wordShown:duo.word,visibility:duo.visibility});
   if(!provenance.length) provenance.push({type:'curated_daily_travel',relation:'editorial_supplement',date:lock.preparedOn});
   // The meanings and notes in the curated deck are editorial. JLPT matches are optional difficulty metadata.
   return {...w,...analyzeReading(w.reading),provenance,
-    familiarityEvidence:matches.length?'present_in_existing_app':'new_supplement',
+    familiarityEvidence:duo?'seen_in_duolingo_screenshot':matches.length?'present_in_existing_app':'new_supplement',
     learningStatus:'not_assessed',meaningReview:'editorial_zh_TW',
     jlptApprox:jlpt[0]?.level||null,jlptRefs:jlpt.map(x=>({id:x.id,level:x.level,source:'OpenJLPT',commit:lock.openjlpt.commit})),
-    aliases:({omoi:['おもい'],regibag:['レジぶくろ'],battery:['でんち']})[w.id]||[],speechText:w.reading,
+    aliases:duo && duo.word!==w.word?[duo.word]:[],speechText:w.reading,
     phaseHint:['battery','grey'].includes(w.id)?'next_voiced':'basic_anchor',
   };
 });
@@ -97,7 +99,9 @@ const confusables=[
   {script:'kata',keys:['nu','su']},{script:'kata',keys:['u','wa']},{script:'kata',keys:['chi','te']},
 ];
 const sources={preparedOn:lock.preparedOn,app:{repository:lock.appRepository,commit:lock.appCommit,files:lock.appFiles},
-  personalVocabulary:{status:'not_in_public_package',extractedCount:0,fullPersonalListAvailable:false,importIntegrationStatus:'planned'},
+  duolingo:{acquisition:'user_uploaded_screenshots',reportedTotal:820,reportedSection:3,reportedUnit:6,reportedUnitTitle:'買電子產品',
+    extractedCount:visibleWords.length,fullPersonalListAvailable:false,exportIntegrationStatus:'not_tested_with_user_account',
+    publicationConsent:{status:'confirmed_by_user',grantedOn:'2026-10-07',scope:'seven_visible_words_and_reported_course_progress'}},
   openjlpt:{repository:lock.openjlpt.repository,commit:lock.openjlpt.commit,license:'CC-BY-SA-4.0',
     licenseUrl:'https://creativecommons.org/licenses/by-sa/4.0/',counts:Object.fromEntries(['N5','N4','N3'].map(l=>[l,vendor.filter(x=>x.sourceLevel===l).length])),
     use:'optional_expansion_and_approximate_level_metadata',meaningsLanguage:'en',zhReviewed:false},
@@ -106,13 +110,13 @@ write('data/kana-basic.v1.json',{schemaVersion:1,kana,confusables});
 write('data/words.v1.json',{schemaVersion:1,words});
 write('data/anchors.v1.json',{schemaVersion:1,anchors});
 write('data/app-corpus.v1.json',{schemaVersion:1,snapshotCommit:lock.appCommit,entries:corpus});
-write('data/personal-words.v1.json',{schemaVersion:1,...sources.personalVocabulary,words:[]});
+write('data/duolingo-visible.v1.json',{schemaVersion:1,...sources.duolingo,words:visibleWords});
 write('data/sources.v1.json',{schemaVersion:1,...sources});
 const manifest={schemaVersion:1,preparedOn:lock.preparedOn,kanaPairs:kana.length,scriptCells:anchors.length,
   trainableCells:anchors.filter(a=>a.status==='trainable').length,curatedWords:words.length,
   anchorReferences:anchors.reduce((n,a)=>n+a.wordRefs.length,0),appCorpusEntries:corpus.length,
   appBreakdown:{legacyBlocks:Object.keys(B).length,chunks:Object.keys(CK).length,oralPhrases:Object.keys(oral.phrases).length,generalGlossary:oral.glossary.filter(x=>x.category!=='成人').length},
-  appTasks:TASKS.length,personalWordsIncluded:0,openjlptWords:vendor.length,
+  appTasks:TASKS.length,duolingoVisibleWords:visibleWords.length,openjlptWords:vendor.length,
   openjlptCounts:sources.openjlpt.counts,corpusRequiringReadingReview:corpus.filter(x=>!x.readable).length,
   runtimeIncludesOpenjlptFullLists:false,runtimeFile:'generated/kana-data.js',
 };

@@ -7,7 +7,7 @@ const {kana,confusables}=read('data/kana-basic.v1.json');
 const {words}=read('data/words.v1.json');
 const {anchors}=read('data/anchors.v1.json');
 const {entries:corpus}=read('data/app-corpus.v1.json');
-const personal=read('data/personal-words.v1.json'), sources=read('data/sources.v1.json'), manifest=read('data/manifest.v1.json');
+const duo=read('data/duolingo-visible.v1.json'), sources=read('data/sources.v1.json'), manifest=read('data/manifest.v1.json');
 const lock=read('source-lock.json');
 const unique=(xs,name)=>assert.equal(new Set(xs).size,xs.length,`${name} must be unique`);
 unique(kana.map(k=>k.id),'kana IDs');unique(kana.map(k=>k.hiragana),'hiragana');unique(kana.map(k=>k.katakana),'katakana');
@@ -41,10 +41,10 @@ for(const a of anchors){
   }
 }
 for(const g of confusables){assert.ok(['hira','kata'].includes(g.script));g.keys.forEach(id=>assert.ok(km[id]));}
-assert.equal(personal.words.length,0);assert.equal(personal.fullPersonalListAvailable,false);
-assert.ok(words.every(w=>['present_in_existing_app','new_supplement'].includes(w.familiarityEvidence)));
-assert.ok(!JSON.stringify({words,sources,personal}).includes('user_uploaded_screenshots'),'Public package must contain no personal screenshot provenance');
-assert.ok(!('reportedTotal' in personal),'Personal course progress is excluded from the public package');
+assert.equal(duo.words.length,7);assert.equal(duo.reportedTotal,820);assert.equal(duo.fullPersonalListAvailable,false);
+assert.equal(duo.publicationConsent.status,'confirmed_by_user');assert.equal(duo.publicationConsent.scope,'seven_visible_words_and_reported_course_progress');
+assert.ok(duo.words.every(d=>wm[d.wordId]&&wm[d.wordId].familiarityEvidence==='seen_in_duolingo_screenshot'));
+assert.equal(duo.words.find(d=>d.word==='ワイヤレス').meaningOriginal,null,'Cropped translation must not be invented');
 assert.ok(!anchors.flatMap(a=>a.wordRefs).some(r=>['battery','grey'].includes(r.wordId)),'Voiced words cannot seed unvoiced cells');
 assert.ok(corpus.some(c=>!c.readable),'Unresolved source readings are retained and flagged, not guessed');
 let n=0;
@@ -58,7 +58,7 @@ for(const level of ['n5','n4','n3']){
 assert.equal(n,2963);assert.equal(sources.openjlpt.license,'CC-BY-SA-4.0');
 const runtime={};vm.runInNewContext(fs.readFileSync(path.join(root,'generated/kana-data.js'),'utf8'),runtime);
 assert.equal(runtime.KANA_REBUILD_DATA.words.length,words.length);assert.equal(runtime.KANA_REBUILD_DATA.anchors.length,92);
-assert.equal(runtime.KANA_REBUILD_DATA.sources.personalVocabulary.fullPersonalListAvailable,false);
+assert.equal(runtime.KANA_REBUILD_DATA.sources.duolingo.fullPersonalListAvailable,false);
 assert.equal(manifest.appCorpusEntries,corpus.length);assert.equal(manifest.curatedWords,words.length);
 assert.equal(manifest.anchorReferences,anchors.reduce((n,a)=>n+a.wordRefs.length,0));
 assert.equal(manifest.openjlptWords,n);assert.equal(manifest.trainableCells,91);

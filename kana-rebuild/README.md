@@ -8,14 +8,14 @@
 
 | 檔案 | 用途 |
 |---|---|
-| `curation.cjs` | 人工選定的 146 個詞、46 組代表詞配置；教材編輯入口 |
+| `curation.cjs` | 人工選定的 146 個詞、46 組代表詞配置、7 個截圖詞；教材編輯入口 |
 | `legacy-readings.cjs` | 舊 B 字庫的 79 筆人工假名讀音；不從羅馬拼音逆推 |
 | `source-lock.json` | 上游版本與來源檔案 SHA-256；來源改變必須先重新審閱 |
 | `data/kana-basic.v1.json` | 46 組基本平片假名、五欄座標、音值、特殊字、易混字組 |
 | `data/words.v1.json` | 146 個起步詞，正常寫法、讀音、拼音、繁中、來源、近似 JLPT 標籤 |
 | `data/anchors.v1.json` | 92 個格子的 147 個代表詞連結、讀音高亮範圍、出題限制 |
 | `data/app-corpus.v1.json` | 732 筆來源快照，完整保留單字／句塊層級；74 筆需要讀音複核 |
-| `data/personal-words.v1.json` | 空的個人詞表交換格式；公開包沒有個人學習紀錄 |
+| `data/duolingo-visible.v1.json` | 7 個真正可從截圖確認的詞；記錄 820 總數、課程進度和匯出狀態 |
 | `data/sources.v1.json` | 來源、版本、授權、資料取得狀態 |
 | `data/manifest.v1.json` | 實際數量與資料包狀態；由工具生成 |
 | `vendor/openjlpt/n5.json`、`n4.json`、`n3.json` | 2,963 筆未改動的完整上游 JSON，包含英文詞義、讀音、例句等 |
@@ -50,7 +50,7 @@ Claude 整合時，在原本 `./build.sh` 中接上這個生成步驟，把 `gen
 
 `firstKana` 是正規化讀音中的第一個假名字形；`firstMora` 保留小字組合，所以 りょこう 是 `firstKana: り`、`firstMora: りょ`。清音、濁音、小字與長音符不互相抹掉。`basicHeadEligible` 只容許可讀、第一拍為單一基本清音、且不是 ん／を 的字首例子。
 
-`provenance` 保存來源位置。`familiarityEvidence` 是 `present_in_existing_app`／`new_supplement`，只表示接觸證據，**不表示已會**。全部 `learningStatus` 為 `not_assessed`。`aliases` 保留常見替代寫法，例如 おもい；不是個人學習證據。
+`provenance` 保存來源位置。`familiarityEvidence` 是 `present_in_existing_app`／`seen_in_duolingo_screenshot`／`new_supplement`，只表示接觸證據，**不表示已會**。全部 `learningStatus` 為 `not_assessed`。`aliases` 保留截圖的平假名寫法，例如 おもい。
 
 `jlptApprox`／`jlptRefs` 是可選的社群難度資訊，來源為 OpenJLPT，不是正式考試清單。繁中詞義與備註為本次編輯，`meaningReview: editorial_zh_TW`。上游英文整庫尚未逐筆翻譯成繁中，不能直接當作繁中正式教材。
 
