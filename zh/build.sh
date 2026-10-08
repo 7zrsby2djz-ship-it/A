@@ -5,5 +5,6 @@ set -e
 mkdir -p build
 node tools/collect.cjs
 python3 tools/zhuyin.py
+python3 tools/itemdiff.py
 node tools/assemble.cjs
 node tools/validate.cjs

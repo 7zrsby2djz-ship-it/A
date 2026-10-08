@@ -24,13 +24,13 @@ with sync_playwright() as pw:
         print('round', rnd, 'ok')
     print('talk records', p.evaluate("Object.entries(S.talk).map(([k,v])=>k+':'+v.best).join(' ')"))
     # 限時聽力：不作答，等倒數
-    p.evaluate("NAV.sheet=null;startPractice({skill:'listening',mode:'timed',count:2,level:'A1',sec:5})"); p.wait_for_timeout(300)
+    p.evaluate("NAV.sheet=null;startPractice({skill:'listening',mode:'timed',count:2,level:'A2',sec:8})"); p.wait_for_timeout(300)
     p.wait_for_timeout(6000)
     st = p.evaluate("NAV.sheet && (NAV.sheet.v + ':' + (NAV.sheet.ans? NAV.sheet.ans.length : ''))"); print('timed after 6s', st)
     p.wait_for_timeout(6000); print('timed end', p.evaluate("NAV.sheet.v"), p.evaluate("NAV.sheet.src && NAV.sheet.src.ans.map(a=>a.to)"))
-    p.evaluate("NAV.sheet=null;startPractice({skill:'listening',mode:'cat',count:5,level:'B1'})")
-    for i in range(5):
+    p.evaluate("NAV.sheet=null;startPractice({skill:'listening',mode:'cat',count:10})")
+    for i in range(10):
         p.wait_for_selector('[data-a="pans"]:not([disabled])', timeout=4000); p.click('[data-a="pans"]:not([disabled])'); p.wait_for_timeout(400)
-    print('cat', p.evaluate("NAV.sheet.v"), p.evaluate("NAV.sheet.src.est.toFixed(2)"))
+    print('cat', p.evaluate("NAV.sheet.v"), p.evaluate("JSON.stringify(NAV.sheet.src.sections)"))
     b.close()
 print('ERRORS', errs or 'none')

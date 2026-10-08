@@ -1,7 +1,7 @@
 /* ===== 單字：書、單元、學習卡、5 秒測驗、生字本、介面字 ===== */
 function wordProgress(ids) { let seen = 0, good = 0; ids.forEach(id => { const s = S.w[id]; if (s && s.seen) { seen++; if (s.s >= 2) good++; } }); return { seen, good, n: ids.length }; }
 function bookIds(b) { return b.units.reduce((a, u) => a.concat(u.ids), []); }
-function srcPill(w) { return { c: '<span class="pill">情境</span>', m: '<span class="pill blue">明朗</span>', u: '<span class="pill kraft">介面</span>', s: '<span class="pill ok">對話</span>' }[w.src] || ''; }
+function srcPill(w) { return { c: '<span class="pill">情境</span>', m: '<span class="pill blue">明朗</span>', u: '<span class="pill kraft">介面</span>', s: '<span class="pill ok">對話</span>', x: '<span class="pill">考試</span>' }[w.src] || ''; }
 function starBtn(id) { const on = S.w[id] && S.w[id].star; return '<button class="ib star' + (on ? ' on' : '') + '" data-a="star" data-id="' + id + '" aria-label="生字本">' + ICON.star + '</button>'; }
 function playBtn(id, sm) { return '<button class="play' + (sm ? ' sm' : '') + '" data-a="playw" data-id="' + id + '" aria-label="播放">' + ICON.sound + '</button>'; }
 

@@ -12,8 +12,8 @@ if (fs.existsSync(SRC)) {
 } else console.log('（找不到原始 Flutter 專案，略過原樣比對）');
 // 2) 對話
 const ctx = {}; vm.createContext(ctx);
-const files = ['talk_core', 'talk_sbux', 'talk_boba', 'talk_cvs', 'talk_bfast', 'talk_mrt', 'talk_school', 'data_ui'];
-vm.runInContext(files.map(f => fs.readFileSync(path.join(Z, 'src', f + '.js'), 'utf8')).join('\n') + ';this.TALK=TALK;this.UI_RAW=UI_RAW;this.UI_GROUPS=UI_GROUPS;this.UI_SCREENS=UI_SCREENS;', ctx);
+const files = ['talk_core', 'talk_sbux', 'talk_boba', 'talk_cvs', 'talk_bfast', 'talk_mrt', 'talk_school', 'data_ui', 'exam_core', 'exam_listen', 'exam_read'];
+vm.runInContext(files.map(f => fs.readFileSync(path.join(Z, 'src', f + '.js'), 'utf8')).join('\n') + ';this.TALK=TALK;this.UI_RAW=UI_RAW;this.UI_GROUPS=UI_GROUPS;this.UI_SCREENS=UI_SCREENS;this.EXAM=EXAM;this.SKILL_NAMES=SKILL_NAMES;', ctx);
 let nv = 0, nn = 0;
 ctx.TALK.forEach(sc => {
   [1, 2, 3].forEach(lv => { if (!sc.vars.some(v => v.lv === lv)) err(sc.id + ' 缺 Lv.' + lv); });
@@ -42,6 +42,28 @@ ctx.UI_RAW.forEach(r => { if (r.length !== 8 || r.some(x => !x)) err('介面字�
 ctx.UI_GROUPS.forEach(g => g.ids.forEach(i => { if (!uids.has(i)) err('易混字組找不到 ' + i); }));
 ctx.UI_SCREENS.forEach(s => { if (s.a >= s.btns.length) err('畫面題答案錯 ' + s.title); });
 console.log('介面字', ctx.UI_RAW.length, '、易混字組', ctx.UI_GROUPS.length, '、畫面題', ctx.UI_SCREENS.length);
+// 3b) TOCFL 型題庫
+const eids = new Set(); let eq = 0, longest = 0;
+ctx.EXAM.forEach(it => {
+  if (eids.has(it.id)) err('題號重複 ' + it.id); eids.add(it.id);
+  if (!['A2', 'A2+', 'B1-', 'B1', 'B1+'].includes(it.lv)) err('難度標籤錯 ' + it.id);
+  if (!it.my) err('缺整段緬文 ' + it.id);
+  if (it.skill === 'listening' && !(it.audio && it.audio.length)) err('聽力缺錄音文字 ' + it.id);
+  if (it.skill === 'reading' && !it.text) err('閱讀缺文章 ' + it.id);
+  if (it.type === 'cloze' && it.text.split('＿＿').length !== 2) err('選詞填空要剛好一個空 ' + it.id);
+  if (it.type === 'para') for (let i = 1; i <= it.qs.length; i++) if (it.text.indexOf('（' + i + '）') < 0) err('段落填空缺（' + i + '） ' + it.id);
+  it.qs.forEach(q => {
+    eq++;
+    if (q.o.length !== 4) err('要四個選項 ' + it.id);
+    if (new Set(q.o.map(o => o[0])).size !== 4) err('選項重複 ' + it.id);
+    q.o.forEach(o => { if (!o[1]) err('選項缺緬文 ' + it.id + ' ' + o[0]); });
+    if (!q.why || !ctx.SKILL_NAMES[q.sk]) err('缺說明或能力標籤 ' + it.id);
+    const L = q.o.map(o => o[0].length), mx = Math.max(...L); if (L[0] === mx && L.filter(x => x === mx).length === 1) longest++;
+    if (it.type === 'cloze' && (it.text.replace('＿＿', q.o[0][0]).length < 4)) err('填空句太短 ' + it.id);
+  });
+});
+console.log('TOCFL 型題目', ctx.EXAM.length, '組、', eq, '題；正確答案剛好最長', Math.round(longest / eq * 100) + '%');
+if (longest / eq > .35) err('正確答案太常是最長的選項');
 // 4) 注音數量對得上
 const rj = fs.readFileSync(path.join(Z, 'src/readings.gen.js'), 'utf8');
 const READ = JSON.parse(rj.slice(rj.indexOf('{'), rj.indexOf(';\nconst CHREAD')));

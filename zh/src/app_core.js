@@ -3,7 +3,7 @@ const KEY = 'mingbai-zh-v1';
 const HAN = /[㐀-鿿]/;
 function DEF() {
   return { v: 1, set: { my: true, zy: true, size: 'm', theme: 'auto', voice: '', rate: 1, auto: true },
-    track: null, w: {}, talk: {}, run: null, day: null, units: {}, scr: {}, seen: [], sessions: [], pstat: {}, prSet: { skill: 'listening', mode: 'guided', level: 'B1', count: 10, sec: 15 }, log: {} };
+    track: null, w: {}, talk: {}, run: null, day: null, units: {}, scr: {}, seen: [], sessions: [], pstat: {}, prSet: { skill: 'listening', mode: 'guided', level: 'B1-', count: 10, sec: 12, type: 'all', fam: true }, log: {}, cat: {}, pskill: {}, ptype: {} };
 }
 function load() {
   let s = null;
@@ -76,21 +76,33 @@ function stopAll() {
   TTS.speaking = false;
   if (AUD.el) { try { AUD.el.pause(); } catch (e) { } }
 }
-function speak(text, rate, onEnd) {
-  stopAll();
-  const seq = TTS.seq;
+function speak(text, rate, onEnd, pitch) { stopAll(); speakRaw(text, rate, onEnd, pitch, TTS.seq); }
+function speakRaw(text, rate, onEnd, pitch, seq) {
   text = spoken(text);
   if (!TTS.ok || !text) { onEnd && onEnd(false); return; }
   const u = new SpeechSynthesisUtterance(text);
   const v = pickVoice(); if (v) u.voice = v;
-  u.lang = v ? v.lang : 'zh-TW'; u.rate = (rate || 1) * (S.set.rate || 1); u.pitch = 1;
+  u.lang = v ? v.lang : 'zh-TW'; u.rate = (rate || 1) * (S.set.rate || 1); u.pitch = pitch || 1;
   let settled = false;
-  const done = ok => { if (settled || seq !== TTS.seq) return; settled = true; clearTimeout(TTS.watch); TTS.speaking = false; document.body.classList.remove('speaking'); onEnd && onEnd(ok); };
+  const done = ok => { if (settled || seq !== TTS.seq) return; settled = true; clearTimeout(TTS.watch); TTS.speaking = false; onEnd && onEnd(ok); };
   u.onstart = () => { if (seq !== TTS.seq) return; TTS.speaking = true; clearTimeout(TTS.watch); TTS.watch = setTimeout(() => { done(true); }, Math.max(15000, text.length * 700 / (u.rate || 1) + 6000)); };
   u.onend = () => done(true);
-  u.onerror = e => done(e && e.error === 'interrupted' ? false : false);
+  u.onerror = () => done(false);
   TTS.watch = setTimeout(() => { if (!TTS.speaking) { done(false); try { speechSynthesis.cancel(); } catch (e) { } } }, 8000);
   try { speechSynthesis.resume(); speechSynthesis.speak(u); } catch (e) { done(false); }
+}
+/* 對話：男聲音調低、女聲音調高，一句一句播；中途換頁會停 */
+const PITCH = { '男': .78, '女': 1.18 };
+function speakSeq(lines, rate, onEnd) {
+  stopAll();
+  const seq = TTS.seq; let i = 0, allOk = true;
+  const next = () => {
+    if (seq !== TTS.seq) return;
+    if (i >= lines.length) { onEnd && onEnd(allOk); return; }
+    const ln = lines[i++];
+    speakRaw(ln[1], rate, ok => { if (!ok) allOk = false; if (!ok && i === 1) { onEnd && onEnd(false); return; } setTimeout(next, 380); }, PITCH[ln[0]] || 1, seq);
+  };
+  next();
 }
 const AUD = { el: null };
 function playWord(w, onEnd) {

@@ -71,13 +71,14 @@ with sync_playwright() as pw:
             p.click('[data-a="pans"]:not([disabled])'); p.wait_for_timeout(250)
             if i == 0: shot(p, '13-listen-fb')
             p.click('[data-a="pnext"]'); p.wait_for_timeout(500)
+            if p.query_selector('.stat'): break
         shot(p, '14-prres')
         p.click('[data-a="close"]'); p.wait_for_timeout(200); shot(p, '15-today-done')
         # CAT 閱讀
         p.click('[data-a="tab"][data-t="practice"]'); p.wait_for_timeout(200); shot(p, '16-practice')
-        p.click('[data-a="pset"][data-k="skill"][data-v="reading"]'); p.click('[data-a="pset"][data-k="mode"][data-v="cat"]'); p.click('[data-a="pset"][data-k="count"][data-v="5"]')
+        p.click('[data-a="pset"][data-k="skill"][data-v="reading"]'); p.click('[data-a="pset"][data-k="mode"][data-v="cat"]'); p.click('[data-a="pset"][data-k="count"][data-v="10"]')
         p.click('[data-a="pstart"]'); p.wait_for_timeout(300); shot(p, '17-cat')
-        for i in range(5): p.click('[data-a="pans"]:not([disabled])'); p.wait_for_timeout(400)
+        for i in range(10): p.wait_for_selector('[data-a="pans"]:not([disabled])', timeout=5000); p.click('[data-a="pans"]:not([disabled])'); p.wait_for_timeout(250)
         shot(p, '18-cat-res')
         p.click('[data-a="close"]')
         # 單字頁

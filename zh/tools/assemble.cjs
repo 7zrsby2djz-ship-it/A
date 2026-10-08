@@ -9,7 +9,8 @@ const js = [
   'const CHIN=' + JSON.stringify(chin) + ';',
   'const MING=' + JSON.stringify(ming) + ';',
   R('src/readings.gen.js'),
-  ...['talk_core', 'talk_sbux', 'talk_boba', 'talk_cvs', 'talk_bfast', 'talk_mrt', 'talk_school', 'data_ui', 'app_core', 'app_words', 'app_talk', 'app_practice', 'app_main'].map(f => R('src/' + f + '.js'))
+  R('src/itemdiff.gen.js'),
+  ...['talk_core', 'talk_sbux', 'talk_boba', 'talk_cvs', 'talk_bfast', 'talk_mrt', 'talk_school', 'data_ui', 'exam_core', 'exam_listen', 'exam_read', 'app_core', 'app_words', 'app_talk', 'app_practice', 'app_main'].map(f => R('src/' + f + '.js'))
 ].join('\n');
 new Function(js); // 語法檢查
 const html = R('src/head.html') + '<style>\n' + R('src/style.css') + '</style>\n' + R('src/shell.html') + '<script>\n' + js.replace(/<\/script/gi, '<\\/script') + '\n</script>\n</body>\n</html>\n';
