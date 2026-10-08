@@ -19,7 +19,7 @@ def answer_all(p, n, right_ratio=0.6, shots=None):
         if p.query_selector('[data-a="pnext"]'): p.click('[data-a="pnext"]'); p.wait_for_timeout(120)
     return n
 with sync_playwright() as pw:
-    b = pw.chromium.launch(); ctx = b.new_context(viewport={'width': 390, 'height': 844}, device_scale_factor=2); ctx.add_init_script(STUB); p = ctx.new_page()
+    b = pw.chromium.launch(); ctx = b.new_context(reduced_motion='reduce', viewport={'width': 390, 'height': 844}, device_scale_factor=2); ctx.add_init_script(STUB); p = ctx.new_page()
     p.on('pageerror', lambda e: errs.append(str(e)))
     p.goto('http://localhost:8765/index.html'); p.wait_for_timeout(300)
     p.click('[data-a="tab"][data-t="practice"]'); p.wait_for_timeout(200); p.screenshot(path=f'{OUT}/e01-home.png')

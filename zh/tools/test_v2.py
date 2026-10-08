@@ -10,7 +10,7 @@ ORDER = ['[data-a="stepgo"]', '[data-a="sknow"][data-k="1"]', '[data-a="sshow"]'
          '[data-a="pans"]:not([disabled])', '[data-a="pnext"]', '[data-a="flownext"]']
 with sync_playwright() as pw:
     b = pw.chromium.launch()
-    ctx = b.new_context(viewport={'width': 402, 'height': 874}, device_scale_factor=3, is_mobile=True, has_touch=True)
+    ctx = b.new_context(reduced_motion='reduce', viewport={'width': 402, 'height': 874}, device_scale_factor=3, is_mobile=True, has_touch=True)
     ctx.add_init_script(STUB); p = ctx.new_page()
     p.on('pageerror', lambda e: errs.append(str(e)))
     p.goto('http://localhost:8765/index.html'); p.wait_for_timeout(400)

@@ -169,7 +169,7 @@ SHEETS.qres = function (s) {
   const n = s.res.filter(r => r.ok).length;
   const wrong = s.res.filter(r => !r.ok);
   let h = sheetHead(s.title);
-  h += '<div class="card center"><div class="score">' + n + '<small> / ' + s.res.length + '</small></div><p class="small muted">' + B(n === s.res.length ? 'အကုန်မှန်တယ် 🎉' : 'မှားတဲ့စကားလုံး မကြာခင် ပြန်ပေါ်လာမယ်') + '</p></div>';
+  h += '<div class="card center">' + MASCOT(n === s.res.length ? 'cheer' : n >= s.res.length / 2 ? 'happy' : 'think', 84, 'bob') + '<div class="score">' + n + '<small> / ' + s.res.length + '</small></div><p class="small muted">' + B(n === s.res.length ? 'အကုန်မှန်တယ် 🎉' : 'မှားတဲ့စကားလုံး မကြာခင် ပြန်ပေါ်လာမယ်') + '</p></div>';
   if (wrong.length) {
     h += '<div class="sec"><h2>' + B('မှားခဲ့တဲ့ စကားလုံး') + '</h2></div><div class="list">';
     wrong.forEach(r => { const w = WORDS[r.id]; h += '<div class="li"><span class="grow"><span style="font-size:1.25rem">' + zy(w.zh) + '</span><span class="my" lang="my" style="display:block">' + esc(w.my) + '</span></span>' + playBtn(r.id, true) + starBtn(r.id) + '</div>'; });
@@ -186,7 +186,7 @@ VIEWS.note = function () {
   const dueIds = all.filter(due);
   const list = f === 'due' ? dueIds : all;
   let h = pageHead('', 'စကားလုံးစာအုပ်');
-  if (!all.length) return h + '<div class="empty">' + B('မသိတဲ့ စကားလုံးတွေ့ရင် ☆ ကိုနှိပ်ပါ။ ဒီစာအုပ်ထဲ ရောက်လာမယ်။') + '</div>';
+  if (!all.length) return h + '<div class="empty">' + MASCOT('think', 96) + B('မသိတဲ့ စကားလုံးတွေ့ရင် ☆ ကိုနှိပ်ပါ။ ဒီစာအုပ်ထဲ ရောက်လာမယ်။') + '</div>';
   h += '<button class="btn pri block" data-a="nstudy">' + B('ပြန်လေ့ကျင့်မယ်' + (dueIds.length ? '（' + MYNUM(dueIds.length) + '）' : '')) + '</button>';
   if (all.length >= 4) h += '<button class="btn block" style="margin-top:10px" data-a="nquiz">' + B('၅ စက္ကန့် စမ်းသပ်') + '</button>';
   h += '<div class="chips" style="margin-top:14px"><button class="chip' + (f === 'all' ? ' on' : '') + '" data-a="nf" data-f="all">' + B('အားလုံး ' + MYNUM(all.length)) + '</button><button class="chip' + (f === 'due' ? ' on' : '') + '" data-a="nf" data-f="due">' + B('ပြန်ကြည့်ရန် ' + MYNUM(dueIds.length)) + '</button></div>';

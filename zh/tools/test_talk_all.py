@@ -5,7 +5,7 @@ import os
 STUB = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'tts_stub.js')).read()
 errs = []
 with sync_playwright() as pw:
-    b = pw.chromium.launch(); ctx = b.new_context(viewport={'width': 390, 'height': 844}); ctx.add_init_script(STUB); p = ctx.new_page()
+    b = pw.chromium.launch(); ctx = b.new_context(reduced_motion='reduce', viewport={'width': 390, 'height': 844}); ctx.add_init_script(STUB); p = ctx.new_page()
     p.on('pageerror', lambda e: errs.append(str(e)))
     p.goto('http://localhost:8765/index.html'); p.wait_for_timeout(300)
     vids = p.evaluate("TALK.flatMap(sc=>sc.vars.map(v=>v.id))")

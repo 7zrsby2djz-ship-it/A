@@ -340,3 +340,74 @@ h2{font-size:1.15rem}
 .more summary{font-family:var(--my);color:var(--ink2);padding:12px 4px;cursor:pointer;list-style:none}
 .more summary::-webkit-details-marker{display:none}
 .setlbl{font-family:var(--my);line-height:1.7}
+
+/* ===== v3：可愛但乾淨 — 按下去有手感、換頁有動作、答對有回饋 ===== */
+:root{--blue-deep:#2C4566;--pink:#F4C7CC;--pink-ink:#B85C6A;--mint:#CFE6D3;--sun:#F6D98B;--press:4px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--blue-deep:#6F8DB8;--pink:#5A3A40;--pink-ink:#F0A9B4;--mint:#2D4433;--sun:#5C4B23}}
+:root[data-theme="dark"]{--blue-deep:#6F8DB8;--pink:#5A3A40;--pink-ink:#F0A9B4;--mint:#2D4433;--sun:#5C4B23}
+/* 立體按鈕：底下有一條厚邊，按下去會沉下去 */
+.btn,.opt,.bigcard,.hero,.chip,.seg button.on,.ib,.play,.step,.li[data-a]{transition:transform .08s ease,box-shadow .08s ease,background .2s,border-color .2s}
+.btn{box-shadow:0 var(--press) 0 var(--line2);border-color:var(--line2)}
+.btn.pri{box-shadow:0 var(--press) 0 var(--blue-deep)}
+.btn.ghost{box-shadow:none}
+.btn:active:not(:disabled),.btn.pressed{transform:translateY(var(--press));box-shadow:0 0 0 transparent}
+.opt{box-shadow:0 3px 0 var(--line2)}
+.opt:active:not(:disabled){transform:translateY(3px);box-shadow:none}
+.opt.ok{box-shadow:0 3px 0 var(--ok);animation:pop .38s cubic-bezier(.3,1.6,.5,1)}
+.opt.bad{box-shadow:0 3px 0 var(--bad);animation:shake .38s ease}
+.bigcard{box-shadow:0 4px 0 var(--line)}
+.bigcard:active{transform:translateY(4px);box-shadow:none}
+.bigcard.pri{box-shadow:0 5px 0 var(--blue-deep)}
+.bigcard .ico{transition:transform .25s cubic-bezier(.3,1.6,.5,1)}
+.bigcard:active .ico{transform:rotate(-8deg) scale(1.08)}
+.hero{box-shadow:0 6px 0 var(--blue-deep),0 14px 28px rgba(44,69,102,.22);animation:breathe 3.2s ease-in-out infinite}
+.hero:active{transform:translateY(6px);box-shadow:0 0 0 var(--blue-deep),0 6px 14px rgba(44,69,102,.18);animation:none}
+.hero.done{animation:none;box-shadow:0 4px 0 var(--ok)}
+.ib{box-shadow:0 3px 0 var(--line)}
+.ib:active{transform:translateY(3px);box-shadow:none}
+.ib.star.on{color:#E0A100;background:#FFF6D8;border-color:#F1D27A}
+.ib.star.on svg{animation:starpop .45s cubic-bezier(.3,1.8,.5,1)}
+.play{box-shadow:0 3px 0 var(--line2)}
+.play:active{transform:translateY(3px);box-shadow:none}
+.play.busy{animation:ring 1s ease-out infinite}
+.chip:active{transform:scale(.95)}
+.li[data-a]:active,.step:active{background:var(--blue-soft)}
+.wordcard{box-shadow:0 6px 0 var(--line),0 16px 30px rgba(0,0,0,.04)}
+.endcard .mark{animation:pop .5s cubic-bezier(.3,1.6,.5,1)}
+.fb{animation:rise .28s ease}
+.bar i,.timer i{background:linear-gradient(90deg,var(--blue),#7FA3CF)}
+.bar{height:6px;border-radius:3px}
+.bar i{border-radius:3px}
+.hero .ring i{transition:background .3s}
+.hero .ring i.on{animation:pop .4s ease}
+.step .ck{transition:all .3s}
+.step.done .ck{animation:pop .35s ease}
+/* 換頁 */
+.enter-fwd{animation:inRight .26s cubic-bezier(.2,.8,.3,1)}
+.enter-back{animation:inLeft .26s cubic-bezier(.2,.8,.3,1)}
+.enter-tab{animation:rise .22s ease}
+.enter-next{animation:inRight .3s cubic-bezier(.2,.8,.3,1)}
+.nav button svg{transition:transform .2s cubic-bezier(.3,1.6,.5,1)}
+.nav button.on svg{transform:translateY(-2px) scale(1.12)}
+@keyframes inRight{from{opacity:0;transform:translateX(28px)}to{opacity:1;transform:none}}
+@keyframes inLeft{from{opacity:0;transform:translateX(-28px)}to{opacity:1;transform:none}}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes pop{0%{transform:scale(.85)}60%{transform:scale(1.06)}100%{transform:scale(1)}}
+@keyframes starpop{0%{transform:scale(.4) rotate(-30deg)}100%{transform:scale(1) rotate(0)}}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-7px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(2px)}}
+@keyframes breathe{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+@keyframes ring{0%{box-shadow:0 0 0 0 rgba(59,90,130,.35)}100%{box-shadow:0 0 0 14px rgba(59,90,130,0)}}
+/* 小角色：飯糰「明明」 */
+.mascot{display:block;margin:0 auto}
+.mascot .blink{animation:blink 4.5s infinite;transform-origin:center;transform-box:fill-box}
+.mascot.bob{animation:bob 2.6s ease-in-out infinite}
+@keyframes blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
+@keyframes bob{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-4px) rotate(-2deg)}}
+.hello-row{display:flex;align-items:center;gap:12px;margin-top:4px}
+.bubble{position:relative;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:10px 14px;font-family:var(--my);line-height:1.7;box-shadow:0 3px 0 var(--line)}
+.bubble::before{content:"";position:absolute;left:-7px;top:22px;width:12px;height:12px;background:var(--card);border-left:1px solid var(--line);border-bottom:1px solid var(--line);transform:rotate(45deg)}
+/* 彩紙 */
+.confetti{position:fixed;inset:0;pointer-events:none;z-index:60;overflow:hidden}
+.confetti i{position:absolute;top:-12px;width:9px;height:14px;border-radius:2px;animation:fall linear forwards}
+@keyframes fall{to{transform:translate3d(var(--dx),105vh,0) rotate(var(--r));opacity:.9}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}

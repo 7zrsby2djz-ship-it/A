@@ -26,6 +26,33 @@ const ICON = {
   school: sv('<path d="M3 9l9-4.5L21 9l-9 4.5z"/><path d="M7 11v5c1.5 1.3 3.2 2 5 2s3.5-.7 5-2v-5M21 9v5"/>')
 };
 const TABS = [['today', 'ဒီနေ့', ICON.today], ['talk', 'စကားပြော', ICON.chat], ['words', 'စကားလုံး', ICON.book], ['practice', 'စာမေးပွဲ', ICON.exam]];
+/* 小角色「明明」：原創的飯糰，海苔是襯衫藍 */
+function MASCOT(mood, size, cls) {
+  const eyes = mood === 'happy' || mood === 'cheer'
+    ? '<path d="M35 49q5-6 10 0M55 49q5-6 10 0" stroke="#2A2926" stroke-width="3" fill="none" stroke-linecap="round"/>'
+    : '<g class="blink"><circle cx="40" cy="49" r="3.8" fill="#2A2926"/><circle cx="60" cy="49" r="3.8" fill="#2A2926"/></g>';
+  const mouth = { happy: '<path d="M44 57q6 6 12 0" stroke="#2A2926" stroke-width="2.6" fill="none" stroke-linecap="round"/>', cheer: '<path d="M43 56q7 10 14 0z" fill="#B85C6A" stroke="#2A2926" stroke-width="2" stroke-linejoin="round"/>',
+    wow: '<ellipse cx="50" cy="59" rx="4" ry="5" fill="#B85C6A" stroke="#2A2926" stroke-width="2"/>', think: '<path d="M45 59h10" stroke="#2A2926" stroke-width="2.6" stroke-linecap="round"/>' }[mood] || '<path d="M44 57q6 5 12 0" stroke="#2A2926" stroke-width="2.6" fill="none" stroke-linecap="round"/>';
+  const extra = mood === 'cheer' ? '<path d="M14 26l3 7 7 3-7 3-3 7-3-7-7-3 7-3z" fill="#F6C945"/><path d="M86 18l2 5 5 2-5 2-2 5-2-5-5-2 5-2z" fill="#F4A9B4"/>' : mood === 'think' ? '<circle cx="84" cy="22" r="3" fill="#C9C3B6"/><circle cx="91" cy="12" r="4.5" fill="#C9C3B6"/>' : '';
+  return '<svg class="mascot ' + (cls || '') + '" viewBox="0 0 100 100" width="' + (size || 72) + '" height="' + (size || 72) + '" aria-hidden="true">' + extra +
+    '<path d="M50 9c8 0 13 5 19 15l20 37c7 13 0 29-16 30H27C11 90 4 74 11 61l20-37C37 14 42 9 50 9z" fill="#FFFDF8" stroke="#2A2926" stroke-width="2.6" stroke-linejoin="round"/>' +
+    '<path d="M31 70h38v20H31z" fill="#3B5A82"/><path d="M31 70h38" stroke="#2A2926" stroke-width="2.6"/><path d="M31 70v20M69 70v20" stroke="#2A2926" stroke-width="2.6"/>' +
+    '<ellipse cx="31" cy="58" rx="5.5" ry="3.4" fill="#F4C7CC"/><ellipse cx="69" cy="58" rx="5.5" ry="3.4" fill="#F4C7CC"/>' + eyes + mouth + '</svg>';
+}
+function confetti() {
+  if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const box = document.createElement('div'); box.className = 'confetti';
+  const cols = ['#3B5A82', '#7FA3CF', '#F4C7CC', '#F6D98B', '#CFE6D3', '#D8C7A3'];
+  for (let i = 0; i < 46; i++) {
+    const c = document.createElement('i');
+    c.style.left = Math.random() * 100 + 'vw'; c.style.background = cols[i % cols.length];
+    c.style.setProperty('--dx', (Math.random() * 120 - 60) + 'px'); c.style.setProperty('--r', (Math.random() * 720 - 360) + 'deg');
+    c.style.animationDuration = (1.4 + Math.random() * 1.2) + 's'; c.style.animationDelay = (Math.random() * .25) + 's';
+    if (i % 3 === 0) { c.style.borderRadius = '50%'; c.style.width = c.style.height = '9px'; }
+    box.appendChild(c);
+  }
+  document.body.appendChild(box); setTimeout(() => box.remove(), 3000);
+}
 const MYNUM = n => String(n).replace(/\d/g, d => '၀၁၂၃၄၅၆၇၈၉'[d]);
 
 function pageHead(title, my) {
@@ -40,7 +67,7 @@ function endBtn() {
   return NAV.flow ? '<button class="btn pri block" data-a="flownext">' + B('ဆက်သွားမယ် →') + '</button>' : '<button class="btn pri block" data-a="close">' + B('ပြီးပြီ') + '</button>';
 }
 SHEETS.done = function (s) {
-  return sheetHead(s.title) + '<div class="card endcard"><div class="mark">' + ICON.check + '</div><div style="font-size:1.15rem">' + B(s.msg) + '</div></div><div style="margin-top:16px">' + endBtn() + '</div>';
+  return sheetHead(s.title) + '<div class="card endcard">' + MASCOT('happy', 96, 'bob') + '<div style="font-size:1.15rem;margin-top:8px">' + B(s.msg) + '</div></div><div style="margin-top:16px">' + endBtn() + '</div>';
 };
 
 /* ---- 每天的計畫 ---- */
@@ -80,7 +107,8 @@ VIEWS.today = function () {
   const doneN = steps.filter(x => day.done[x.t]).length, nx = nextStep();
   const hr = new Date(now() + 8 * 3600e3).getUTCHours();
   const hi = hr < 11 ? 'မင်္ဂလာနံနက်ခင်းပါ' : hr < 18 ? 'မင်္ဂလာနေ့လယ်ခင်းပါ' : 'မင်္ဂလာညနေခင်းပါ';
-  let h = '<h1 style="margin-top:6px">' + B(hi) + '</h1>';
+  const say = !nx ? 'ဒီနေ့ အရမ်းတော်တယ်！' : doneN ? 'ဆက်လုပ်ကြမယ်။ နည်းနည်းပဲ ကျန်တော့တယ်။' : hi + '။ ဒီနေ့လည်း အတူတူ လေ့လာကြမယ်။';
+  let h = '<div class="hello-row">' + MASCOT(!nx ? 'cheer' : 'smile', 70, 'bob') + '<div class="bubble grow">' + esc(say) + '</div></div>';
   if (S.run && !S.run.end) {
     h += '<button class="bigcard" style="margin-top:14px" data-a="tresume"><span class="ico">' + ICON.chat + '</span><span class="grow"><span class="t">စကားပြော ဆက်လုပ်မယ်</span><span class="d">' + esc(findVar(S.run.vid) ? findVar(S.run.vid).sc.my : '') + '</span></span></button>';
   }
@@ -116,7 +144,7 @@ SHEETS.step = function (s) {
     '<button class="linkbtn" data-a="stepskip">' + esc('ဒါကို ကျော်မယ်') + '</button>';
 };
 SHEETS.alldone = function () {
-  return '<div class="shead"><button class="ib" data-a="close" aria-label="close">' + ICON.x + '</button><span class="grow"></span></div><div class="intro fade"><div class="ico" style="background:var(--ok-soft);color:var(--ok)">' + ICON.check + '</div><h1>ဒီနေ့ ပြီးပါပြီ</h1><p>အရမ်းတော်တယ်။ နေ့တိုင်း နည်းနည်းစီ လုပ်ရင် တိုးတက်မယ်။</p></div><button class="btn pri block" style="margin-top:22px" data-a="close">' + B('ပင်မစာမျက်နှာ') + '</button>';
+  return '<div class="shead"><button class="ib" data-a="close" aria-label="close">' + ICON.x + '</button><span class="grow"></span></div><div class="intro fade">' + MASCOT('cheer', 130, 'bob') + '<h1>ဒီနေ့ ပြီးပါပြီ</h1><p>အရမ်းတော်တယ်။ နေ့တိုင်း နည်းနည်းစီ လုပ်ရင် တိုးတက်မယ်။</p></div><button class="btn pri block" style="margin-top:22px" data-a="close">' + B('ပင်မစာမျက်နှာ') + '</button>';
 };
 function flowNext() {
   stopAll();
@@ -183,9 +211,17 @@ function render() {
     h = (top ? '' : '<header class="top"><div class="brand"><b>' + zy('明白') + '</b></div><button class="gear" data-a="go" data-v="me" aria-label="settings">' + ICON.gear + '</button></header>') +
       (top ? VIEWS[top.v](top) : VIEWS[NAV.tab]());
   }
-  $('#app').innerHTML = '<main class="' + (sh ? 'sheet' : 'page') + '">' + h + '</main>';
+  const key0 = sh ? (sh.v === 'pr' ? 'pr:' + (sh.cur ? sh.cur.id : sh.phase) + ':' + sh.qi : sh.v + ':' + (sh.i != null ? sh.i : '') + ':' + (sh.t || '')) : 'p:' + NAV.tab + ':' + NAV.stack.length + ':' + (NAV.stack.length ? JSON.stringify(NAV.stack[NAV.stack.length - 1]) : '');
+  let anim = '';
+  if (key0 !== lastKey) anim = NAV.dir ? 'enter-' + NAV.dir : (sh && lastKey.split(':')[0] === sh.v ? 'enter-next' : 'enter-fwd');
+  NAV.dir = null;
+  $('#app').innerHTML = '<main class="' + (sh ? 'sheet' : 'page') + ' ' + anim + '">' + h + '</main>';
+  if (sh && !sh._cele) {
+    const win = sh.v === 'alldone' || sh.v === 'done' || (sh.v === 'qres' && sh.res.every(r => r.ok)) || (sh.v === 'prres' && sh.src.ans.length && sh.src.ans.filter(a => a.ok).length / sh.src.ans.length >= .8) || (sh.v === 'talk' && S.run && S.run.end);
+    if (win) { sh._cele = true; setTimeout(confetti, 120); }
+  }
   $('#nav').innerHTML = '<div class="nav-in">' + TABS.map(t => '<button class="' + (NAV.tab === t[0] ? 'on' : '') + '" data-a="tab" data-t="' + t[0] + '">' + t[2] + '<span class="lbl" lang="my">' + esc(t[1]) + '</span></button>').join('') + '</div>';
-  const key = sh ? sh.v + ':' + (sh.i != null ? sh.i : '') + ':' + (sh.ans ? sh.ans.length : '') + ':' + (sh.t || '') : 'p:' + NAV.tab + ':' + NAV.stack.length + ':' + (NAV.stack.length ? JSON.stringify(NAV.stack[NAV.stack.length - 1]) : '');
+  const key = key0;
   if (key !== lastKey && !(sh && sh.v === 'talk')) window.scrollTo(0, 0);
   if (sh && sh.v === 'talk' && !lastKey.startsWith('talk')) window.scrollTo(0, 0);
   lastKey = key;
@@ -193,10 +229,10 @@ function render() {
 
 /* ---- 事件 ---- */
 const ACTS = {
-  tab: el => { stopAll(); NAV.tab = el.dataset.t; NAV.stack = []; NAV.resetArm = false; render(); },
+  tab: el => { stopAll(); NAV.dir = 'tab'; NAV.tab = el.dataset.t; NAV.stack = []; NAV.resetArm = false; render(); },
   go: el => { stopAll(); NAV.stack.push({ v: el.dataset.v, id: el.dataset.id, u: el.dataset.u != null ? +el.dataset.u : null }); render(); },
-  back: () => { stopAll(); NAV.stack.pop(); render(); },
-  close: () => { stopAll(); const s = NAV.sheet; if (s) { clearTimeout(s.timer); clearInterval(s.tick); } NAV.sheet = null; NAV.flow = false; if (S.run && S.run.end) { S.run = null; save(); } render(); },
+  back: () => { stopAll(); NAV.dir = 'back'; NAV.stack.pop(); render(); },
+  close: () => { stopAll(); NAV.dir = 'back'; const s = NAV.sheet; if (s) { clearTimeout(s.timer); clearInterval(s.tick); } NAV.sheet = null; NAV.flow = false; if (S.run && S.run.end) { S.run = null; save(); } render(); },
   flowstart: () => { NAV.flow = true; const nx = nextStep(); if (nx) { NAV.sheet = { v: 'step', t: nx.t }; render(); } },
   flownext: () => { const s = NAV.sheet; if (s) { clearTimeout(s.timer); clearInterval(s.tick); } flowNext(); },
   stepgo: () => runTask(NAV.sheet.t),

@@ -179,7 +179,7 @@ NODE.end = function (n, f) {
   const lab = { text: ['看文字完成', 'စာကြည့်ပြီး ပြီးမြောက်'], listen: ['只用聽就完成', 'နားထောင်ရုံနဲ့ ပြီးမြောက်'], repair: ['求助後完成', 'အကူအညီတောင်းပြီး ပြီးမြောက်'] }[t.kind];
   const other = f.sc.vars.find(v => v.lv === f.v.lv && v.id !== f.v.id);
   const up = f.sc.vars.find(v => v.lv === f.v.lv + 1 && !v.tr);
-  let h = '<div class="card endcard' + (n.res === 'late' ? ' late' : '') + '"><div class="mark">' + ICON.check + '</div><div style="font-size:1.05rem;line-height:2">' + zy(n.text) + '</div>' + MY(n.textMy) +
+  let h = '<div class="card endcard' + (n.res === 'late' ? ' late' : '') + '">' + MASCOT(n.res === 'late' ? 'happy' : 'cheer', 96, 'bob') + '<div style="font-size:1.05rem;line-height:2;margin-top:6px">' + zy(n.text) + '</div>' + MY(n.textMy) +
     '<div class="row" style="justify-content:center;margin-top:12px;gap:6px"><span class="pill blue">' + esc(lab[0]) + '</span>' + (r.help ? '<span class="pill">' + esc('求助 ' + r.help + ' 次') + '</span>' : '') + '</div>';
   if (t.kind === 'text') h += '<p class="small muted ui" style="margin-top:10px">' + esc('နောက်တစ်ခါ စာမပြဘဲ နားထောင်ရုံနဲ့ စမ်းကြည့်မယ်။') + '</p>';
   h += '</div><div class="btns" style="margin-top:14px">';
