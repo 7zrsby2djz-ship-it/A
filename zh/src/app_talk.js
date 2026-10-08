@@ -17,40 +17,35 @@ function recommendVar() {
 }
 
 VIEWS.talk = function () {
-  let h = '<p class="small muted" style="margin:4px 2px 12px">' + zy('課本沒教、但每天會聽到的話。先聽懂對方，再選怎麼回答。') + '<small class="my">စာအုပ်ထဲမပါပေမယ့် နေ့တိုင်းကြားရတဲ့ စကား။ တစ်ဖက်လူကို အရင်နားလည်၊ ပြီးမှ ဘယ်လိုဖြေမလဲ ရွေး။</small></p>';
+  let h = '<p class="muted ui" style="margin:4px 2px 14px">' + esc('စာအုပ်ထဲမပါပေမယ့် နေ့တိုင်းကြားရတဲ့ စကား။ တစ်ဖက်လူကို အရင်နားထောင်ပြီး ဘယ်လိုပြန်ပြောမလဲ ရွေး။') + '</p>';
   if (S.run && !S.run.end) {
     const f = findVar(S.run.vid);
-    if (f) h += '<button class="card resume row" style="width:100%;text-align:left;margin-bottom:12px" data-a="tresume"><span class="grow">' + T('接著練：' + f.sc.name, 'ဆက်လေ့ကျင့်') + '</span><span class="arr">›</span></button>';
+    if (f) h += '<button class="bigcard pri" style="margin-bottom:12px" data-a="tresume"><span class="ico">' + ICON.play + '</span><span class="grow"><span class="t">ဆက်လုပ်မယ်</span><span class="d">' + esc(f.sc.my) + '</span></span></button>';
   }
-  h += '<div class="list">';
   TALK.forEach(sc => {
-    h += '<button class="scene" data-a="go" data-v="scene" data-id="' + sc.id + '"><span class="mk">' + (ICON[SC_ICON[sc.id]] || ICON.chat) + '</span><span class="grow"><b style="font-weight:500">' + zy(sc.name) + '</b><small class="my">' + esc(sc.my) + '</small>' +
+    const n = sceneDone(sc);
+    h += '<button class="bigcard" data-a="go" data-v="scene" data-id="' + sc.id + '"><span class="ico">' + (ICON[SC_ICON[sc.id]] || ICON.chat) + '</span><span class="grow"><span class="t">' + esc(sc.my) + '</span><span class="d">' + esc(sc.name) + '</span>' +
       '<span class="dots" style="margin-top:6px">' + sc.vars.map(v => { const r = varRank(v.id); return '<i class="' + (r === 'text' ? 't' : r ? 'l' : '') + '"></i>'; }).join('') + '</span></span><span class="arr">›</span></button>';
   });
-  h += '</div><p class="tiny" style="margin:12px 4px">' + esc('● 淺棕＝看文字完成　● 藍＝只用聽完成') + '</p>';
   return h;
 };
 
 VIEWS.scene = function (p) {
-  const sc = TALK.find(x => x.id === p.id);
-  let h = pageHead(sc.name, sc.my);
-  h += '<div class="card paper"><div class="small"><span class="muted">' + zy('目標') + '</span>　' + zy(sc.goal) + '</div>' + MY(sc.goalMy) +
-    '<div class="small" style="margin-top:6px"><span class="muted">' + zy('地點') + '</span>　' + zy(sc.place) + '</div><div class="tiny" style="margin-top:6px">' + zy(sc.sim) + '</div></div>';
-  h += '<div class="sec"><h2>' + T('先學這些字', 'ဒီစကားလုံးတွေ အရင်လေ့လာ') + '</h2><button class="btn sm" data-a="scwords" data-id="' + sc.id + '">' + T('全部學一次', 'အကုန်လေ့လာ') + '</button></div><div class="list">';
-  sc.words.forEach((w, i) => {
-    const id = 's' + sc.id + i;
-    h += '<div class="li"><span class="grow"><span style="font-size:1.08rem">' + zy(w[0]) + '</span><small class="my">' + esc(w[1]) + '</small>' + (w[2] ? '<small class="tiny" style="display:block">' + zy(w[2]) + '</small>' : '') + '</span><button class="play sm" data-a="say" data-t="' + esc(w[0]) + '">' + ICON.sound + '</button>' + starBtn(id) + '</div>';
-  });
-  h += '</div>';
+  const sc = TALK.find(x => x.id === p.id), nv = nextVar(sc);
+  let h = pageHead('', sc.my);
+  h += '<div class="card paper"><div class="ui">' + esc('ရည်မှန်းချက်：' + sc.goalMy) + '</div><div class="small muted" style="margin-top:4px">' + zy(sc.place) + '</div></div>';
+  h += '<button class="btn pri block" style="margin-top:14px;min-height:66px;font-size:1.15rem" data-a="tstart" data-id="' + nv.id + '">' + B('စမယ်（အဆင့် ' + MYNUM(nv.lv) + (nv.tr ? '・ပြောပုံပြောင်း' : '') + '）') + '</button>';
+  h += '<button class="btn block" style="margin-top:10px" data-a="scwords" data-id="' + sc.id + '">' + B('ဒီနေရာမှာ သုံးတဲ့ စကားလုံး ' + MYNUM(sc.words.length) + ' လုံး အရင်လေ့လာမယ်') + '</button>';
+  h += '<details class="more"><summary>' + esc('အဆင့်အားလုံး ›') + '</summary>';
   [1, 2, 3].forEach(lv => {
-    h += '<div class="sec"><h2>' + esc('Lv.' + lv) + '</h2></div><div class="card"><div class="small">' + zy(sc.axis[lv][0]) + '</div>' + MY(sc.axis[lv][1]) + '<div class="btns two" style="margin-top:12px">';
+    h += '<div class="card" style="margin-top:10px"><div class="ui" style="font-weight:600">' + esc('အဆင့် ' + MYNUM(lv)) + '</div><div class="small muted ui">' + esc(sc.axis[lv][1]) + '</div><div class="btns two" style="margin-top:10px">';
     sc.vars.filter(v => v.lv === lv).forEach(v => {
       const r = varRank(v.id);
-      const lab = r ? { text: '看字完成', listen: '純聽完成', repair: '求助後完成' }[r] : '';
-      h += '<button class="btn' + (r ? '' : ' pri') + '" data-a="tstart" data-id="' + v.id + '">' + T(v.tr ? '換說法' : '一般', v.tr ? 'ပြောပုံပြောင်း' : 'ပုံမှန်') + (lab ? '<small class="tiny" style="display:block">' + esc(lab) + '</small>' : '') + '</button>';
+      h += '<button class="btn sm' + (r ? '' : ' pri') + '" data-a="tstart" data-id="' + v.id + '">' + B((v.tr ? 'ပြောပုံပြောင်း' : 'ပုံမှန်') + (r ? ' ✓' : '')) + '</button>';
     });
     h += '</div></div>';
   });
+  h += '</details>';
   return h;
 };
 
@@ -98,7 +93,7 @@ SHEETS.talk = function () {
   const r = S.run, f = findVar(r.vid), n = curNode();
   let h = '<div class="shead"><button class="ib" data-a="close" aria-label="關閉">' + ICON.x + '</button><span class="grow">' + zy(f.sc.name) + ' <span class="pill">' + esc('Lv.' + f.v.lv + (f.v.tr ? ' 換說法' : '')) + '</span></span>' +
     '<button class="ib' + (r.mode === 'full' ? ' on' : '') + '" data-a="tmode" aria-label="文字">' + ICON.text + '</button></div>';
-  h += '<div class="board"><div class="g"><b>' + zy('目標') + '</b>　' + zy(f.sc.goal) + '</div>' +
+  h += '<div class="board"><div class="g ui">' + esc('ရည်မှန်းချက်：' + f.sc.goalMy) + '</div>' +
     (r.board.length ? '<div class="got">' + r.board.map(b => '<span>' + esc(b[0]) + '</span>').join('') + '</div>' : '') + '</div>';
   if (r.i === 0 && !r.hist.length) h += '<div class="note" style="margin-bottom:12px"><div class="small">' + zy(f.v.setup) + '</div>' + MY(f.v.setupMy) + '</div>';
   h += '<div class="chat">';
@@ -113,20 +108,20 @@ const NODE = {};
 NODE.hear = function (n, f) {
   const ns = S.run.ns, who = n.bc ? '📢 ' + (n.who || '廣播') : (n.who || f.v.who || '');
   const qs = n.q || [];
-  let h = '<div class="bub them cur' + (n.bc ? ' bc' : '') + '"><span class="who">' + esc(who) + (ns.easy ? '　· ' + esc('簡單說法') : '') + '</span>';
+  let h = '<div class="bub them cur' + (n.bc ? ' bc' : '') + '"><span class="who">' + esc(who) + (ns.easy ? '　· ' + esc('လွယ်တဲ့ပြောပုံ') : '') + '</span>';
   h += ns.show ? '<div>' + zy(hearText(n)) + '</div>' : '<button class="hidden-text" data-a="tshow">' + esc('・・・・・') + ' <span class="pill blue" style="letter-spacing:0">' + esc('顯示文字') + '</span></button>';
   if (ns.qdone || ns.my) h += '<span class="my" lang="my" style="display:block">' + esc(ns.easy && n.easyMy ? n.easyMy : n.my) + '</span>';
   h += '</div>';
   // 求助：按鈕就是你可以說的話
   h += '<div class="repair">';
   if (n.bc) {
-    h += '<button data-a="trep" data-k="again">↺ ' + zy('重播') + '</button><button data-a="trep" data-k="slow">' + zy('放慢') + '</button>';
+    h += '<button data-a="trep" data-k="again" class="ui">↺ ' + esc('ထပ်နားထောင်') + '</button><button data-a="trep" data-k="slow" class="ui">' + esc('ဖြည်းဖြည်း') + '</button>';
   } else {
     h += '<button data-a="trep" data-k="again">' + zy(REPAIR.again[0]) + '</button><button data-a="trep" data-k="slow">' + zy(REPAIR.slow[0]) + '</button>' +
       '<button data-a="trep" data-k="easy"' + (n.easy && !ns.easy ? '' : ' disabled') + '>' + zy(REPAIR.easy[0]) + '</button>';
   }
   h += '</div>';
-  if (n.bc) h += '<p class="tiny" style="margin:4px 2px">' + esc('廣播只能重播或放慢，不能請它說簡單一點。') + '</p>';
+  if (n.bc) h += '<p class="small muted ui" style="margin:4px 2px">' + esc('ကြေညာချက်ကို ထပ်နားထောင် ဒါမှမဟုတ် ဖြည်းဖြည်းနားထောင်လို့ပဲ ရတယ်။') + '</p>';
   if (!ns.qdone && qs.length) {
     const q = qs[ns.qi], ord = ns.qord[ns.qi];
     h += '<div class="qbox card" style="margin-top:12px"><div class="q">' + zy(q.q) + MY(q.qMy) + '</div>';
@@ -137,31 +132,31 @@ NODE.hear = function (n, f) {
     });
     if (ns.sel != null && ns.sel !== q.a) {
       const key = n.zh.indexOf(q.o[q.a][0]) >= 0 ? q.o[q.a][0] : null;
-      h += '<div class="fb bad"><div>' + zy('答案是：' + q.o[q.a][0]) + '</div><div class="why small">' + (key ? zy('可以先確認這一句：「' + key + '」') : zy('可以按「顯示文字」再看一次，或請對方說慢一點。')) + '</div></div>' +
-        '<button class="btn block" style="margin-top:10px" data-a="tqnext">' + T('知道了', 'နားလည်ပြီ') + '</button>';
+      h += '<div class="fb bad"><div><span class="ui">' + esc('အဖြေ：') + '</span>' + zy(q.o[q.a][0]) + '</div><div class="why small">' + (key ? '<span class="ui">' + esc('ဒီစာကြောင်းကို ပြန်နားထောင်：') + '</span>' + zy('「' + key + '」') : '<span class="ui">' + esc('「စာ ကြည့်မယ်」ကိုနှိပ်ပြီး ပြန်ကြည့်ပါ။') + '</span>') + '</div></div>' +
+        '<button class="btn block" style="margin-top:10px" data-a="tqnext">' + B('နားလည်ပြီ') + '</button>';
     }
     h += '</div>';
   } else {
     if (n.learn) h += '<div class="note blue small" style="margin-top:12px">✓ ' + zy(n.learn[0]) + MY(n.learn[1]) + '</div>';
-    h += '<button class="btn pri block" style="margin-top:12px" data-a="tnext">' + T('繼續', 'ဆက်') + '</button>';
+    h += '<button class="btn pri block" style="margin-top:12px" data-a="tnext">' + B('ဆက်သွားမယ် →') + '</button>';
   }
   return h;
 };
 NODE.say = function (n) {
   const ns = S.run.ns;
-  let h = '<div class="card"><div class="tiny">' + T('換你先說', 'မင်းအရင်ပြော') + '</div><div style="font-weight:500;margin-top:4px">' + zy(n.intent) + '</div>' + MY(n.intentMy);
+  let h = '<div class="card"><div class="tiny">' + B('မင်း အရင်ပြော') + '</div><div style="font-weight:500;margin-top:4px">' + zy(n.intent) + '</div>' + MY(n.intentMy);
   h += '<div class="blocks">' + n.skel.map((b, i) => (i ? '<span class="plus">＋</span>' : '') + '<span class="b">' + zy(b[0]) + '<small class="my">' + esc(b[1]) + '</small></span>').join('') + '</div>';
-  if (!ns.rev) h += '<p class="small muted">' + T('先自己大聲說出來，再看參考答案。', 'ကိုယ်တိုင် အသံထွက်ပြောပြီးမှ အဖြေကြည့်။') + '</p><button class="btn pri block" data-a="trev">' + T('看參考答案', 'နမူနာအဖြေ ကြည့်') + '</button>';
+  if (!ns.rev) h += '<p class="small muted">' + B('အသံထွက်ပြီး ကိုယ်တိုင် အရင်ပြောကြည့်ပါ။ ပြီးမှ အဖြေကြည့်။') + '</p><button class="btn pri block" data-a="trev">' + B('နမူနာအဖြေ ကြည့်မယ်') + '</button>';
   else {
     h += '<hr class="thin"><div class="row"><div class="grow" style="font-size:1.1rem;line-height:2.1">' + zy(n.ans) + '</div><button class="play sm" data-a="say" data-t="' + esc(n.ans) + '">' + ICON.sound + '</button></div>' + MY(n.ansMy);
-    if (n.alt) n.alt.forEach(a => { h += '<div class="row small" style="margin-top:6px"><span class="tiny">' + zy('也可以') + '</span><span class="grow">' + zy(a) + '</span><button class="play sm" data-a="say" data-t="' + esc(a) + '">' + ICON.sound + '</button></div>'; });
-    h += '<button class="btn pri block" style="margin-top:14px" data-a="tsaid">' + T('我說了，繼續', 'ပြောပြီးပြီ၊ ဆက်') + '</button>';
+    if (n.alt) n.alt.forEach(a => { h += '<div class="row small" style="margin-top:6px"><span class="small muted ui">' + esc('ဒါလည်းရ') + '</span><span class="grow">' + zy(a) + '</span><button class="play sm" data-a="say" data-t="' + esc(a) + '">' + ICON.sound + '</button></div>'; });
+    h += '<button class="btn pri block" style="margin-top:14px" data-a="tsaid">' + B('ပြောပြီးပြီ →') + '</button>';
   }
   return h + '</div>';
 };
 NODE.act = function (n) {
   const ns = S.run.ns;
-  let h = '<div class="card"><div style="font-weight:500">' + zy(n.q) + '</div>' + MY(n.qMy) + '<div style="margin-top:12px">';
+  let h = '<div class="card"><div class="ui" style="font-weight:600;font-size:1.08rem">' + esc(n.qMy) + '</div><div class="small muted">' + zy(n.q) + '</div>' + '<div style="margin-top:12px">';
   ns.ord.forEach(k => {
     const o = n.o[k];
     let c = '';
@@ -174,8 +169,8 @@ NODE.act = function (n) {
     const o = n.o[ns.sel];
     const lab = { ok: ['可以', 'ရတယ်'], part: ['差一點', 'နည်းနည်းလိုသေး'], bad: ['會出問題', 'ပြဿနာဖြစ်မယ်'] }[o.r];
     h += '<div class="fb ' + o.r + '"><b>' + T(lab[0], lab[1]) + '</b>' + (o.why ? '<div class="why">' + zy(o.why) + MY(o.whyMy) + '</div>' : '') + '</div>';
-    if (o.r === 'ok' || o.go) h += '<button class="btn pri block" style="margin-top:12px" data-a="tactnext">' + T('繼續', 'ဆက်') + '</button>';
-    else h += '<p class="tiny" style="margin-top:8px">' + esc('再選一次。') + '</p>';
+    if (o.r === 'ok' || o.go) h += '<button class="btn pri block" style="margin-top:12px" data-a="tactnext">' + B('ဆက်သွားမယ် →') + '</button>';
+    else h += '<p class="small ui" style="margin-top:8px">' + esc('နောက်တစ်ခု ပြန်ရွေးပါ။') + '</p>';
   }
   return h + '</div>';
 };
@@ -186,11 +181,12 @@ NODE.end = function (n, f) {
   const up = f.sc.vars.find(v => v.lv === f.v.lv + 1 && !v.tr);
   let h = '<div class="card endcard' + (n.res === 'late' ? ' late' : '') + '"><div class="mark">' + ICON.check + '</div><div style="font-size:1.05rem;line-height:2">' + zy(n.text) + '</div>' + MY(n.textMy) +
     '<div class="row" style="justify-content:center;margin-top:12px;gap:6px"><span class="pill blue">' + esc(lab[0]) + '</span>' + (r.help ? '<span class="pill">' + esc('求助 ' + r.help + ' 次') + '</span>' : '') + '</div>';
-  if (t.kind === 'text') h += '<p class="tiny" style="margin-top:10px">' + esc('下次這段會先不顯示文字，試試只用聽。') + '</p>';
+  if (t.kind === 'text') h += '<p class="small muted ui" style="margin-top:10px">' + esc('နောက်တစ်ခါ စာမပြဘဲ နားထောင်ရုံနဲ့ စမ်းကြည့်မယ်။') + '</p>';
   h += '</div><div class="btns" style="margin-top:14px">';
-  if (other) h += '<button class="btn pri" data-a="tstart" data-id="' + other.id + '">' + T(other.tr ? '試試換說法' : '練一般版本', other.tr ? 'ပြောပုံပြောင်း စမ်း' : 'ပုံမှန် စမ်း') + '</button>';
-  else if (up) h += '<button class="btn pri" data-a="tstart" data-id="' + up.id + '">' + T('下一級', 'နောက်အဆင့်') + '</button>';
-  h += '<button class="btn" data-a="tstart" data-id="' + r.vid + '">' + T('再練一次', 'ထပ်လေ့ကျင့်') + '</button><button class="btn ghost" data-a="close">' + T('回去', 'ပြန်') + '</button></div>';
+  if (NAV.flow) return h + endBtn() + '<button class="linkbtn" data-a="tstart" data-id="' + r.vid + '">' + esc('ထပ်လေ့ကျင့်မယ်') + '</button></div>';
+  if (other) h += '<button class="btn pri" data-a="tstart" data-id="' + other.id + '">' + B(other.tr ? 'ပြောပုံပြောင်းပြီး စမ်းမယ်' : 'ပုံမှန် စမ်းမယ်') + '</button>';
+  else if (up) h += '<button class="btn pri" data-a="tstart" data-id="' + up.id + '">' + B('နောက်အဆင့်') + '</button>';
+  h += '<button class="btn" data-a="tstart" data-id="' + r.vid + '">' + B('ထပ်လေ့ကျင့်မယ်') + '</button><button class="btn ghost" data-a="close">' + B('ပြန်သွားမယ်') + '</button></div>';
   return h;
 };
 function talkAct(a, k) {

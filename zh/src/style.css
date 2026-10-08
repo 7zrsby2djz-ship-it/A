@@ -257,3 +257,86 @@ body:not(.hide-zy) .tiny,body:not(.hide-zy) .stat span,body:not(.hide-zy) .seg b
 .wordcard .src{right:auto;left:62px;top:11px}
 .z{display:inline}
 .passage.notice{border-style:dashed;background:var(--paper)}
+
+/* ===== v2：大字、緬文介面、少即是多 ===== */
+:root{--fs:20px;--nav:76px;--r:18px}
+:root[data-size="s"]{--fs:18px}
+:root[data-size="l"]{--fs:23px}
+.ui{font-family:var(--my);line-height:1.75;font-weight:inherit}
+.ui-sub{display:block;font-family:var(--my);font-size:.82em;color:var(--ink2);line-height:1.7;font-weight:400}
+.tiny{font-size:.8rem}
+.small{font-size:.92rem}
+h1{font-size:1.45rem}
+h2{font-size:1.15rem}
+.btn{min-height:58px;border-radius:16px;font-size:1.02rem;padding:10px 18px}
+.btn.sm{min-height:46px;font-size:.92rem}
+.btn .ui{font-weight:500}
+.ib{width:50px;height:50px;border-radius:14px}
+.icon{width:24px;height:24px}
+.li{padding:16px;gap:14px;min-height:68px}
+.li .no{display:none}
+.nav-in{grid-template-columns:repeat(4,1fr)}
+.nav button{font-size:.78rem;gap:4px}
+.nav button svg{width:26px;height:26px}
+.nav .lbl{font-family:var(--my);font-size:.84rem;line-height:1.3}
+.top{padding:18px 2px 8px}
+.gear{width:50px;height:50px;border-radius:14px;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;background:var(--card)}
+/* 首頁大按鈕 */
+.hero{margin-top:18px;width:100%;border-radius:28px;background:var(--blue);color:#fff;padding:30px 22px;text-align:center;display:block;box-shadow:0 6px 18px rgba(59,90,130,.25)}
+:root[data-theme="dark"] .hero{color:#14202f}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .hero{color:#14202f}}
+.hero .big{font-family:var(--my);font-size:2.1rem;font-weight:600;line-height:1.6;display:block}
+.hero .sub{font-family:var(--my);font-size:1rem;opacity:.85;display:block;line-height:1.7}
+.hero .ring{display:flex;justify-content:center;gap:8px;margin-top:14px}
+.hero .ring i{width:12px;height:12px;border-radius:50%;border:2px solid currentColor;opacity:.9}
+.hero .ring i.on{background:currentColor}
+.hero.done{background:var(--ok-soft);color:var(--ok);box-shadow:none;border:1px solid var(--ok)}
+.steps{margin-top:18px}
+.step{display:flex;align-items:center;gap:14px;padding:14px 16px;border-top:1px solid var(--line);width:100%;text-align:left}
+.step:first-child{border-top:0}
+.step .ck{width:34px;height:34px;border-radius:50%;border:2px solid var(--line2);display:flex;align-items:center;justify-content:center;flex:none;font-size:.9rem;color:var(--ink3)}
+.step.done .ck{background:var(--blue);border-color:var(--blue);color:#fff}
+.step.done .ui{color:var(--ink2)}
+.step.now{background:var(--blue-soft)}
+/* 步驟介紹 */
+.intro{text-align:center;padding:30px 10px 10px}
+.intro .num{font-family:var(--my);color:var(--ink2);font-size:.95rem}
+.intro .ico{width:84px;height:84px;border-radius:26px;margin:14px auto;background:var(--blue-soft);color:var(--blue);display:flex;align-items:center;justify-content:center}
+.intro .ico svg{width:44px;height:44px}
+.intro h1{font-family:var(--my);font-size:1.6rem;line-height:1.7;font-weight:600}
+.intro p{font-family:var(--my);font-size:1.05rem;color:var(--ink2);line-height:1.9;margin:8px 0 0}
+.linkbtn{display:block;margin:14px auto 0;color:var(--ink2);font-family:var(--my);font-size:.95rem;padding:10px 16px}
+/* 大卡片選單 */
+.bigcard{display:flex;align-items:center;gap:16px;width:100%;text-align:left;padding:20px 18px;border:1px solid var(--line);border-radius:22px;background:var(--card)}
+.bigcard+.bigcard{margin-top:12px}
+.bigcard .ico{width:58px;height:58px;border-radius:18px;background:var(--blue-soft);color:var(--blue);display:flex;align-items:center;justify-content:center;flex:none}
+.bigcard .ico svg{width:30px;height:30px}
+.bigcard .t{font-family:var(--my);font-size:1.12rem;font-weight:600;line-height:1.7;display:block}
+.bigcard .d{font-family:var(--my);font-size:.88rem;color:var(--ink2);line-height:1.7;display:block}
+.bigcard.pri{background:var(--blue);border-color:var(--blue);color:#fff}
+.bigcard.pri .ico{background:rgba(255,255,255,.18);color:#fff}
+.bigcard.pri .d{color:rgba(255,255,255,.85)}
+/* 學習卡變大 */
+.wordcard{padding:30px 18px 24px;border-radius:24px}
+.wordcard .big{font-size:3.6rem}
+.wordcard .big.long{font-size:2.5rem}
+.wordcard .mean{font-size:1.35rem}
+.wordcard .mean .my,.wordcard .mean.my{font-size:1em;color:var(--ink)}
+.ex .zh{font-size:1.2rem}
+.ex .my{font-size:1rem}
+.opt{min-height:66px;padding:16px 18px;font-size:1.08rem;border-radius:18px}
+.opt .k{width:30px;height:30px;font-size:.85rem}
+.passage{font-size:1.18rem}
+.bub{font-size:1.1rem}
+.repair button{font-size:.92rem;padding:8px 14px}
+.chip{font-size:.95rem;padding:8px 14px}
+.seg button{font-size:.95rem;padding:10px 6px}
+.fb{font-size:1rem}
+.sheet .shead .grow{font-family:var(--my);font-size:1rem}
+.myw .my{color:var(--ink2)}
+.hide-my .myw:not(.force) .my{display:none}
+.my-reveal{font-family:var(--my)}
+.more{margin-top:16px}
+.more summary{font-family:var(--my);color:var(--ink2);padding:12px 4px;cursor:pointer;list-style:none}
+.more summary::-webkit-details-marker{display:none}
+.setlbl{font-family:var(--my);line-height:1.7}

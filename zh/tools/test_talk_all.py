@@ -1,12 +1,13 @@
 """每一段對話都走到結局（含故意選錯）；限時聽力與 CAT 聽力倒數。"""
 from playwright.sync_api import sync_playwright
 import random
-STUB = open(__file__.replace('test_talk_all.py', 'test_app.py')).read().split('STUB = """')[1].split('"""')[0]
+import os
+STUB = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'tts_stub.js')).read()
 errs = []
 with sync_playwright() as pw:
     b = pw.chromium.launch(); ctx = b.new_context(viewport={'width': 390, 'height': 844}); ctx.add_init_script(STUB); p = ctx.new_page()
     p.on('pageerror', lambda e: errs.append(str(e)))
-    p.goto('http://localhost:8765/index.html'); p.click('[data-t="scene"]')
+    p.goto('http://localhost:8765/index.html'); p.wait_for_timeout(300)
     vids = p.evaluate("TALK.flatMap(sc=>sc.vars.map(v=>v.id))")
     for rnd in range(2):
         for vid in vids:

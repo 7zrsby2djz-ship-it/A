@@ -15,6 +15,14 @@
 
 `data/chin_words.json` 由 `tools/extract_chin.py` 從 Flutter 專案的 Dart 檔逐字抽出；`tools/validate.cjs` 會逐欄比對原始檔，確認 800 字沒有被改動。App 不顯示拼音（只用注音）。
 
+## 介面（v2，2026-10-09 依緬恩的回饋改版）
+
+- 按鈕、標題、說明全部只用緬文（`B()`、`T()` 的緬文）；學習內容才是中文（含注音、緬文翻譯開關）。
+- 首頁只有一個大按鈕「စမယ်」：一步一步帶著做完今天（新字 → 複習 → 對話 → 介面字 → 聽力），每一步先有說明畫面，可略過；中途按 ✕ 會停下。
+- 底部 4 個分頁：ဒီနေ့（今天）、စကားပြော（對話）、စကားလုံး（單字＋生字本）、စာမေးပွဲ（考試）。設定在首頁右上角齒輪。
+- 字變大（基本 20px，可選 18／20／23），按鈕至少 58px 高；以 iPhone Pro（402×874）實測。
+- 考試頁只有四個大選項（聽力練習、閱讀練習、CAT 程度檢查、模擬考），其他條件收在「ကိုယ်တိုင် ရွေးမယ်」裡。
+
 ## 功能
 
 - **今天**：新字 5 個（學完 5 秒測驗）→ 到期複習 → 一段對話 → 介面字 3 個＋畫面題 → 聽力 5 題。
@@ -51,7 +59,7 @@
 | `tools/test_exam.py` | 聽讀各模式實測 |
 | `src/app_main.js` | 今天、我的、設定、事件 |
 | `src/style.css` | 版面（淺色／深色） |
-| `tools/test_app.py`、`tools/test_talk_all.py` | 瀏覽器實測（先在 `zh/` 執行 `python3 -m http.server 8765`） |
+| `tools/test_v2.py`、`tools/test_exam.py`、`tools/test_talk_all.py` | 瀏覽器實測（先在 `zh/` 執行 `python3 -m http.server 8765`；假語音在 `tools/tts_stub.js`） |
 
 新增對話情境：照 `talk_core.js` 開頭的格式寫一個 `talk_xxx.js`，加到 `tools/collect.cjs`、`tools/assemble.cjs`、`tools/validate.cjs` 的檔案清單，再 `./build.sh`。
 

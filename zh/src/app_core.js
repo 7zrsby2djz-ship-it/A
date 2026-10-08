@@ -56,9 +56,10 @@ function myt(text) { // 緬文（** 標記變粗體）
   return esc(text).replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>').replace(/\*\*/g, '');
 }
 /* T(中文, 緬文)：介面標籤。中文有注音，緬文可整體隱藏 */
-function T(zh, my) { return zy(zh) + (my ? '<small class="my" lang="my">' + esc(my) + '</small>' : ''); }
+function T(zh, my) { return my ? '<span class="ui" lang="my">' + esc(my) + '</span>' : zy(zh); }
+const B = my => '<span class="ui" lang="my">' + esc(my) + '</span>'; // 只有緬文的介面字
 function MY(text, cls) { // 可「點一下看緬文」的緬文段落
-  return '<span class="myw ' + (cls || '') + '"><button class="reveal my-reveal" data-a="reveal">' + zy('看緬文') + '</button><span class="my" lang="my">' + myt(text) + '</span></span>';
+  return '<span class="myw ' + (cls || '') + '"><button class="reveal my-reveal" data-a="reveal">မြန်မာလို ကြည့်</button><span class="my" lang="my">' + myt(text) + '</span></span>';
 }
 const ZY = zy;
 
