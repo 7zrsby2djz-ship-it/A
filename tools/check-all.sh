@@ -13,7 +13,7 @@ step() { printf '\n== %s\n' "$*"; }
 step "教材檢查"; node tools/validate.js; node listening-jp/validate.js
 step "建置"; ./build.sh
 step "生成檔是否已提交（工作目錄 vs 暫存區）"
-GEN="index.html listening-jp/index.html src/oral.generated.js src/oral.generated.css kana-rebuild/generated oral-audio/generated"
+GEN="index.html sw.js listening-jp/index.html src/oral.generated.js src/oral.generated.css kana-rebuild/generated oral-audio/generated"
 if ! git diff --quiet -- $GEN; then
   git diff --stat -- $GEN
   echo "FAIL: 建置結果和 git add 的版本不同。請確認改的是來源，重建後 git add 再跑一次。"; exit 1

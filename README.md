@@ -153,6 +153,14 @@
 - 根目錄 `manifest.webmanifest`（standalone）、`apple-touch-icon.png`（180）、`icon-192/512.png`、`favicon-32.png`、`favicon.ico`；圖示來源 `tools/icon/icon.svg`，改圖後跑 `node tools/icon/make-icons.cjs`（需要 Playwright，build.sh 不會跑）。
 - **注意**：iPhone 從主畫面打開的 App 和 Safari 分開存 localStorage。加入主畫面前先在 Safari「我的 → 複製備份」，再到主畫面 App「貼上備份還原」；口語聽力在它的設定頁另外匯出／匯入。
 
+## 離線可用（service worker）
+- `src/sw.js` → `./build.sh` 跑 `tools/build-sw.cjs` 產生根目錄 `sw.js`（版本＝`index.html` 的雜湊，**不要手改**）。
+- 只在 https 正式網址註冊（GitHub Pages）；Claude 成品（iframe）、`file://`、一般 http 都不註冊。本機測試用 `http://127.0.0.1:<port>/?swtest=1`。
+- 首頁 network-first：先上網拿最新版，3 秒沒回應或離線才用快取，之後背景更新；圖示／manifest 用快取。`zh/`、`listening-jp/` 等其他路徑完全不攔截。
+- 換版：`index.html` 一變 `sw.js` 就變，瀏覽器自動換新 worker 並刪舊快取（`bnk-app-<版本>`）。
+- **出問題時怎麼解除**：App「我的 → 清除快取並重新載入」（取消註冊＋刪 `bnk-` 快取，不動進度）。Safari 也可到「設定 → Safari → 進階 → 網站資料」刪掉 `7zrsby2djz-ship-it.github.io`（這會連進度一起刪，先備份）。要整個停用：刪掉 `src/app.js` 最後的 `swAllowed()` 註冊並在 `src/sw.js` 改成只做 `self.registration.unregister()`。
+- 測試：`tools/test-sw.extra.cjs`（離線、換版、慢網路、清除）。
+
 ## 存檔
 - `localStorage`（key：`bnk-state-v1`）；在 Claude artifact 裡登入時也存到使用者帳號（只有本人看得到）。
 - **存檔保護**：任何存檔（`bnk-state-v1`、`bnk-today5-v1`、`bnk-lockplay-v1`、口語 `kiku-independent-v1`）讀不懂時，先把原始文字另存到新的 `<key>.bak-<時間>`（舊備份永遠不覆蓋），才用新進度繼續；「我的」會顯示並可複製。存不了時跳一次提示。啟動時請瀏覽器保留資料（`navigator.storage.persist()`）。不在 Claude 裡（例如 GitHub Pages）時，口語設定頁會顯示「匯出／匯入進度」。
