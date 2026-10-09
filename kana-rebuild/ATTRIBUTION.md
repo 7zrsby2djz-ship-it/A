@@ -47,6 +47,8 @@
 
 ## 1.1 版新增教材與真人清音（2026-10-07）
 
+> 2026-10-09：真人錄音已從 App 與倉庫移除，改用裝置內建語音；以下為歷史紀錄。
+
 `expansion.cjs` 追加 178 個人工編輯的旅行／日常詞，與原版合併為 324 詞、325 個代表詞連結。正常寫法、假名讀音、輔助拼音、繁中詞義與易混用法由本次編輯；來源接觸證據及可匹配的 OpenJLPT 近似難度仍由既有生成器核對。衍生教材繼續按上述 CC BY-SA 4.0 提供，不因此變更既有 App 程式碼的授權。
 
 真人單音來自 **Hakatanoshio117117／Wikimedia Commons**，44 個基本清音。逐檔 API metadata 均顯示作者自作、`LicenseShortName: Public domain`、`License: pd`；假名描述、作者、原始頁面、來源格式與雜湊列在 [audio/manifest.json](audio/manifest.json)，原始 metadata 保存於 [audio/source-metadata.json](audio/source-metadata.json)。

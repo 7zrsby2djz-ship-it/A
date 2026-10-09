@@ -1,4 +1,4 @@
-// Kana 1.1: existing save compatibility, expanded anchors, offline human audio and scoring.
+// Kana 1.1: existing save compatibility, expanded anchors, built-in TTS for kana and scoring.
 // Usage: node tools/test-kana.cjs [KANA_CHROMIUM_PATH may select an installed browser].
 const fs=require('node:fs'),path=require('node:path'),http=require('node:http'),assert=require('node:assert/strict');
 let chromium;try{({chromium}=require('playwright'));}catch(e){({chromium}=require(path.join(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES,'playwright')));}
@@ -9,7 +9,8 @@ function spy(){
   window.__spoken=[];window.__audios=[];window.__audioMode='ok';window.__late=[];
   Object.defineProperty(window,'speechSynthesis',{configurable:true,value:{
     getVoices:()=>[{lang:'ja-JP',name:'test'}],addEventListener(){},resume(){},cancel(){},
-    speak(u){window.__spoken.push(u.text);setTimeout(()=>u.onend&&u.onend(),20);}
+    speak(u){window.__spoken.push({text:u.text,rate:u.rate});window.__late.push({end:u.onend});const m=window.__audioMode;
+      if(m==='ok')setTimeout(()=>u.onend&&u.onend(),20);else if(m==='error'||m==='reject')setTimeout(()=>u.onerror&&u.onerror({error:'synthesis-failed'}),20);}
   }});
   window.Audio=class{
     constructor(src){this.src=src;this.currentTime=0;window.__audios.push(this);}
@@ -38,7 +39,7 @@ function spy(){
   assert.equal(await page.evaluate(()=>knSt().wordFamiliarity.eki),'unfamiliar');
   assert(await page.evaluate(()=>S.tk.bus.lv[1].listen===2&&S.en.allow.s===3&&S.gm.star===12));
   assert.equal(await page.evaluate(()=>KD.words.length),324);
-  assert.equal(await page.evaluate(()=>Object.keys(K_AUDIO.clips).length),44);
+  assert.equal(await page.evaluate(()=>typeof globalThis.KANA_REBUILD_AUDIO),'undefined','No bundled recordings');
   await page.evaluate(()=>{UI.tab='jp';render();knOpen();});
   assert.equal(await page.locator('#kn .kcell:not(.empty)').count(),46);
   for(const mode of ['hira','kata','mixed']){
@@ -52,10 +53,10 @@ function spy(){
   await page.locator('#kn .kextras summary').click();
   assert.equal(await page.locator('#kn .kword:visible').count(),4);
   assert((await page.locator('#kn').innerText()).includes('英語'));
-  await page.locator('#kn [data-k=sayKana]').click();await page.waitForFunction(()=>!KG.audio);
-  assert.equal(await page.evaluate(()=>__spoken.length),0,'A single kana must not use TTS');
-  assert(await page.evaluate(()=>__audios.at(-1).src.startsWith('data:audio/mpeg;base64,')));
-  await page.locator('#kn [data-k=sayWord]').first().click();await page.waitForFunction(()=>__spoken.length===1);
+  await page.locator('#kn [data-k=sayKana]').click();await page.waitForFunction(()=>__spoken.length===1);
+  assert.equal(await page.evaluate(()=>__spoken[0].text),'え','A single kana uses built-in TTS');
+  assert.equal(await page.evaluate(()=>__audios.length),0,'No <audio> for kana');
+  await page.locator('#kn [data-k=sayWord]').first().click();await page.waitForFunction(()=>__spoken.length===2);
   await page.locator('#kn [data-k=peek]').click();assert.equal(await page.evaluate(()=>KG.peek),true);
   await page.locator('#kn [data-k=open][data-v="hira:o"]').click();assert.equal(await page.evaluate(()=>KG.peek),false);
   // Every added anchor can be presented without changing the old progress keys.
@@ -78,24 +79,24 @@ function spy(){
   const word=await page.evaluate(()=>knCur().word);assert.equal(word,'muubii');
   await page.evaluate(()=>knAnswer(knCur().opts.find(k=>k!==knCur().key)));
   assert.equal(await page.evaluate(()=>knSt().active.items[3].word),word,'A retry must preserve the same word');
-  // Hear credit is blocked until the recording ends successfully.
+  // Hear credit is blocked until speech ends successfully.
   async function hearQuestion(){await page.evaluate(()=>{const q=knQuestion('hear','hira:ka',[]);knSt().active={mode:'hira',targets:[q.key],items:[q,{type:'learn',key:'hira:e'}],i:0,ans:{},requeued:{}};KG.view='round';KG.peek=false;KG.play={};knRender();});}
   await hearQuestion();const before=await page.evaluate(()=>knCard('hira:ka',true).hear.correct);
   await page.evaluate(()=>knAnswer(knCur().key));assert.equal(await page.evaluate(()=>knSt().active.ans[0]),undefined);
   await page.evaluate(()=>__audioMode='reject');await page.locator('#kn [data-k=play]').first().click();await page.waitForFunction(()=>KG.play.fail);
-  assert.equal(await page.evaluate(()=>KG.play.fail),'recording');
+  assert.equal(await page.evaluate(()=>KG.play.fail),'synthesis-failed');
   assert.equal(await page.locator('#kn [data-k=ans]:not([disabled])').count(),0);
   await page.evaluate(()=>__audioMode='ok');await page.locator('#kn [data-k=play]').first().click();await page.waitForFunction(()=>KG.play.ok);
   await page.evaluate(()=>knAnswer(knCur().key));assert.equal(await page.evaluate(()=>knCard('hira:ka').hear.correct),before+1);
   await page.evaluate(()=>knAnswer(knCur().key));assert.equal(await page.evaluate(()=>knCard('hira:ka').hear.correct),before+1,'No double scoring');
   await hearQuestion();await page.evaluate(()=>__audioMode='ok');await page.locator('#kn [data-k=playSlow]').click();await page.waitForFunction(()=>KG.play.ok);
-  assert.equal(await page.evaluate(()=>__audios.at(-1).playbackRate),.8);
-  assert.equal(await page.evaluate(()=>__audios.at(-1).preservesPitch),true);
-  // No Japanese synthesizer voice is required for human recordings.
+  assert(await page.evaluate(()=>__spoken.at(-1).rate<__spoken.at(-2).rate),'Slow is slower than normal');
+  // Without a Japanese voice the question reports it instead of giving credit.
   await page.evaluate(()=>{VOICES=[{lang:'en-US'}];});
-  await page.locator('#kn [data-k=play]').click();await page.waitForFunction(()=>KG.play.ok);
+  await page.locator('#kn [data-k=play]').click();await page.waitForFunction(()=>KG.play.fail);
+  assert.equal(await page.evaluate(()=>KG.play.fail),'novoice');
   await page.evaluate(()=>{VOICES=[{lang:'ja-JP'}];__audioMode='hang';});
-  await page.locator('#kn [data-k=play]').click();await page.locator('#kn [data-k=noaudio]').click();
+  await page.locator('#kn [data-k=play]').first().click();await page.locator('#kn [data-k=noaudio]').click();
   await page.evaluate(()=>__late.forEach(x=>x.end&&x.end()));assert.equal(await page.evaluate(()=>KG.play.ok),undefined);
   const h0=await page.evaluate(()=>knCard('hira:ka').hear.correct);
   await page.evaluate(()=>knAnswer(knCur().key));assert.equal(await page.evaluate(()=>knCard('hira:ka').hear.correct),h0);
@@ -131,16 +132,6 @@ function spy(){
     if(width===390&&!dark)await page.screenshot({path:path.join(qa,'expanded-card.png')});
   }
   assert.deepEqual(errors,[]);await context.close();
-  // Real browser decoding + playback with the network offline (audio quality is a true-device check).
-  const real=await browser.newContext({viewport:{width:390,height:844}});
-  await real.route('https://**',r=>r.abort());const audioPage=await real.newPage();await audioPage.goto('http://127.0.0.1:'+server.address().port);await real.setOffline(true);
-  const decoded=await audioPage.evaluate(async()=>{const ac=new AudioContext(),out=[];for(const [id,src]of Object.entries(K_AUDIO.clips)){
-    const bytes=Uint8Array.from(atob(src.split(',')[1]),c=>c.charCodeAt(0));const b=await ac.decodeAudioData(bytes.buffer);
-    out.push({id,duration:b.duration,channels:b.numberOfChannels});}await ac.close();return out;});
-  assert.equal(decoded.length,44);assert(decoded.every(c=>c.duration>.2&&c.duration<6&&c.channels===1));
-  await audioPage.evaluate(()=>{UI.tab='jp';render();knOpen();KG.key='hira:e';KG.view='card';knRender();});
-  await audioPage.locator('#kn [data-k=sayKana]').click();await audioPage.waitForFunction(()=>!KG.audio,{},{timeout:15000});
-  const played=await audioPage.evaluate(()=>new Promise(r=>knSayKana('ka',false,(ok,why)=>r({ok,why}))));assert.equal(played.ok,true);
-  await real.close();await browser.close();await new Promise(r=>server.close(r));
-  console.log('PASS: 324 words; expanded/cycling anchors; original save/round resume; human audio success/failure/cancellation; no false listening credit; 360/390/430 light/dark layouts; 44 MP3s decoded and played offline. Subjective iPhone sound quality not tested.');
+  await browser.close();await new Promise(r=>server.close(r));
+  console.log('PASS: 324 words; expanded/cycling anchors; original save/round resume; kana via built-in TTS (normal/slow, failure, no-voice, cancellation); no bundled recordings; no false listening credit; 360/390/430 light/dark layouts. Real iPhone voice not tested.');
 })().catch(e=>{console.error(e);process.exit(1);});

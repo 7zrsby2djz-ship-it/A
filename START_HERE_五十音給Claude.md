@@ -1,5 +1,8 @@
 # 五十音 1.1：Claude 從這裡接手發布
 
+> **2026-10-09 更新：五十音真人錄音已全部移除**，基本假名改用 iPhone 內建日文語音（Web Speech，正常 0.8／慢速 0.55）。`kana-rebuild/audio/`、`generated/kana-audio.js`、`build-audio.cjs`、`fetch-audio.py` 已刪除，`build.sh` 不再內嵌錄音。鎖屏聽力的 60 段合成音（oral-audio）不受影響。
+
+
 使用者已授權擴充同一個 App 的五十音教材、修正單音發音，完成 GitHub 提交後由 Claude 更新目前的手機成品。請直接接手發布，不需要再請 SOL 審核。
 
 ## 目前已完成

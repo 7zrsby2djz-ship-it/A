@@ -5,7 +5,6 @@
    特殊字：ん 用字中字尾、を 用句子、ム 用ハム 字中、ヲ 只配對認識；不切整詞第一拍當單音。
    ======================================================================== */
 const KD = globalThis.KANA_REBUILD_DATA || {kana:[], words:[], anchors:[], confusables:[]};
-const K_AUDIO = globalThis.KANA_REBUILD_AUDIO || {clips:{}};
 const KN = Object.fromEntries(KD.kana.map(k => [k.id, k]));
 const KW = Object.fromEntries(KD.words.map(w => [w.id, w]));
 const KA = Object.fromEntries(KD.anchors.map(a => [a.key, a]));
@@ -86,32 +85,12 @@ function knStop() {
   if (KG.audio) { const a = KG.audio; KG.audio = null; a.onended = a.onerror = null; try { a.pause(); a.currentTime = 0; } catch (e) {} }
   try { speechSynthesis.cancel(); } catch (e) {}
 }
-// Basic kana always use the bundled human recording. Words retain the existing TTS.
-// No fetch, autoplay or network dependency; play() runs directly in the tap handler.
+// 基本假名改用 iPhone 內建日文語音（不再內嵌真人錄音）。play 在點擊當下直接呼叫。
 function knSayKana(id, slow, cb) {
-  knStop(); const tok = ++KG.tok, src = K_AUDIO.clips[id];
-  let a;
-  const fin = (ok, why) => {
-    if (tok !== KG.tok || fin.done) return;
-    fin.done = true; clearTimeout(KG.audioTimer); KG.audioTimer = null;
-    if (a) { a.onended = a.onerror = null; try { a.pause(); } catch (e) {} }
-    if (KG.audio === a) KG.audio = null;
-    cb && cb(ok, why);
-  };
-  if (!src) { fin(false, 'recording'); return tok; }
-  try {
-    a = new Audio(src); KG.audio = a;
-    a.playbackRate = slow ? .8 : 1;
-    a.preservesPitch = true; a.webkitPreservesPitch = true;
-    a.onended = () => fin(true);
-    a.onerror = () => fin(false, 'recording');
-    KG.audioTimer = setTimeout(() => fin(false, 'timeout'), 12000);
-    const p = a.play();
-    if (p && p.catch) p.catch(() => fin(false, 'recording'));
-  } catch (e) { fin(false, 'recording'); }
-  return tok;
+  const k = KN[id];
+  return knSay(k && k.speechText, slow ? .55 : .8, cb);
 }
-const KN_FAIL = {nosupport:'這台裝置不能播放聲音。', novoice:'找不到日文語音，可以到手機設定加入日文語音。', recording:'這次沒有播出真人錄音。', timeout:'這次沒有播出聲音。', error:'這次沒有播出聲音。', canceled:'播放被中斷了。', interrupted:'播放被中斷了。'};
+const KN_FAIL = {nosupport:'這台裝置不能播放聲音。', novoice:'找不到日文語音，可以到手機設定加入日文語音。', timeout:'這次沒有播出聲音。', error:'這次沒有播出聲音。', canceled:'播放被中斷了。', interrupted:'播放被中斷了。'};
 
 /* ---------- 代表詞 ---------- */
 function knRefs(key) {
@@ -301,8 +280,8 @@ function knHomeView() {
       <p>代表詞先用 App 裡已有的詞，其次是多鄰國截圖確認看過的詞，再補旅行日常詞。來源標籤只代表「接觸過」，不代表已經會。</p>
       <p>這一版練基本 46 組。濁音（が、で…）、拗音（きゃ…）、促音、長音會在代表詞裡自然出現，獨立練習留到下一版。</p>
       <p>每格先看兩個詞，其餘可展開；單字找字練習會輪流使用不同代表詞。ヌ 等少見字首不硬湊陌生詞。</p>
-      <p>基本假名用真人錄音，已包進 App，可離線播放。部分原錄音會重複同一個音，方便跟讀；單字仍用手機內建日文語音。ん／を 保留整詞或句子示範。</p>
-      <p>真人錄音：<a href="${esc(K_AUDIO.collectionUrl || 'https://commons.wikimedia.org')}" target="_blank" rel="noopener">Hakatanoshio117117／Wikimedia Commons</a>（公共領域）。單字難度：<a href="https://github.com/evanclan/OpenJLPT" target="_blank" rel="noopener">OpenJLPT</a>（<a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a>）；繁中詞義為本 App 編輯。</p></div></details>
+      <p>假名和單字都用手機內建的日文語音。ん／を 保留整詞或句子示範。</p>
+      <p>單字難度：<a href="https://github.com/evanclan/OpenJLPT" target="_blank" rel="noopener">OpenJLPT</a>（<a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a>）；繁中詞義為本 App 編輯。</p></div></details>
   </div></div>`;
 }
 function knCardHtml(key, opt = {}) {
@@ -312,7 +291,7 @@ function knCardHtml(key, opt = {}) {
     <div class="kbig" lang="ja">${esc(knGlyph(key))}</div>
     <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:6px">
       <p class="small muted">${KN_SCRIPT[s]}${showRo ? `・<b>${esc(k.romaji)}</b>` : ''}</p>
-      ${k.speechText && k.kind === 'basic' ? `<button class="btn sm jp-b" data-k="sayKana" data-v="${key}">${IC.speak}真人發音</button>` : `<p class="small muted">${k.id === 'n' ? 'ん 要在詞裡聽' : 'を 念 o，用句子聽'}</p>`}
+      ${k.speechText && k.kind === 'basic' ? `<button class="btn sm jp-b" data-k="sayKana" data-v="${key}">${IC.speak}發音</button>` : `<p class="small muted">${k.id === 'n' ? 'ん 要在詞裡聽' : 'を 念 o，用句子聽'}</p>`}
       ${st.prefs.script === 'mixed' || opt.showOther ? (opt.inRound ? `<p class="small">${KN_SCRIPT[other.split(':')[0]]}：<span class="jpf" style="font-size:20px">${esc(knGlyph(other))}</span></p>` : `<button class="btn ghost sm" data-k="open" data-v="${other}">${KN_SCRIPT[other.split(':')[0]]}：<span class="jpf" style="font-size:20px">${esc(knGlyph(other))}</span></button>`) : ''}
       ${!showRo && !opt.noPeek ? `<button class="btn ghost sm" data-k="peek">看拼音</button>` : ''}
     </div></div>`;
@@ -441,7 +420,7 @@ document.addEventListener('click', e => {
     case 'words': KG.view = 'words'; knRender(); break;
     case 'open': if (!v) break; knStop(); KG.key = v; KG.view = 'card'; KG.peek = false; { const c = knCard(v, true); c.seen = true; c.lastSeen = Date.now(); persist(); } knRender(); { const b = $('#knBody'); if (b) b.scrollTop = 0; } break;
     case 'peek': KG.peek = true; knRender(); break;
-    case 'sayKana': { const k = KN[v.split(':')[1]]; knSayKana(k.id, false, ok => { if (!ok) toast('沒有播出真人錄音'); }); } break;
+    case 'sayKana': { const k = KN[v.split(':')[1]]; knSayKana(k.id, false, ok => { if (!ok) toast('沒有播出聲音'); }); } break;
     case 'sayWord': { const w = KW[v]; knSay(w.speechText || w.reading, .9, ok => { if (!ok) toast('沒有播出聲音'); }); } break;
     case 'unfam': st.wordFamiliarity[v] = st.wordFamiliarity[v] === 'unfamiliar' ? undefined : 'unfamiliar'; if (!st.wordFamiliarity[v]) delete st.wordFamiliarity[v]; persist(); knRender(); break;
     case 'play': knPlayItem(false); break;
