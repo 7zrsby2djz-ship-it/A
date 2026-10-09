@@ -44,7 +44,17 @@ const DEF = () => ({v:1, updatedAt:0, created:Date.now(), settings:{romaji:true,
 function migrate(o) { const d = DEF(); if (!o || typeof o !== 'object') return d; for (const k in d) if (o[k] === undefined) o[k] = d[k];
   const had = o.settings || {}; o.settings = Object.assign(d.settings, had); if (had.read === undefined) o.settings.read = had.romaji === false ? 'none' : 'furi'; return o; }
 let S = DEF();
-try { const raw = localStorage.getItem(LSK); if (raw) S = migrate(JSON.parse(raw)); } catch (e) {}
+/* 存檔保護：讀不懂的舊資料絕不直接覆蓋。先把原始文字另存到新的帶時間 key（舊備份永遠不覆蓋），再用新進度繼續。 */
+function bnkBackupRaw(key, raw) {
+  if (!raw) return '';
+  try { const base = key + '.bak-' + new Date().toISOString().replace(/[:.]/g, '-'); let k = base, i = 1; while (localStorage.getItem(k) !== null) k = base + '-' + (i++); localStorage.setItem(k, raw); return k; } catch (e) { return ''; }
+}
+function bnkBackups() { const out = []; try { for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (k && k.startsWith(LSK + '.bak-')) out.push(k); } } catch (e) {} return out.sort(); }
+const LOADERR = {key:'', failed:false};
+{ let raw = null; try { raw = localStorage.getItem(LSK); } catch (e) {}
+  if (raw) { let o; try { o = JSON.parse(raw); } catch (e) { o = undefined; }
+    let ok = false; if (o && typeof o === 'object' && !Array.isArray(o)) { try { S = migrate(o); ok = true; } catch (e) { S = DEF(); } }
+    if (!ok) { LOADERR.key = bnkBackupRaw(LSK, raw); LOADERR.failed = !LOADERR.key; } } }
 const UI = {tab:'home', enSeg:'lib', cat:'all', st:'all', jpSeg:'dlg', look:{text:'', res:null, ai:null, busy:false, err:''}};
 try { const t = sessionStorage.getItem('bnk-tab'); if (t) UI.tab = t; } catch (e) {}
 
@@ -53,7 +63,10 @@ function allEnIds() { return EN_ORDER.concat(Object.keys(S.custom)); }
 
 /* ---- persistence: this browser immediately, the person's private cloud copy shortly after ---- */
 const cloud = {doc:null, state:'local', writing:false, dirty:false, timer:0};
-function saveLocal() { try { localStorage.setItem(LSK, JSON.stringify(S)); } catch (e) {} }
+let saveWarned = false;
+function saveLocal() { try { localStorage.setItem(LSK, JSON.stringify(S)); } catch (e) { if (!saveWarned) { saveWarned = true; setTimeout(() => toast('這台裝置目前存不了進度。請到「我的」按「複製備份」先存起來。'), 0); } } }
+/* 請瀏覽器把這個網站的資料當成「要保留」（iOS 對沒加到主畫面的網站可能 7 天後清掉）；不支援就略過 */
+try { if (navigator.storage && navigator.storage.persist) navigator.storage.persisted().then(p => p || navigator.storage.persist()).catch(() => {}); } catch (e) {}
 function persist() { S.updatedAt = Date.now(); saveLocal(); scheduleCloud(); }
 function scheduleCloud(ms = 1500) { if (!cloud.doc) return; clearTimeout(cloud.timer); cloud.timer = setTimeout(pushCloud, ms); }
 function trimForCloud() {
@@ -514,6 +527,7 @@ function vMe() {
     </div>
     <p class="sec-title">資料</p>
     <div class="card flat stack" style="gap:10px"><p class="small" id="syncText">${syncText()}</p>
+      ${(() => { const b = bnkBackups(); return LOADERR.failed ? `<p class="small" style="color:var(--bad)">上次打開時讀不懂存檔，也沒辦法另存原始資料。請先別清除瀏覽器資料。</p>` : b.length ? `<p class="small" style="color:var(--warn)">有 ${b.length} 份讀不懂、已另存的舊存檔（不會自動刪除）。</p><div class="row wrap"><button class="btn sm" data-a="bakCopy">複製最新一份舊存檔</button></div>` : ''; })()}
       <div class="row wrap"><button class="btn sm" data-a="backup">複製備份</button><button class="btn sm" data-a="restoreOpen">貼上備份還原</button><button class="btn sm" data-a="resetAsk" style="color:var(--bad)">全部重來</button></div></div>
     <p class="small muted" style="text-align:center">加到 iPhone 主畫面：用 Safari 打開這頁 → 分享 → 加入主畫面。</p>
   </div>`;
@@ -943,6 +957,7 @@ document.addEventListener('click', e => {
     case 'manual': showSheet(() => manualSheet(v)); break;
     case 'manualSave': { const ok = addCustom($('#mW').value, $('#mZ').value, $('#mN').value, UI.look.text); if (!ok) { toast('請填英文和中文意思'); break; } closeSheet(); toast('已加入練習'); render(); } break;
     case 'hist': { const p = S.pastes[+v]; if (p) { UI.look.text = p.text; UI.look.res = analyze(p.text); UI.look.ai = null; render(); window.scrollTo(0, 0); } } break;
+    case 'bakCopy': { const b = bnkBackups(); let txt = ''; try { txt = localStorage.getItem(b[b.length - 1]) || ''; } catch (x) {} const sheet = () => showSheet(() => `<h2 style="font-size:20px">舊存檔原始資料</h2><p class="small muted">${esc(b[b.length - 1] || '')}。全選下面的文字複製起來，之後可以請人幫忙救回。</p><textarea readonly style="min-height:200px">${esc(txt)}</textarea>`); try { navigator.clipboard.writeText(txt).then(() => toast('舊存檔已複製'), sheet); } catch (x) { sheet(); } } break;
     case 'backup': { const txt = JSON.stringify(S); const done = () => toast('備份已複製，貼到記事本存起來'); try { navigator.clipboard.writeText(txt).then(done, () => showSheet(() => `<h2 style="font-size:20px">備份資料</h2><p class="small muted">全選下面的文字，複製起來。</p><textarea readonly style="min-height:200px">${esc(txt)}</textarea>`)); } catch (x) { showSheet(() => `<textarea readonly>${esc(txt)}</textarea>`); } } break;
     case 'restoreOpen': showSheet(() => `<h2 style="font-size:20px">貼上備份還原</h2><p class="small muted">會取代目前的所有進度。</p><textarea id="restoreBox" placeholder="把備份文字貼在這裡"></textarea><button class="btn primary block" data-a="restoreDo">還原</button>`); break;
     case 'restoreDo': { try { const o = JSON.parse($('#restoreBox').value); if (!o || !o.settings) throw 0; S = migrate(o); S.updatedAt = Date.now(); saveLocal(); scheduleCloud(0); buildIndex(); closeSheet(); render(); toast('已還原'); } catch (x) { toast('這段文字不是備份資料'); } } break;
@@ -970,5 +985,6 @@ document.addEventListener('keydown', e => {
 $('#tabs').innerHTML = [['home','今天',IC.home,''],['en','英文',IC.en,''],['look','查',IC.look,'look'],['jp','日文',IC.jp,'jp'],['oral','口語聽力',IC.speak,'jp'],['me','我的',IC.me,'']].map(([v,l,ic,c]) => `<button class="tab ${c}" data-a="tab" data-v="${v}">${c==='look'?`<span class="dot">${ic}</span>`:ic}<span>${l}</span></button>`).join('');
 buildIndex();
 render();
+if (LOADERR.key || LOADERR.failed) setTimeout(() => toast(LOADERR.key ? '存檔讀不懂，原本的資料已另存一份，不會被刪除。' : '存檔讀不懂，請先別清除瀏覽器資料。'), 300);
 initCloud();
 initSample();

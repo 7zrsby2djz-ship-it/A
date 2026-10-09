@@ -146,6 +146,7 @@
 
 ## 存檔
 - `localStorage`（key：`bnk-state-v1`）；在 Claude artifact 裡登入時也存到使用者帳號（只有本人看得到）。
+- **存檔保護**：任何存檔（`bnk-state-v1`、`bnk-today5-v1`、`bnk-lockplay-v1`、口語 `kiku-independent-v1`）讀不懂時，先把原始文字另存到新的 `<key>.bak-<時間>`（舊備份永遠不覆蓋），才用新進度繼續；「我的」會顯示並可複製。存不了時跳一次提示。啟動時請瀏覽器保留資料（`navigator.storage.persist()`）。不在 Claude 裡（例如 GitHub Pages）時，口語設定頁會顯示「匯出／匯入進度」。
 - 欄位定義在 `app.js` 的 `DEF()`。新增欄位加在 `DEF()`，舊存檔會自動補上。
 - 舊版對話進度（`S.dlg` 的「通過」）會轉成新版的「純聽完成」（`migrateOldDlg`）；舊版單字卡 `S.jpw` 保留在「句塊」分頁下方。讀音設定從舊的 `romaji` 轉成 `read`（`furi`／`ro`／`both`／`none`）。
 

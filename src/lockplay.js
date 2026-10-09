@@ -8,7 +8,7 @@ const LP = {open:false, playing:false, urls:{}};
 function lpItems() { return (globalThis.ORAL_AUDIO && ORAL_AUDIO.items) || []; }
 function lpPref() {
   if (LP.p) return LP.p;
-  let o = null; try { o = JSON.parse(localStorage.getItem(LPK) || 'null'); } catch (e) {}
+  let o = null, raw = null; try { raw = localStorage.getItem(LPK); o = JSON.parse(raw || 'null'); } catch (e) { o = null; bnkBackupRaw(LPK, raw); }
   const n = lpItems().length;
   LP.p = {i:o && o.i >= 0 && o.i < n ? o.i | 0 : 0, speed:o && o.speed === 'slow' ? 'slow' : 'normal', auto:!(o && o.auto === false)};
   return LP.p;

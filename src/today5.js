@@ -10,7 +10,8 @@ let T5 = null;
 function t5St() {
   if (T5 && T5.d === dayKey()) return T5;
   T5 = null;
-  try { const o = JSON.parse(localStorage.getItem(T5K) || 'null'); if (o && o.d === dayKey() && typeof o.step === 'number') T5 = o; } catch (e) {}
+  let raw = null; try { raw = localStorage.getItem(T5K); } catch (e) {}
+  try { const o = JSON.parse(raw || 'null'); if (o && o.d === dayKey() && typeof o.step === 'number') T5 = o; } catch (e) { bnkBackupRaw(T5K, raw); }
   if (!T5) T5 = {d:dayKey(), step:0, on:false, log:{}};
   return T5;
 }
