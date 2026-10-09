@@ -231,10 +231,11 @@ function knOpen(v) {
   if (!el) { el = document.createElement('div'); el.id = 'kn'; el.className = 'overlay jpmode'; document.body.append(el); }
   el.hidden = false; document.body.style.overflow = 'hidden';
   KG.view = v === 'go' ? 'round' : 'home'; KG.peek = false; KG.play = {};
+  KG.fromTable = v !== 'go'; // 從「假名表」進來的才回假名表；從「練五個字」或今天 5 分鐘進來的，離開就回原本頁面
   if (v === 'go') { if (knSt().active) { KG.view = 'round'; knRender(); } else knStartRound(); return; }
   knRender();
 }
-function knClose() { const t5f = !!KG.roundDone; KG.roundDone = false; knStop(); const el = $('#kn'); if (el) el.hidden = true; document.body.style.overflow = ''; render(); t5After('kana', t5f); }
+function knClose() { const t5f = !!KG.roundDone; KG.roundDone = false; knStop(); const el = $('#kn'); if (el) el.hidden = true; document.body.style.overflow = ''; render(); homeTop(); t5After('kana', t5f); }
 function knRender() {
   const el = $('#kn'); if (!el || el.hidden) return;
   const v = KG.view;
@@ -332,7 +333,7 @@ function knCharPos(a) { const seen = []; for (let j = 0; j <= a.i && j < a.items
 function knRoundView() {
   const st = knSt(), a = st.active; if (!a) { KG.view = 'home'; return knHomeView(); }
   const it = a.items[a.i], r = a.ans[a.i], [s, id] = it.key.split(':'), k = KN[id];
-  const head = `<div class="ov-head"><button class="icon-btn" data-k="home" aria-label="先離開，之後接續">${IC.x}</button><div class="prog" aria-hidden="true"><i style="width:${a.i / a.items.length * 100}%"></i></div><span class="small muted tnum" data-kprog>字 ${knCharPos(a)}/${knChars(a).length}・第 ${a.i + 1}/${a.items.length} 步</span></div>`;
+  const head = `<div class="ov-head"><button class="icon-btn" data-k="leave" aria-label="先離開，之後接續">${IC.x}</button><div class="prog" aria-hidden="true"><i style="width:${a.i / a.items.length * 100}%"></i></div><span class="small muted tnum" data-kprog>字 ${knCharPos(a)}/${knChars(a).length}・第 ${a.i + 1}/${a.items.length} 步</span></div>`;
   let b = '', f = '';
   if (it.type === 'learn') {
     b = `<p class="small muted">新的字：先看、先聽，不用急著記。</p>${knCardHtml(it.key, {peek:KG.peek, inRound:true})}`;
@@ -414,6 +415,7 @@ document.addEventListener('click', e => {
   const a = t.dataset.k, v = t.dataset.v, st = knSt();
   switch (a) {
     case 'close': knClose(); break;
+    case 'leave': if (KG.fromTable) { knStop(); KG.view = 'home'; KG.peek = false; KG.play = {}; knRender(); } else { knClose(); toast('已保存，之後可以從這裡接續'); } break;
     case 'home': knStop(); KG.view = 'home'; KG.peek = false; KG.play = {}; knRender(); break;
     case 'mode': st.prefs.script = v; persist(); knRender(); break;
     case 'romaji': st.prefs.romaji = !st.prefs.romaji; persist(); knRender(); break;

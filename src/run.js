@@ -169,7 +169,7 @@ function closeRunView(silent) {
   try { speechSynthesis.cancel(); } catch (e) {}
   if (S.run && !silent) toast('已保存，回首頁可以從這裡接續');
   const t5f = !!RUN_END && !S.run;
-  RUN_END = null; render();
+  RUN_END = null; render(); homeTop();
   t5After('dlg', t5f);
 }
 function boardHtml(r) {

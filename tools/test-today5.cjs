@@ -50,9 +50,9 @@ function spy(){Object.defineProperty(window,'speechSynthesis',{configurable:true
   await page.waitForFunction(()=>{const k=document.querySelector('#kn');return k&&!k.hidden;});
   st=await t5();assert.equal(st.step,2);assert.equal(st.log.dlg,'done');
   assert(await page.evaluate(()=>!!knSt().active),'kana round started');
-  // 沒做完就離開（回假名表再關）→ 不算完成
-  await page.locator('#kn .ov-head [data-k=home]').click();
-  await page.locator('#kn .ov-head [data-k=close]').click();
+  // 沒做完就離開（優化第4輪起：直接回首頁，不再落在假名表）→ 不算完成
+  await page.locator('#kn .ov-head [data-k=leave]').click();
+  assert.equal(await page.evaluate(()=>document.querySelector('#kn').hidden),true);
   st=await t5();assert.equal(st.step,2);assert.equal(st.on,false);
   // 做完一輪（模擬最後一題後 knNext）再關 → 完成
   await page.locator('#view [data-a=t5Go]').click();

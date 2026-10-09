@@ -67,7 +67,7 @@ function lpOpen() {
   el.hidden = false; document.body.style.overflow = 'hidden';
   lpRender();
 }
-function lpClose() { const a = $('#lpAudio'); if (a) a.pause(); lpSave(); LP.open = false; const el = $('#lpv'); if (el) el.hidden = true; document.body.style.overflow = ''; render(); }
+function lpClose() { const a = $('#lpAudio'); if (a) a.pause(); lpSave(); LP.open = false; const el = $('#lpv'); if (el) el.hidden = true; document.body.style.overflow = ''; render(); homeTop(); }
 function lpRender() {
   const el = $('#lpv'); if (!el || !LP.open) return;
   const items = lpItems(), p = lpPref(), it = items[p.i];

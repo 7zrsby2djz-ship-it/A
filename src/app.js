@@ -600,7 +600,7 @@ function startSession(kind, cards, title, extra = {}) {
 function endSession() {
   const t5 = SES && SES.ck ? !curCard() : null;
   SES = null; const el = $('#ses'); el.hidden = true; document.body.style.overflow = ''; if (canSpeak) try { speechSynthesis.cancel(); } catch (e) {}
-  render();
+  render(); homeTop();
   if (t5 !== null) t5After('review', t5);
 }
 function startEn(extra = 0) {
@@ -831,6 +831,8 @@ function finishSession() {
 }
 
 /* ================= misc ================= */
+/* 關掉全螢幕練習回到首頁時，捲回最上面，讓「今天 5 分鐘」主按鈕完整出現 */
+function homeTop() { if (UI.tab === 'home') try { window.scrollTo(0, 0); } catch (e) {} }
 function toast(msg) { $('#toast')?.remove(); const t = document.createElement('div'); t.className = 'toast'; t.id = 'toast'; t.setAttribute('role', 'status'); t.textContent = msg; document.body.append(t); setTimeout(() => t.remove(), 2600); }
 function markEncounter(id) {
   const r = S.en[id];
@@ -983,8 +985,10 @@ document.addEventListener('keydown', e => {
 });
 
 $('#tabs').innerHTML = [['home','今天',IC.home,''],['en','英文',IC.en,''],['look','查',IC.look,'look'],['jp','日文',IC.jp,'jp'],['oral','口語聽力',IC.speak,'jp'],['me','我的',IC.me,'']].map(([v,l,ic,c]) => `<button class="tab ${c}" data-a="tab" data-v="${v}">${c==='look'?`<span class="dot">${ic}</span>`:ic}<span>${l}</span></button>`).join('');
+try { history.scrollRestoration = 'manual'; } catch (e) {}
 buildIndex();
 render();
+homeTop();
 if (LOADERR.key || LOADERR.failed) setTimeout(() => toast(LOADERR.key ? '存檔讀不懂，原本的資料已另存一份，不會被刪除。' : '存檔讀不懂，請先別清除瀏覽器資料。'), 300);
 initCloud();
 initSample();
