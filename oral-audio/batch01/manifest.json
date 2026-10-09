@@ -1,0 +1,1114 @@
+{
+  "schemaVersion": 1,
+  "batch": "batch01",
+  "title": "鎖屏聽力第一批：交通＋生活（App 內已有的對話句）",
+  "generatedOn": "2026-10-09",
+  "engine": {
+    "name": "Open JTalk",
+    "version": "1.11-5",
+    "dictionary": "naist-jdic (open-jtalk-mecab-naist-jdic)",
+    "voice": "HTS Voice \"Mei\" mei_normal.htsvoice (MMDAgent_Example-1.8)",
+    "voiceSha256": "b19e8e5ddef4d9d9559d654f395818e2bb3c0bbdbbca533f96086de21ac5db2b",
+    "voiceLicense": "CC BY 3.0, © 2009-2018 Nagoya Institute of Technology (MMDAgent Project Team)",
+    "speeds": {
+      "normal": 1,
+      "slow": 0.8
+    },
+    "encoding": "MP3 mono 44.1 kHz 64 kbps, loudnorm I=-16"
+  },
+  "synthetic": true,
+  "caveat": "合成語音，不是真人錄音；未在 iPhone 實機試聽。漢字讀音已用教材振假名逐句比對（見 ttsReadingMode）。",
+  "playlist": {
+    "file": "batch01_playlist.mp3",
+    "durationSeconds": 273.215,
+    "sha256": "591eb68327641d388665a797d795ccc73a603267719ef44c7503705ad3ccfdbb",
+    "pattern": "每句：正常 → 1.2 秒 → 慢速 → 1.5 秒 → 正常 → 2.5 秒"
+  },
+  "items": [
+    {
+      "n": 1,
+      "id": "bus-b1a-n1",
+      "ja": "すみません、このバスは金閣寺に行きますか。",
+      "jaRuby": "すみません、このバスは{金閣寺|きんかくじ}に{行|い}きますか。",
+      "kana": "すみません、このバスはきんかくじにいきますか。",
+      "romaji": "sumimasen kono basu wa Kinkakuji ni ikimasu ka",
+      "zh": "不好意思，這台巴士會到金閣寺嗎？",
+      "speaker": "你",
+      "nodeType": "say",
+      "source": {
+        "task": "bus",
+        "variant": "b1a",
+        "node": "n1",
+        "level": 1,
+        "taskName": "巴士・方向對嗎"
+      },
+      "chunks": [
+        "sumimasen",
+        "b_kono",
+        "b_kinkaku_ni",
+        "ikimasuka"
+      ],
+      "ttsInput": "すみません、このバスは金閣寺に行きますか。",
+      "ttsReadingMode": "kanji",
+      "audio": {
+        "normal": {
+          "file": "mp3/01_bus-b1a-n1.mp3",
+          "durationSeconds": 3.736,
+          "sha256": "43464f1ba5981a83d8232ac37ac4ab5f564487d675fbb434edd2051632bba4a2"
+        },
+        "slow": {
+          "file": "mp3/01_bus-b1a-n1_slow.mp3",
+          "durationSeconds": 4.676,
+          "sha256": "54d996ca8c8a0016c449510211c7aaefb77e3659e08f656f445c0a4c86a7d4fe"
+        }
+      }
+    },
+    {
+      "n": 2,
+      "id": "bus-b1a-n2",
+      "ja": "はい、行きますよ。",
+      "jaRuby": "はい、{行|い}きますよ。",
+      "kana": "はい、いきますよ。",
+      "romaji": "hai ikimasu yo",
+      "zh": "是，會到喔。",
+      "speaker": "司機",
+      "nodeType": "hear",
+      "source": {
+        "task": "bus",
+        "variant": "b1a",
+        "node": "n2",
+        "level": 1,
+        "taskName": "巴士・方向對嗎"
+      },
+      "chunks": [
+        "hai",
+        "ikimasu_yo"
+      ],
+      "ttsInput": "はい、行きますよ。",
+      "ttsReadingMode": "kanji",
+      "audio": {
+        "normal": {
+          "file": "mp3/02_bus-b1a-n2.mp3",
+          "durationSeconds": 1.776,
+          "sha256": "83fa062fd1a2521751e8403f4405ec9731bb3982772987e4cbc43b1b8c82eb50"
+        },
+        "slow": {
+          "file": "mp3/02_bus-b1a-n2_slow.mp3",
+          "durationSeconds": 2.194,
+          "sha256": "d62f823e3529e0046bc1c8c85a16827a3b23797c4543094cc58c083454f02c4a"
+        }
+      }
+    },
+    {
+      "n": 3,
+      "id": "bus-b1a-n4",
+      "ja": "降りる時に払ってください。",
+      "jaRuby": "{降|お}りる{時|とき}に{払|はら}ってください。",
+      "kana": "おりるときにはらってください。",
+      "romaji": "oriru toki ni haratte kudasai",
+      "zh": "下車的時候請付錢。",
+      "speaker": "司機",
+      "nodeType": "hear",
+      "source": {
+        "task": "bus",
+        "variant": "b1a",
+        "node": "n4",
+        "level": 1,
+        "taskName": "巴士・方向對嗎"
+      },
+      "chunks": [
+        "oriru_toki_ni",
+        "haratte"
+      ],
+      "ttsInput": "降りる時に払ってください。",
+      "ttsReadingMode": "kanji",
+      "audio": {
+        "normal": {
+          "file": "mp3/03_bus-b1a-n4.mp3",
+          "durationSeconds": 2.22,
+          "sha256": "84babe79e42ee829582dd931f7fecec710e71915a26a2a33582dd94e96eaa054"
+        },
+        "slow": {
+          "file": "mp3/03_bus-b1a-n4_slow.mp3",
+          "durationSeconds": 2.821,
+          "sha256": "7e17d12d857a544f3af56305a4b173f24b60c7b3eb2b31c56f4bf47f6c2efdb2"
+        }
+      }
+    },
+    {
+      "n": 4,
+      "id": "bus-b1b-n2",
+      "ja": "いいえ、行きません。",
+      "jaRuby": "いいえ、{行|い}きません。",
+      "kana": "いいえ、いきません。",
+      "romaji": "iie ikimasen",
+      "zh": "不，不會到。",
+      "speaker": "司機",
+      "nodeType": "hear",
+      "source": {
+        "task": "bus",
+        "variant": "b1b",
+        "node": "n2",
+        "level": 1,
+        "taskName": "巴士・方向對嗎"
+      },
+      "chunks": [
+        "iie",
+        "ikimasen2"
+      ],
+      "ttsInput": "いいえ、行きません。",
+      "ttsReadingMode": "kanji",
+      "audio": {
+        "normal": {
+          "file": "mp3/04_bus-b1b-n2.mp3",
+          "durationSeconds": 1.724,
+          "sha256": "4d2030d0af6a6be58b7f90a4ed76a71797c9fc86cd78239a319264bb8c68f75d"
+        },
+        "slow": {
+          "file": "mp3/04_bus-b1b-n2_slow.mp3",
+          "durationSeconds": 2.142,
+          "sha256": "e4830aaf35f554e7530a064df45d57edaeebdb42b28d5a3f8ce9a3e5412c5e09"
+        }
+      }
+    },
+    {
+      "n": 5,
+      "id": "bus-b1b-n4",
+      "ja": "向こうのバス停です。",
+      "jaRuby": "{向|む}こうのバス{停|てい}です。",
+      "kana": "むこうのバスていです。",
+      "romaji": "mukō no basutei desu",
+      "zh": "在對面的公車站。",
+      "speaker": "司機",
+      "nodeType": "hear",
+      "source": {
+        "task": "bus",
+        "variant": "b1b",
+        "node": "n4",
+        "level": 1,
+        "taskName": "巴士・方向對嗎"
+      },
+      "chunks": [
+        "mukou_no",
+        "basutei_desu"
+      ],
+      "ttsInput": "向こうのバス停です。",
+      "ttsReadingMode": "kanji",
+      "audio": {
+        "normal": {
+          "file": "mp3/05_bus-b1b-n4.mp3",
+          "durationSeconds": 1.75,
+          "sha256": "3c80f20ebd90ae73f3b34e75fcd92ed7d3f380c0b60baf900bb55ebf3c0cc242"
+        },
+        "slow": {
+          "file": "mp3/05_bus-b1b-n4_slow.mp3",
+          "durationSeconds": 2.194,
+          "sha256": "eb878cb895b00fe4f1ad7061714e0dbc36087f5bcb5bd6a809849d2ba2959a7a"
+        }
+      }
+    },
+    {
+      "n": 6,
+      "id": "bus-b2a-n2",
+      "ja": "いいえ、これは反対方向です。向こう側から乗ってください。",
+      "jaRuby": "いいえ、これは{反対方向|はんたいほうこう}です。{向|む}こう{側|がわ}から{乗|の}ってください。",
+      "kana": "いいえ、これははんたいほうこうです。むこうがわからのってください。",
+      "romaji": "iie kore wa hantai-hōkō desu mukō-gawa kara notte kudasai",
+      "zh": "不，這台是反方向。請從對面那一側搭。",
+      "speaker": "司機",
+      "nodeType": "hear",
+      "source": {
+        "task": "bus",
+        "variant": "b2a",
+        "node": "n2",
+        "level": 2,
+        "taskName": "巴士・方向對嗎"
+      },
+      "chunks": [
+        "iie",
+        "kore_wa",
+        "hantai_houkou",
+        "mukougawa_kara",
+        "notte_kudasai"
+      ],
+      "ttsInput": "いいえ、これは反対方向です。向こう側から乗ってください。",
+      "ttsReadingMode": "kanji",
+      "audio": {
+        "normal": {
+          "file": "mp3/06_bus-b2a-n2.mp3",
+          "durationSeconds": 4.963,
+          "sha256": "2fdd626361101edc04e2b5d411ee9f5cf71cb2e07d7121af5e47449937ca48e8"
+        },
+        "slow": {
+          "file": "mp3/06_bus-b2a-n2_slow.mp3",
+          "durationSeconds": 6.269,
+          "sha256": "015425aefce09c7a7e443bc5bbf1bcb7a7fca7ba501ac630d7c76cf609e03d5e"
+        }
+      }
+    },
+    {
+      "n": 7,
+      "id": "bus-b2a-n4",
+      "ja": "205番のバスです。",
+      "jaRuby": "205{番|ばん}のバスです。",
+      "kana": "205ばんのバスです。",
+      "romaji": "nihyaku-go-ban no basu desu",
+      "zh": "是 205 號巴士。",
+      "speaker": "司機",
+      "nodeType": "hear",
+      "source": {
+        "task": "bus",
+        "variant": "b2a",
+        "node": "n4",
+        "level": 2,
+        "taskName": "巴士・方向對嗎"
+      },
+      "chunks": [
+        "b205_no_basu"
+      ],
+      "ttsInput": "205番のバスです。",
+      "ttsReadingMode": "kanji",
+      "audio": {
+        "normal": {
+          "file": "mp3/07_bus-b2a-n4.mp3",
+          "durationSeconds": 2.038,
+          "sha256": "342e7fa391e6ee974bc2414f3421acdbe9330775901b07725736c08283f08f1c"
+        },
+        "slow": {
+          "file": "mp3/07_bus-b2a-n4_slow.mp3",
+          "durationSeconds": 2.56,
+          "sha256": "ce51d4c22edabef567fb3db8d84d96dba42f9e7f048c5cb833137a522184b657"
+        }
+      }
+    },
+    {
+      "n": 8,
+      "id": "bus-b2b-n2",
+      "ja": "はい、行きますよ。金閣寺道で降りてください。",
+      "jaRuby": "はい、{行|い}きますよ。{金閣寺道|きんかくじみち}で{降|お}りてください。",
+      "kana": "はい、いきますよ。きんかくじみちでおりてください。",
+      "romaji": "hai ikimasu yo Kinkakuji-michi de orite kudasai",
+      "zh": "是，會到喔。請在「金閣寺道」下車。",
+      "speaker": "司機",
+      "nodeType": "hear",
+      "source": {
+        "task": "bus",
+        "variant": "b2b",
+        "node": "n2",
+        "level": 2,
+        "taskName": "巴士・方向對嗎"
+      },
+      "chunks": [
+        "hai",
+        "ikimasu_yo",
+        "kinkakujimichi_de",
+        "orite_kudasai"
+      ],
+      "ttsInput": "はい、行きますよ。きんかくじみちで降りてください。",
+      "ttsReadingMode": "mixed",
+      "ttsKanaSegments": [
+        "{金閣寺道|きんかくじみち}"
+      ],
+      "audio": {
+        "normal": {
+          "file": "mp3/08_bus-b2b-n2.mp3",
+          "durationSeconds": 4.075,
+          "sha256": "dd1062287f413ec40a6a245a5e1055aed53420d88e0a2658356bc92ce2de731f"
+        },
+        "slow": {
+          "file": "mp3/08_bus-b2b-n2_slow.mp3",
+          "durationSeconds": 5.094,
+          "sha256": "f4245ad39c6867ccd1b53ed90ae469bf951e20294f3c1089a0c5c695b8e50513"
+        }
+      }
+    },
+    {
+      "n": 9,
+      "id": "train-tr1a-n1",
+      "ja": "すみません、この電車は京都に行きますか。",
+      "jaRuby": "すみません、この{電車|でんしゃ}は{京都|きょうと}に{行|い}きますか。",
+      "kana": "すみません、このでんしゃはきょうとにいきますか。",
+      "romaji": "sumimasen kono densha wa Kyōto ni ikimasu ka",
+      "zh": "不好意思，這班電車會到京都嗎？",
+      "speaker": "你",
+      "nodeType": "say",
+      "source": {
+        "task": "train",
+        "variant": "tr1a",
+        "node": "n1",
+        "level": 1,
+        "taskName": "電車・這班對嗎"
+      },
+      "chunks": [
+        "sumimasen",
+        "t_kono",
+        "kyoto_ni",
+        "ikimasuka"
+      ],
+      "ttsInput": "すみません、この電車は京都に行きますか。",
+      "ttsReadingMode": "kanji",
+      "audio": {
+        "normal": {
+          "file": "mp3/09_train-tr1a-n1.mp3",
+          "durationSeconds": 3.5,
+          "sha256": "e808d098f90716cedf5f9e7d9126f4a98a8790c0c2b9e28fbc29d2bdc4456f05"
+        },
+        "slow": {
+          "file": "mp3/09_train-tr1a-n1_slow.mp3",
+          "durationSeconds": 4.441,
+          "sha256": "64d68b144c3f5d2c84e33ce1fa16ac37105b6fa3b6df6ba07d8ec0f8aa511672"
+        }
+      }
+    },
+    {
+      "n": 10,
+      "id": "train-tr1a-n4",
+      "ja": "40分くらいです。",
+      "jaRuby": "40{分|ぷん}くらいです。",
+      "kana": "40ぷんくらいです。",
+      "romaji": "yonjuppun kurai desu",
+      "zh": "大約 40 分鐘。",
+      "speaker": "站務員",
+      "nodeType": "hear",
+      "source": {
+        "task": "train",
+        "variant": "tr1a",
+        "node": "n4",
+        "level": 1,
+        "taskName": "電車・這班對嗎"
+      },
+      "chunks": [
+        "yonjuppun_kurai"
+      ],
+      "ttsInput": "40ぷんくらいです。",
+      "ttsReadingMode": "mixed",
+      "ttsKanaSegments": [
+        "{分|ぷん}"
+      ],
+      "audio": {
+        "normal": {
+          "file": "mp3/10_train-tr1a-n4.mp3",
+          "durationSeconds": 1.75,
+          "sha256": "84f916cc06296343529bdde50f536693e306fa238da95883f8e6570667af622f"
+        },
+        "slow": {
+          "file": "mp3/10_train-tr1a-n4_slow.mp3",
+          "durationSeconds": 2.194,
+          "sha256": "a446fac6ac84863a168d2f6a640a7dd99810f807f9b9ce982903651c3479882e"
+        }
+      }
+    },
+    {
+      "n": 11,
+      "id": "train-tr1b-n4",
+      "ja": "5番線です。",
+      "jaRuby": "5{番線|ばんせん}です。",
+      "kana": "5ばんせんです。",
+      "romaji": "go-bansen desu",
+      "zh": "5 號月台。",
+      "speaker": "站務員",
+      "nodeType": "hear",
+      "source": {
+        "task": "train",
+        "variant": "tr1b",
+        "node": "n4",
+        "level": 1,
+        "taskName": "電車・這班對嗎"
+      },
+      "chunks": [
+        "go_bansen"
+      ],
+      "ttsInput": "5番線です。",
+      "ttsReadingMode": "kanji",
+      "audio": {
+        "normal": {
+          "file": "mp3/11_train-tr1b-n4.mp3",
+          "durationSeconds": 1.332,
+          "sha256": "f5d1566639cf97b9b174dc5dd5143b0fadfa8efce8eb68949b6a11755f2b17c9"
+        },
+        "slow": {
+          "file": "mp3/11_train-tr1b-n4_slow.mp3",
+          "durationSeconds": 1.672,
+          "sha256": "b66b3817567e5c1e64c9ea517c09b011621a085fc46ba17851ec18f453b7fd12"
+        }
+      }
+    },
+    {
+      "n": 12,
+      "id": "train-tr2a-n2",
+      "ja": "はい、行きますよ。京都は四つ目です。",
+      "jaRuby": "はい、{行|い}きますよ。{京都|きょうと}は{四|よ}つ{目|め}です。",
+      "kana": "はい、いきますよ。きょうとはよつめです。",
+      "romaji": "hai ikimasu yo Kyōto wa yottsu-me desu",
+      "zh": "是，會到喔。京都是第四站。",
+      "speaker": "站務員",
+      "nodeType": "hear",
+      "source": {
+        "task": "train",
+        "variant": "tr2a",
+        "node": "n2",
+        "level": 2,
+        "taskName": "電車・這班對嗎"
+      },
+      "chunks": [
+        "hai",
+        "ikimasu_yo",
+        "kyoto_yottsume"
+      ],
+      "ttsInput": "はい、行きますよ。京都はよつ目です。",
+      "ttsReadingMode": "mixed",
+      "ttsKanaSegments": [
+        "{四|よ}"
+      ],
+      "audio": {
+        "normal": {
+          "file": "mp3/12_train-tr2a-n2.mp3",
+          "durationSeconds": 3.265,
+          "sha256": "9d8c7168ef7d3163b339336ef9a1c994b01129f29e62e0f540be3bcf72bd7981"
+        },
+        "slow": {
+          "file": "mp3/12_train-tr2a-n2_slow.mp3",
+          "durationSeconds": 4.101,
+          "sha256": "d37a563c1d4cc2b9e707e5a332e3ca277a7aa79b2f52734a8e0d33fc1cad6a79"
+        }
+      }
+    },
+    {
+      "n": 13,
+      "id": "way-w1a-n1",
+      "ja": "すみません、バス乗り場はどこですか。",
+      "jaRuby": "すみません、バス{乗|の}り{場|ば}はどこですか。",
+      "kana": "すみません、バスのりばはどこですか。",
+      "romaji": "sumimasen basu noriba wa doko desu ka",
+      "zh": "不好意思，巴士搭乘處在哪裡？",
+      "speaker": "你",
+      "nodeType": "say",
+      "source": {
+        "task": "way",
+        "variant": "w1a",
+        "node": "n1",
+        "level": 1,
+        "taskName": "問路・找巴士搭乘處"
+      },
+      "chunks": [
+        "sumimasen",
+        "noriba_doko"
+      ],
+      "ttsInput": "すみません、バス乗り場はどこですか。",
+      "ttsReadingMode": "kanji",
+      "audio": {
+        "normal": {
+          "file": "mp3/13_way-w1a-n1.mp3",
+          "durationSeconds": 2.952,
+          "sha256": "806483a8f2f83c14ceb86c2cdf1ba1eea815cb809f14c1d17e4af08dcf0ad9ee"
+        },
+        "slow": {
+          "file": "mp3/13_way-w1a-n1_slow.mp3",
+          "durationSeconds": 3.709,
+          "sha256": "0df01452048e52824d2472f03ebca7879c9f6cce8bc49942f715cc8f7b8b5178"
+        }
+      }
+    },
+    {
+      "n": 14,
+      "id": "way-w1b-n2",
+      "ja": "まっすぐ行って、右です。",
+      "jaRuby": "まっすぐ{行|い}って、{右|みぎ}です。",
+      "kana": "まっすぐいって、みぎです。",
+      "romaji": "massugu itte migi desu",
+      "zh": "直走，然後在右邊。",
+      "speaker": "站務員",
+      "nodeType": "hear",
+      "source": {
+        "task": "way",
+        "variant": "w1b",
+        "node": "n2",
+        "level": 1,
+        "taskName": "問路・找巴士搭乘處"
+      },
+      "chunks": [
+        "massugu_itte",
+        "migi_desu"
+      ],
+      "ttsInput": "まっすぐ行って、右です。",
+      "ttsReadingMode": "kanji",
+      "audio": {
+        "normal": {
+          "file": "mp3/14_way-w1b-n2.mp3",
+          "durationSeconds": 2.273,
+          "sha256": "23ba8a3fc776808d8d5f26f800befbc3379834c9a6ea97d6222d117b0f89a3bf"
+        },
+        "slow": {
+          "file": "mp3/14_way-w1b-n2_slow.mp3",
+          "durationSeconds": 2.873,
+          "sha256": "a000219aa30ed4711a24ec979fb22c14bc17b73578b8262327842e9d73ad6249"
+        }
+      }
+    },
+    {
+      "n": 15,
+      "id": "way-w1b-n4",
+      "ja": "はい、歩いて2分くらいですよ。",
+      "jaRuby": "はい、{歩|ある}いて2{分|ふん}くらいですよ。",
+      "kana": "はい、あるいて2ふんくらいですよ。",
+      "romaji": "hai aruite ni-fun kurai desu yo",
+      "zh": "對。走路大約 2 分鐘喔。",
+      "speaker": "站務員",
+      "nodeType": "hear",
+      "source": {
+        "task": "way",
+        "variant": "w1b",
+        "node": "n4",
+        "level": 1,
+        "taskName": "問路・找巴士搭乘處"
+      },
+      "chunks": [
+        "hai",
+        "aruite2"
+      ],
+      "ttsInput": "はい、歩いて2分くらいですよ。",
+      "ttsReadingMode": "kanji",
+      "audio": {
+        "normal": {
+          "file": "mp3/15_way-w1b-n4.mp3",
+          "durationSeconds": 2.664,
+          "sha256": "6b7c43008b3b92730c03aa88b1ea7007ed454e96e5c1d0dd1399e02fa6d3218b"
+        },
+        "slow": {
+          "file": "mp3/15_way-w1b-n4_slow.mp3",
+          "durationSeconds": 3.37,
+          "sha256": "8db295bf9fdc9915261676f7ede804288fc9e497e3d8cb2c9c64aede6c9ed0b5"
+        }
+      }
+    },
+    {
+      "n": 16,
+      "id": "way-w2a-n2",
+      "ja": "この道をまっすぐ行って、二つ目の信号を左です。",
+      "jaRuby": "この{道|みち}をまっすぐ{行|い}って、{二|ふた}つ{目|め}の{信号|しんごう}を{左|ひだり}です。",
+      "kana": "このみちをまっすぐいって、ふたつめのしんごうをひだりです。",
+      "romaji": "kono michi o massugu itte futatsu-me no shingō o hidari desu",
+      "zh": "這條路直走，在第二個紅綠燈左轉。",
+      "speaker": "站務員",
+      "nodeType": "hear",
+      "source": {
+        "task": "way",
+        "variant": "w2a",
+        "node": "n2",
+        "level": 2,
+        "taskName": "問路・找巴士搭乘處"
+      },
+      "chunks": [
+        "michi_massugu_itte",
+        "futatsume_shingou",
+        "hidari_desu"
+      ],
+      "ttsInput": "この道をまっすぐ行って、二つ目の信号を左です。",
+      "ttsReadingMode": "kanji",
+      "audio": {
+        "normal": {
+          "file": "mp3/16_way-w2a-n2.mp3",
+          "durationSeconds": 4.362,
+          "sha256": "379675407fce7c3881fc5642548d039ba336a8d83d85630484e4af4224492a7a"
+        },
+        "slow": {
+          "file": "mp3/16_way-w2a-n2_slow.mp3",
+          "durationSeconds": 5.538,
+          "sha256": "06086c2a2b0edb99ce36d0494f44ee75342d91ff707e88b6e65e873cf6c52dc6"
+        }
+      }
+    },
+    {
+      "n": 17,
+      "id": "ck-mouichido",
+      "ja": "もう一度お願いします。",
+      "jaRuby": "もう{一度|いちど}お{願|ねが}いします。",
+      "kana": "もういちどおねがいします。",
+      "romaji": "mō ichido onegai shimasu",
+      "zh": "請再說一次",
+      "speaker": "你",
+      "nodeType": "say",
+      "source": {
+        "chunk": "mouichido"
+      },
+      "chunks": [
+        "mouichido"
+      ],
+      "ttsInput": "もう一度お願いします。",
+      "ttsReadingMode": "kanji",
+      "audio": {
+        "normal": {
+          "file": "mp3/17_ck-mouichido.mp3",
+          "durationSeconds": 2.064,
+          "sha256": "eff9f52c7b22aa5707c9c052172373fc5a60ad0ef130631af631018210b05b54"
+        },
+        "slow": {
+          "file": "mp3/17_ck-mouichido_slow.mp3",
+          "durationSeconds": 2.586,
+          "sha256": "f55b646e23fec51d6d132c2caef00e5154223994bf7875df08c994b1f4aa82f2"
+        }
+      }
+    },
+    {
+      "n": 18,
+      "id": "ck-yukkuri",
+      "ja": "ゆっくりお願いします。",
+      "jaRuby": "ゆっくりお{願|ねが}いします。",
+      "kana": "ゆっくりおねがいします。",
+      "romaji": "yukkuri onegai shimasu",
+      "zh": "請說慢一點",
+      "speaker": "你",
+      "nodeType": "say",
+      "source": {
+        "chunk": "yukkuri"
+      },
+      "chunks": [
+        "yukkuri"
+      ],
+      "ttsInput": "ゆっくりお願いします。",
+      "ttsReadingMode": "kanji",
+      "audio": {
+        "normal": {
+          "file": "mp3/18_ck-yukkuri.mp3",
+          "durationSeconds": 1.855,
+          "sha256": "b4f7cbf71b1dfa98cbfd6b688e023ee3ef56e424c174f000fc756ea13d41fa58"
+        },
+        "slow": {
+          "file": "mp3/18_ck-yukkuri_slow.mp3",
+          "durationSeconds": 2.325,
+          "sha256": "616d3b574d5329bdf4a8713604a1d801de08b2237dd5f26427d5084c3fd23530"
+        }
+      }
+    },
+    {
+      "n": 19,
+      "id": "conv-cv1a-n2",
+      "ja": "袋はご利用ですか。",
+      "jaRuby": "{袋|ふくろ}はご{利用|りよう}ですか。",
+      "kana": "ふくろはごりようですか。",
+      "romaji": "fukuro wa goriyō desu ka",
+      "zh": "要袋子嗎？",
+      "speaker": "店員",
+      "nodeType": "hear",
+      "source": {
+        "task": "conv",
+        "variant": "cv1a",
+        "node": "n2",
+        "level": 1,
+        "taskName": "便利商店・結帳"
+      },
+      "chunks": [
+        "cv_fukuro_goriyou"
+      ],
+      "ttsInput": "袋はご利用ですか。",
+      "ttsReadingMode": "kanji",
+      "audio": {
+        "normal": {
+          "file": "mp3/19_conv-cv1a-n2.mp3",
+          "durationSeconds": 1.829,
+          "sha256": "e7d2be7239b83857ec1576745973eb2527a7e6ff3b178ca7924f248e15beb39f"
+        },
+        "slow": {
+          "file": "mp3/19_conv-cv1a-n2_slow.mp3",
+          "durationSeconds": 2.325,
+          "sha256": "58bc640a8e7b54514344bc04f7af05757d225be0e844d73a020761a6f901ef30"
+        }
+      }
+    },
+    {
+      "n": 20,
+      "id": "conv-cv1a-n4",
+      "ja": "温めますか。",
+      "jaRuby": "{温|あたた}めますか。",
+      "kana": "あたためますか。",
+      "romaji": "atatamemasu ka",
+      "zh": "要加熱嗎？",
+      "speaker": "店員",
+      "nodeType": "hear",
+      "source": {
+        "task": "conv",
+        "variant": "cv1a",
+        "node": "n4",
+        "level": 1,
+        "taskName": "便利商店・結帳"
+      },
+      "chunks": [
+        "cv_atatame_masuka"
+      ],
+      "ttsInput": "温めますか。",
+      "ttsReadingMode": "kanji",
+      "audio": {
+        "normal": {
+          "file": "mp3/20_conv-cv1a-n4.mp3",
+          "durationSeconds": 1.463,
+          "sha256": "d2e3f5d38a1c25c0a01d3099412ab0d44e405d36e2343440a63c610338f22717"
+        },
+        "slow": {
+          "file": "mp3/20_conv-cv1a-n4_slow.mp3",
+          "durationSeconds": 1.855,
+          "sha256": "40a1b2ff0fbb06cbfaf911a3487e1bf923d173bd4677666cc81fb98a4bec9faa"
+        }
+      }
+    },
+    {
+      "n": 21,
+      "id": "conv-cv2a-n4",
+      "ja": "お支払いはどうされますか。",
+      "jaRuby": "お{支払|しはら}いはどうされますか。",
+      "kana": "おしはらいはどうされますか。",
+      "romaji": "oshiharai wa dō saremasu ka",
+      "zh": "要怎麼付款？",
+      "speaker": "店員",
+      "nodeType": "hear",
+      "source": {
+        "task": "conv",
+        "variant": "cv2a",
+        "node": "n4",
+        "level": 2,
+        "taskName": "便利商店・結帳"
+      },
+      "chunks": [
+        "cv_shiharai"
+      ],
+      "ttsInput": "お支払いはどうされますか。",
+      "ttsReadingMode": "kanji",
+      "audio": {
+        "normal": {
+          "file": "mp3/21_conv-cv2a-n4.mp3",
+          "durationSeconds": 2.194,
+          "sha256": "5920057848a13b4e5dcb08d992ba096207d95982d9683a6134d84b8feef25bb5"
+        },
+        "slow": {
+          "file": "mp3/21_conv-cv2a-n4_slow.mp3",
+          "durationSeconds": 2.769,
+          "sha256": "951f6901ff6b33b49d76f0ad42755ed583e849cb25a873fc958cc626128f948e"
+        }
+      }
+    },
+    {
+      "n": 22,
+      "id": "izakaya-iz1a-n1",
+      "ja": "いらっしゃいませ。何名様ですか。",
+      "jaRuby": "いらっしゃいませ。{何名様|なんめいさま}ですか。",
+      "kana": "いらっしゃいませ。なんめいさまですか。",
+      "romaji": "irasshaimase nanmei-sama desu ka",
+      "zh": "歡迎光臨。幾位？",
+      "speaker": "店員",
+      "nodeType": "hear",
+      "source": {
+        "task": "izakaya",
+        "variant": "iz1a",
+        "node": "n1",
+        "level": 1,
+        "taskName": "居酒屋・一個人點啤酒"
+      },
+      "chunks": [
+        "l_irasshai",
+        "iz_nanmei"
+      ],
+      "ttsInput": "いらっしゃいませ。何名様ですか。",
+      "ttsReadingMode": "kanji",
+      "audio": {
+        "normal": {
+          "file": "mp3/22_izakaya-iz1a-n1.mp3",
+          "durationSeconds": 3.082,
+          "sha256": "cf3bd4aaf6fe34edd10a93ada50fd83eeb1f5d340bb5d4c65a7b3f65ba2b3c17"
+        },
+        "slow": {
+          "file": "mp3/22_izakaya-iz1a-n1_slow.mp3",
+          "durationSeconds": 3.892,
+          "sha256": "2be08e3a058c0f452d319d65daeae51e92618837c9a1ca9bf4b3f2b1750db7b6"
+        }
+      }
+    },
+    {
+      "n": 23,
+      "id": "izakaya-iz2a-n1",
+      "ja": "生ビール、ひとつください。",
+      "jaRuby": "{生|なま}ビール、ひとつください。",
+      "kana": "なまビール、ひとつください。",
+      "romaji": "nama bīru, hitotsu kudasai",
+      "zh": "生啤酒一杯。",
+      "speaker": "你",
+      "nodeType": "say",
+      "source": {
+        "task": "izakaya",
+        "variant": "iz2a",
+        "node": "n1",
+        "level": 2,
+        "taskName": "居酒屋・一個人點啤酒"
+      },
+      "chunks": [
+        "iz_nama_kudasai"
+      ],
+      "ttsInput": "生ビール、ひとつください。",
+      "ttsReadingMode": "kanji",
+      "audio": {
+        "normal": {
+          "file": "mp3/23_izakaya-iz2a-n1.mp3",
+          "durationSeconds": 2.273,
+          "sha256": "771d4dbd2bf0a243448ff1278ac61f2aea25b0d04c121a9e4ac1259e7b5ac246"
+        },
+        "slow": {
+          "file": "mp3/23_izakaya-iz2a-n1_slow.mp3",
+          "durationSeconds": 2.873,
+          "sha256": "944eafadbf406c21eb89997bee45ea6d6af175d93a292d910bcdcf41c0706d62"
+        }
+      }
+    },
+    {
+      "n": 24,
+      "id": "menu-mn1a-n1",
+      "ja": "いらっしゃいませ。先に食券をお願いします。",
+      "jaRuby": "いらっしゃいませ。{先|さき}に{食券|しょっけん}をお{願|ねが}いします。",
+      "kana": "いらっしゃいませ。さきにしょっけんをおねがいします。",
+      "romaji": "irasshaimase saki ni shokken o onegai shimasu",
+      "zh": "歡迎光臨。請先買餐券。",
+      "speaker": "店員",
+      "nodeType": "hear",
+      "source": {
+        "task": "menu",
+        "variant": "mn1a",
+        "node": "n1",
+        "level": 1,
+        "taskName": "麵店・看不懂菜單"
+      },
+      "chunks": [
+        "l_irasshai",
+        "mn_shokken_saki"
+      ],
+      "ttsInput": "いらっしゃいませ。先に食券をお願いします。",
+      "ttsReadingMode": "kanji",
+      "audio": {
+        "normal": {
+          "file": "mp3/24_menu-mn1a-n1.mp3",
+          "durationSeconds": 3.997,
+          "sha256": "73dbfd114cfaa03d8abd25991c449344fbe81462305225c98d99090506faa08d"
+        },
+        "slow": {
+          "file": "mp3/24_menu-mn1a-n1_slow.mp3",
+          "durationSeconds": 4.989,
+          "sha256": "5c338ff7a17c406595eb4413c4adcd649da440af81d2b94867754ed5509acfbf"
+        }
+      }
+    },
+    {
+      "n": 25,
+      "id": "menu-mn2a-n4",
+      "ja": "大盛りにもできますが、どうしますか。",
+      "jaRuby": "{大盛|おおも}りにもできますが、どうしますか。",
+      "kana": "おおもりにもできますが、どうしますか。",
+      "romaji": "ōmori ni mo dekimasu ga, dō shimasu ka",
+      "zh": "也可以加大，要怎麼樣？",
+      "speaker": "店員",
+      "nodeType": "hear",
+      "source": {
+        "task": "menu",
+        "variant": "mn2a",
+        "node": "n4",
+        "level": 2,
+        "taskName": "麵店・看不懂菜單"
+      },
+      "chunks": [
+        "mn_oomori",
+        "mn_dou_shimasu"
+      ],
+      "ttsInput": "大盛りにもできますが、どうしますか。",
+      "ttsReadingMode": "kanji",
+      "audio": {
+        "normal": {
+          "file": "mp3/25_menu-mn2a-n4.mp3",
+          "durationSeconds": 3.03,
+          "sha256": "0e21b05192ebb35861d341e73f989abdfa752b577b4ebbabb7a8a4577a6b59b2"
+        },
+        "slow": {
+          "file": "mp3/25_menu-mn2a-n4_slow.mp3",
+          "durationSeconds": 3.814,
+          "sha256": "6fd81dad934231e2d83c0dd585412fb20fdd2cbfdd3f7d090b08fe77cee6891c"
+        }
+      }
+    },
+    {
+      "n": 26,
+      "id": "annc-an1a-n1",
+      "ja": "次は、札幌、札幌です。お出口は右側です。",
+      "jaRuby": "{次|つぎ}は、{札幌|さっぽろ}、{札幌|さっぽろ}です。お{出口|でぐち}は{右側|みぎがわ}です。",
+      "kana": "つぎは、さっぽろ、さっぽろです。おでぐちはみぎがわです。",
+      "romaji": "tsugi wa, Sapporo, Sapporo desu odeguchi wa migigawa desu",
+      "zh": "下一站是札幌。出口在右側。",
+      "speaker": "車內廣播",
+      "nodeType": "hear",
+      "source": {
+        "task": "annc",
+        "variant": "an1a",
+        "node": "n1",
+        "level": 1,
+        "taskName": "車內・車站廣播"
+      },
+      "chunks": [
+        "an_tsugi_sapporo",
+        "an_deguchi_migi"
+      ],
+      "ttsInput": "次は、札幌、札幌です。お出口は右側です。",
+      "ttsReadingMode": "kanji",
+      "audio": {
+        "normal": {
+          "file": "mp3/26_annc-an1a-n1.mp3",
+          "durationSeconds": 4.885,
+          "sha256": "35fef5506ef73f7e870fe603c168c99869734aba6eac97039d6d7b0cf6c94c2a"
+        },
+        "slow": {
+          "file": "mp3/26_annc-an1a-n1_slow.mp3",
+          "durationSeconds": 6.217,
+          "sha256": "6166843303a23a11ecf1e94e38ee4a914c53160f1cd641a67b5a0e60d75083aa"
+        }
+      }
+    },
+    {
+      "n": 27,
+      "id": "annc-an2a-n1",
+      "ja": "ただいま、電車が約10分遅れております。ご迷惑をおかけしております。",
+      "jaRuby": "ただいま、{電車|でんしゃ}が{約|やく}10{分|ぷん}{遅|おく}れております。ご{迷惑|めいわく}をおかけしております。",
+      "kana": "ただいま、でんしゃがやく10ぷんおくれております。ごめいわくをおかけしております。",
+      "romaji": "tadaima, densha ga yaku juppun okurete orimasu gomeiwaku o okake shite orimasu",
+      "zh": "目前電車大約誤點 10 分鐘，造成您的不便。",
+      "speaker": "月台廣播",
+      "nodeType": "hear",
+      "source": {
+        "task": "annc",
+        "variant": "an2a",
+        "node": "n1",
+        "level": 2,
+        "taskName": "車內・車站廣播"
+      },
+      "chunks": [
+        "an_tadaima",
+        "an_10pun_okure",
+        "an_meiwaku"
+      ],
+      "ttsInput": "ただいま、電車が約10ぷん遅れております。ご迷惑をおかけしております。",
+      "ttsReadingMode": "mixed",
+      "ttsKanaSegments": [
+        "{分|ぷん}"
+      ],
+      "audio": {
+        "normal": {
+          "file": "mp3/27_annc-an2a-n1.mp3",
+          "durationSeconds": 5.851,
+          "sha256": "ec5fc480d75b8aaa234a66227dc119807728d29d39990447c391a7da8d61f03d"
+        },
+        "slow": {
+          "file": "mp3/27_annc-an2a-n1_slow.mp3",
+          "durationSeconds": 7.367,
+          "sha256": "e110518f9b4e79a02b977428ff20c144f981620bde1cd6fe918f910ee99743db"
+        }
+      }
+    },
+    {
+      "n": 28,
+      "id": "entry-en1a-n4",
+      "ja": "タオルはお持ちですか。",
+      "jaRuby": "タオルはお{持|も}ちですか。",
+      "kana": "タオルはおもちですか。",
+      "romaji": "taoru wa omochi desu ka",
+      "zh": "有帶毛巾嗎？",
+      "speaker": "櫃台",
+      "nodeType": "hear",
+      "source": {
+        "task": "entry",
+        "variant": "en1a",
+        "node": "n4",
+        "level": 1,
+        "taskName": "入場櫃台・規則說明"
+      },
+      "chunks": [
+        "en_towel"
+      ],
+      "ttsInput": "タオルはお持ちですか。",
+      "ttsReadingMode": "kanji",
+      "audio": {
+        "normal": {
+          "file": "mp3/28_entry-en1a-n4.mp3",
+          "durationSeconds": 1.776,
+          "sha256": "0e95536cfef1ea24ea122a84152f24edbf566ff2abfdef845cc380f3886231fa"
+        },
+        "slow": {
+          "file": "mp3/28_entry-en1a-n4_slow.mp3",
+          "durationSeconds": 2.273,
+          "sha256": "b69493818864a091a9dced0b7cea6b6d214155e9d547041d9eed80e9c957cef2"
+        }
+      }
+    },
+    {
+      "n": 29,
+      "id": "shop-sh1a-n1",
+      "ja": "すみません、試着してもいいですか。",
+      "jaRuby": "すみません、{試着|しちゃく}してもいいですか。",
+      "kana": "すみません、しちゃくしてもいいですか。",
+      "romaji": "sumimasen shichaku shite mo ii desu ka",
+      "zh": "不好意思，可以試穿嗎？",
+      "speaker": "你",
+      "nodeType": "say",
+      "source": {
+        "task": "shop",
+        "variant": "sh1a",
+        "node": "n1",
+        "level": 1,
+        "taskName": "買衣服・試穿與洗滌"
+      },
+      "chunks": [
+        "sumimasen",
+        "sh_shichaku_ii"
+      ],
+      "ttsInput": "すみません、試着してもいいですか。",
+      "ttsReadingMode": "kanji",
+      "audio": {
+        "normal": {
+          "file": "mp3/29_shop-sh1a-n1.mp3",
+          "durationSeconds": 2.978,
+          "sha256": "db7affa83d60c246a19ad05aa4016fb54e7f73ebd872c8068edfa11906992ddb"
+        },
+        "slow": {
+          "file": "mp3/29_shop-sh1a-n1_slow.mp3",
+          "durationSeconds": 3.736,
+          "sha256": "f9acff762ef6810e01390be8c55beee44ae2481787f88f9a4683a0922f385d16"
+        }
+      }
+    },
+    {
+      "n": 30,
+      "id": "shop-sh1a-n2",
+      "ja": "はい、どうぞ。試着室はあちらです。",
+      "jaRuby": "はい、どうぞ。{試着室|しちゃくしつ}はあちらです。",
+      "kana": "はい、どうぞ。しちゃくしつはあちらです。",
+      "romaji": "hai, dōzo. shichakushitsu wa achira desu",
+      "zh": "好，請。試衣間在那邊。",
+      "speaker": "店員",
+      "nodeType": "hear",
+      "source": {
+        "task": "shop",
+        "variant": "sh1a",
+        "node": "n2",
+        "level": 1,
+        "taskName": "買衣服・試穿與洗滌"
+      },
+      "chunks": [
+        "sh_douzo_achira"
+      ],
+      "ttsInput": "はい、どうぞ。試着室はあちらです。",
+      "ttsReadingMode": "kanji",
+      "audio": {
+        "normal": {
+          "file": "mp3/30_shop-sh1a-n2.mp3",
+          "durationSeconds": 3.239,
+          "sha256": "06f48a541fc53df33c81f4373c6368b44d0f5e3d333362e89d0ab24839487c4f"
+        },
+        "slow": {
+          "file": "mp3/30_shop-sh1a-n2_slow.mp3",
+          "durationSeconds": 4.075,
+          "sha256": "dca40155b80a18639bd9334d23653992313e32414fd08e1ae42cf9496f18d656"
+        }
+      }
+    }
+  ]
+}

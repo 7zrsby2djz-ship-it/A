@@ -168,7 +168,9 @@ function closeRunView(silent) {
   const el = $('#run'); if (el) el.hidden = true; document.body.style.overflow = '';
   try { speechSynthesis.cancel(); } catch (e) {}
   if (S.run && !silent) toast('已保存，回首頁可以從這裡接續');
+  const t5f = !!RUN_END && !S.run;
   RUN_END = null; render();
+  t5After('dlg', t5f);
 }
 function boardHtml(r) {
   const t = TASK[r.tid];

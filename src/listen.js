@@ -51,7 +51,7 @@ function lsBuild() {
   LS.q = q;
 }
 function lsOpen(scope) {
-  closeSheet();
+  closeSheet(); $('#lpAudio')?.pause();
   LS.scope = scope || null; LS.list = lsPlaylist(LS.scope); lsBuild();
   const pos = lsPref().pos[lsKey()]; LS.k = pos && pos < LS.q.length ? pos : 0;
   LS.open = true;

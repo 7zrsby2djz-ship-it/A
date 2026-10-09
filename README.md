@@ -42,7 +42,12 @@
 | `src/run.js` | 對話執行引擎：節點流程、提示撤除、求助、判定、進度分類、中斷接續、句塊說明。 |
 | `src/jp.js` | 句塊複習、舊版單字卡、日文頁／首頁推薦、讀音設定。 |
 | `src/listen.js` | 耳機模式（教學／連播／接話）。 |
+| `src/today5.js` | 首頁「今天 5 分鐘」一鍵流程（到期複習 → 一段對話 → 五個假名），狀態另存 `bnk-today5-v1`。設計見 [docs/TODAY5_DESIGN.md](docs/TODAY5_DESIGN.md)。 |
 | `src/app.js` | 主程式：存檔、英文功能、分頁、事件。**必須最後載入**（它在最後一行啟動畫面）。 |
+| `src/lockplay.js` | 「全部」裡的**鎖屏聽力**：用 `<audio>`（不是 Web Speech）播 `oral-audio/batch01` 的 30 句（正常／慢速 0.8、上一句／下一句、自動下一句），並設定 Media Session，讓 iPhone 鎖定畫面／耳機按鈕可以暫停、跳句。位置與速度另存 `bnk-lockplay-v1`，不動 `bnk-state-v1`。 |
+| `oral-audio/` | 鎖屏聽力用的離線 MP3（第一批 30 句 × 正常／慢速，合成語音）。`build.sh` 會跑 `oral-audio/tools/build-embed.cjs`，把 60 個逐句 MP3 檢查 sha256 後以 data URI 打包進 `index.html`（約 +2.1 MB；連播檔 `batch01_playlist.mp3` 不打包）。見 [oral-audio/README.md](oral-audio/README.md)。 |
+| `tools/test-lockplay.cjs` | 鎖屏聽力回歸測試（Playwright，實際解碼 MP3；iPhone 鎖屏行為無法在這裡測）。 |
+| `tools/test-today5.cjs` | 「今天 5 分鐘」流程回歸測試（Playwright）。 |
 
 ## 日文教材格式（`src/data_tasks.js`）
 檔案開頭有完整說明，重點如下：

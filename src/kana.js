@@ -226,7 +226,7 @@ function knNext() {
   const it = knCur(); if (it && it.type === 'learn') { const c = knCard(it.key, true); c.seen = true; c.lastSeen = Date.now(); }
   knStop(); KG.peek = false; KG.play = {}; KG.reveal = false;
   a.i++;
-  if (a.i >= a.items.length) { KG.summary = {targets:a.targets, ans:a.items.map((x, i) => ({it:x, r:a.ans[i]}))}; knSt().active = null; persist(); KG.view = 'done'; }
+  if (a.i >= a.items.length) { KG.roundDone = true; KG.summary = {targets:a.targets, ans:a.items.map((x, i) => ({it:x, r:a.ans[i]}))}; knSt().active = null; persist(); KG.view = 'done'; }
   else persist();
   knRender(); const b = $('#knBody'); if (b) b.scrollTop = 0;
 }
@@ -255,7 +255,7 @@ function knOpen(v) {
   if (v === 'go') { if (knSt().active) { KG.view = 'round'; knRender(); } else knStartRound(); return; }
   knRender();
 }
-function knClose() { knStop(); const el = $('#kn'); if (el) el.hidden = true; document.body.style.overflow = ''; render(); }
+function knClose() { const t5f = !!KG.roundDone; KG.roundDone = false; knStop(); const el = $('#kn'); if (el) el.hidden = true; document.body.style.overflow = ''; render(); t5After('kana', t5f); }
 function knRender() {
   const el = $('#kn'); if (!el || el.hidden) return;
   const v = KG.view;

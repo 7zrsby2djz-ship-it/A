@@ -355,6 +355,8 @@ function vHome() {
   const lw = lookWeek(0), pw = lookWeek(7);
   const first = S.xp === 0;
   return topbar('按鈕與積木') + `<div class="stack">
+    ${t5CardHtml()}
+    <details id="homeAll" class="stack" ${UI.allOpen ? 'open' : ''}><summary class="sec-title" style="cursor:pointer;min-height:44px;display:flex;align-items:center;gap:8px"><span style="flex:1">全部</span><span class="small muted" style="font-weight:400">英文・日文・五十音・鎖屏聽力・小店・紀錄 ▾</span></summary><div class="stack">
     ${first ? `<div class="card flat"><h3 style="font-size:17px;margin-bottom:6px">從這裡開始</h3><p class="muted">先按下面的「開始英文練習」。今天會學 ${S.settings.dailyNew} 個 Claude 畫面上最常出現的英文。在 Claude 看到不懂的字，就到下方中間的「查」貼上。</p></div>` : ''}
     <section class="card hero-en stack" aria-label="英文">
       <div class="row"><div class="grow" style="flex:1"><p class="small muted">英文 · 看懂 Claude 介面</p><p class="big tnum">${Math.round(cov * 100)}%</p><p class="small muted">Claude 常見英文，你已經看得懂的比例・已學 ${allEnIds().filter(id => S.en[id]).length} 個字</p></div></div>
@@ -365,6 +367,7 @@ function vHome() {
     </section>
     <section class="card hero-jp stack" aria-label="日文">${jpNextHtml(true)}</section>
     ${kanaCardHtml()}
+    ${lpCardHtml()}
     ${gmCardHtml()}
     ${again.length ? `<section class="stack" style="gap:8px"><p class="sec-title">今天再遇到</p><div class="chips">${again.map(id => `<button class="chip en" data-a="word" data-v="${id}">${esc(getEn(id).w)}</button>`).join('')}</div><p class="small muted">今天答錯或在 Claude 裡查過的字。它們會在 10 分鐘後的練習裡再出現。</p></section>` : ''}
     <div class="kpis">
@@ -374,7 +377,7 @@ function vHome() {
     <section class="card"><div class="row" style="margin-bottom:10px"><p class="sec-title" style="flex:1;margin:0">這 7 天</p><span class="small muted"><span style="color:var(--en)">■</span> 英文　<span style="color:var(--jp)">■</span> 日文</span></div>
       <div class="week">${week.map(w => `<div><span style="display:flex;flex-direction:column;justify-content:flex-end;width:100%;align-items:center;flex:1;gap:2px">${w.jp ? `<i class="jpbar" style="height:${w.jp / mx * 52}px"></i>` : ''}<i style="height:${Math.max(3, w.en / mx * 52)}px;${w.en ? '' : 'opacity:.25'}"></i></span>${w.day}</div>`).join('')}</div></section>
     <p class="small muted" style="text-align:center">查字次數越少，代表你越不需要翻譯就看得懂 Claude。</p>
-  </div>`;
+  </div></details></div>`;
 }
 
 /* ---------- 英文 ---------- */
@@ -581,8 +584,10 @@ function startSession(kind, cards, title, extra = {}) {
   renderSes(); autoSpeakCard();
 }
 function endSession() {
+  const t5 = SES && SES.ck ? !curCard() : null;
   SES = null; const el = $('#ses'); el.hidden = true; document.body.style.overflow = ''; if (canSpeak) try { speechSynthesis.cancel(); } catch (e) {}
   render();
+  if (t5 !== null) t5After('review', t5);
 }
 function startEn(extra = 0) {
   const due = enDue().slice(0, 14);
@@ -893,6 +898,13 @@ document.addEventListener('click', e => {
     case 'lsClose': lsClose(); break;
     case 'gmOpen': gmOpen(v); break;
     case 'knOpen': knOpen(v); break;
+    case 't5Go': t5Go(v === 'again'); break;
+    case 'lpOpen': lpOpen(); break;
+    case 'lpClose': lpClose(); break;
+    case 'lpToggle': lpToggle(); break;
+    case 'lpGo': lpGo(+v); break;
+    case 'lpSpeed': lpSpeed(v); break;
+    case 'lpAuto': { const p = lpPref(); p.auto = !p.auto; lpSave(); lpRender(); } break;
     default: if (S.run) runAction(a, v); break;
     case 'review': startReview(); break;
     case 'reviewAgain': endSession(); startReview(); break;
