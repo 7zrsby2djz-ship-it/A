@@ -353,7 +353,8 @@ rt{font-size:.5em;font-weight:500;color:var(--muted);font-family:var(--f-body)}
 .kst.st-ok,.kst.st-solid{color:var(--ok)}.kst.st-review,.kst.st-due{color:var(--warn)}
 .kprog{display:flex;flex-direction:column;gap:2px;color:var(--muted)}
 .kword{display:flex;flex-direction:column;gap:6px;border-top:1px solid var(--line);padding-top:10px}
-.kw{font-size:24px;font-weight:700}.kr{font-size:20px}.kz{font-size:17px;font-weight:700}
+.kw{font-size:24px;font-weight:700}.kr{font-size:20px}
+.kw.kr{font-size:24px;font-weight:700}.kz{font-size:17px;font-weight:700}
 .khl{color:var(--jp-ink);text-decoration:underline;text-decoration-thickness:3px;text-underline-offset:4px;background:var(--jp-soft);border-radius:4px;padding:0 2px}
 .kmask{display:inline-block;min-width:1.1em;text-align:center;border:2px dashed var(--jp);border-radius:6px;color:var(--jp-ink)}
 .kmatch{background:var(--warn-soft);border-radius:8px;padding:4px 8px}
@@ -2810,7 +2811,11 @@ function hearHtml(n) {
     </section>`;
   }
   if (allDone) {
-    b += `${(n.learn || []).length ? `<div class="fb ok" style="animation:none"><h3>確認了</h3>${n.learn.map(x => `<p>・${esc(x)}</p>`).join('')}</div>` : ''}${n.fig ? `<p class="sec-title">照這張卡走</p>${figHtml(n.fig)}` : ''}
+    // 有答錯時不顯示綠色「確認了」（會和紅字回饋矛盾），改成黃色「他其實是說」，提醒還可以再確認
+    const anyWrong = qs.some(x => ans[x.i] !== undefined && ans[x.i] !== 0);
+    b += `${(n.learn || []).length ? (anyWrong
+      ? `<div class="fb mid" style="animation:none" data-learn="wrong"><h3>他其實是說</h3>${n.learn.map(x => `<p>・${esc(x)}</p>`).join('')}<p class="small">這次沒聽出來也沒關係。下一步可以用「〜ですね」再確認一次。</p></div>`
+      : `<div class="fb ok" style="animation:none" data-learn="ok"><h3>確認了</h3>${n.learn.map(x => `<p>・${esc(x)}</p>`).join('')}</div>`) : ''}${n.fig ? `<p class="sec-title">照這張卡走</p>${figHtml(n.fig)}` : ''}
       <details class="card flat"><summary style="cursor:pointer;font-weight:700">拆開來看（點句塊看說明）</summary><div class="list" style="margin-top:10px">${(easy ? n.c.concat(n.easy.c.filter(id => !n.c.includes(id))) : n.c).map(id => `<button class="li" data-a="ckInfo" data-v="${id}"><div class="grow"><div class="jpf" style="font-weight:700;font-size:17px">${rubyHtml(CK[id].jp)}</div><div class="zh" style="white-space:normal">${esc(CK[id].zh)}<span class="muted">・${CAT[CK[id].cat]}</span></div></div>${IC.chev}</button>`).join('')}</div></details>`;
   }
   let f;
@@ -3819,8 +3824,8 @@ function knHomeView() {
   return knHead('五十音', '假名 → 聲音 → 熟悉的單字 → 意思') + `<div class="ov-body" id="knBody"><div class="in">
     ${knModeSeg()}
     <section class="card stack" style="gap:10px">
-      ${a ? `<p class="small muted">上一輪還沒做完（${a.i}/${a.items.length}）</p><button class="btn jp-b block" data-k="resume">繼續這一輪</button><button class="btn ghost sm" data-k="drop">放棄，重新選五個</button>`
-        : `<button class="btn jp-b block" data-k="start">練五個（約 3 分鐘）</button>`}
+      ${a ? `<p class="small muted">上一輪還沒做完：${knChars(a).length} 個字，做到第 ${a.i}/${a.items.length} 小步</p><button class="btn jp-b block" data-k="resume">繼續這一輪</button><button class="btn ghost sm" data-k="drop">放棄，重新選五個字</button>`
+        : `<button class="btn jp-b block" data-k="start">練五個字（約 15 小步・3 分鐘）</button>`}
       <div class="kprog small"><span>平假名 已練 <b class="tnum">${h.done}</b>/${h.total}${h.rev ? `・需複習 ${h.rev}` : ''}</span><span>片假名 已練 <b class="tnum">${k.done}</b>/${k.total}${k.rev ? `・需複習 ${k.rev}` : ''}</span></div>
     </section>
     <div class="ktable" role="grid" aria-label="假名表">${rows.join('')}</div>
@@ -3852,7 +3857,7 @@ function knCardHtml(key, opt = {}) {
     const refs = knRefs(key);
     const wordHtml = r => { const w = KW[r.wordId], fam = st.wordFamiliarity[w.id] === 'unfamiliar';
       return `<div class="kword"><div class="row" style="align-items:flex-start"><div style="flex:1;min-width:0">
-        <p class="kw jpf" lang="ja">${esc(w.word)}</p><p class="kr jpf" lang="ja">${knReadingHtml(r)}</p>${showRo ? `<p class="small muted">${esc(w.romaji)}</p>` : ''}
+        ${w.word === r.displayedReading ? `<p class="kw kr jpf" lang="ja">${knReadingHtml(r)}</p>` : `<p class="kw jpf" lang="ja">${esc(w.word)}</p><p class="kr jpf" lang="ja">${knReadingHtml(r)}</p>`}${showRo ? `<p class="small muted">${esc(w.romaji)}</p>` : ''}
         <p class="kz">${esc(w.meaningZh)}</p>
         <p class="small muted">${esc(KN_EVID[w.familiarityEvidence] || '')}${w.jlptApprox ? '・約 ' + esc(w.jlptApprox) : ''}${fam ? '・你標了不熟' : ''}</p>
         ${KN_MATCH[r.matchType] ? `<p class="small kmatch">${esc(r.note || KN_MATCH[r.matchType])}</p>` : ''}${w.note ? `<p class="small muted">${esc(w.note)}</p>` : ''}</div>
@@ -3877,10 +3882,13 @@ function knOptsHtml(it, r) {
     const dis = r || (it.type === 'hear' && !KG.play.ok && !KG.play.fallback);
     return `<button class="opt kopt ${cls}" data-k="ans" data-v="${o}" ${dis ? 'disabled' : ''} lang="ja">${esc(knGlyph(o))}${knSt().prefs.romaji || r ? `<span class="sub">${esc(knRomajiOf(o))}</span>` : ''}</button>`; }).join('')}</div>`;
 }
+// 一輪是「5 個字」，每個字約 3 小步；進度同時顯示第幾個字和第幾步，避免「練五個」卻看到 1/15
+function knChars(a) { const out = []; (a.items || []).forEach(x => { if (!out.includes(x.key)) out.push(x.key); }); return out; }
+function knCharPos(a) { const seen = []; for (let j = 0; j <= a.i && j < a.items.length; j++) if (!seen.includes(a.items[j].key)) seen.push(a.items[j].key); return Math.max(1, seen.indexOf(a.items[Math.min(a.i, a.items.length - 1)].key) + 1); }
 function knRoundView() {
   const st = knSt(), a = st.active; if (!a) { KG.view = 'home'; return knHomeView(); }
   const it = a.items[a.i], r = a.ans[a.i], [s, id] = it.key.split(':'), k = KN[id];
-  const head = `<div class="ov-head"><button class="icon-btn" data-k="home" aria-label="先離開，之後接續">${IC.x}</button><div class="prog" aria-hidden="true"><i style="width:${a.i / a.items.length * 100}%"></i></div><span class="small muted tnum">${a.i + 1}/${a.items.length}</span></div>`;
+  const head = `<div class="ov-head"><button class="icon-btn" data-k="home" aria-label="先離開，之後接續">${IC.x}</button><div class="prog" aria-hidden="true"><i style="width:${a.i / a.items.length * 100}%"></i></div><span class="small muted tnum" data-kprog>字 ${knCharPos(a)}/${knChars(a).length}・第 ${a.i + 1}/${a.items.length} 步</span></div>`;
   let b = '', f = '';
   if (it.type === 'learn') {
     b = `<p class="small muted">新的字：先看、先聽，不用急著記。</p>${knCardHtml(it.key, {peek:KG.peek, inRound:true})}`;
@@ -3935,7 +3943,7 @@ function knDoneView() {
   return knHead('這一輪完成', '') + `<div class="ov-body" id="knBody"><div class="in">
     <div class="done-hero"><h2 style="font-size:24px">完成 ${s.targets.length} 個字</h2><p class="muted">看提示也算學習；答錯的字之後會優先出現。</p></div>
     <div class="list">${rows}</div></div></div>
-    <div class="ov-foot"><div class="in"><button class="btn primary block" data-k="start">再練五個</button><button class="btn block" data-k="home">回假名表</button></div></div>`;
+    <div class="ov-foot"><div class="in"><button class="btn primary block" data-k="start">再練五個字</button><button class="btn block" data-k="home">回假名表</button></div></div>`;
 }
 function knWordsView() {
   const groups = {}, voiced = [];
@@ -3952,7 +3960,7 @@ function kanaCardHtml() {
   const a = knSt().active, h = knCount('hira'), k = knCount('kata');
   return `<section class="card stack" style="gap:8px"><div class="row"><div style="flex:1"><p class="small muted">字形・聲音・熟悉的單字</p><p style="font-size:19px;font-weight:800">五十音</p>
     <p class="small muted">平假名 ${h.done}/${h.total}・片假名 ${k.done}/${k.total}${a ? '・有一輪沒做完' : ''}</p></div><span class="kbig sm jpf" aria-hidden="true">あ<span>ア</span></span></div>
-    <div class="row"><button class="btn jp-b" style="flex:1" data-a="knOpen" data-v="go">${a ? '繼續' : '練五個'}</button><button class="btn" data-a="knOpen">假名表</button></div></section>`;
+    <div class="row"><button class="btn jp-b" style="flex:1" data-a="knOpen" data-v="go">${a ? '繼續' : '練五個字'}</button><button class="btn" data-a="knOpen">假名表</button></div></section>`;
 }
 
 /* ---------- 事件 ---------- */

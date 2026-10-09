@@ -254,7 +254,11 @@ function hearHtml(n) {
     </section>`;
   }
   if (allDone) {
-    b += `${(n.learn || []).length ? `<div class="fb ok" style="animation:none"><h3>確認了</h3>${n.learn.map(x => `<p>・${esc(x)}</p>`).join('')}</div>` : ''}${n.fig ? `<p class="sec-title">照這張卡走</p>${figHtml(n.fig)}` : ''}
+    // 有答錯時不顯示綠色「確認了」（會和紅字回饋矛盾），改成黃色「他其實是說」，提醒還可以再確認
+    const anyWrong = qs.some(x => ans[x.i] !== undefined && ans[x.i] !== 0);
+    b += `${(n.learn || []).length ? (anyWrong
+      ? `<div class="fb mid" style="animation:none" data-learn="wrong"><h3>他其實是說</h3>${n.learn.map(x => `<p>・${esc(x)}</p>`).join('')}<p class="small">這次沒聽出來也沒關係。下一步可以用「〜ですね」再確認一次。</p></div>`
+      : `<div class="fb ok" style="animation:none" data-learn="ok"><h3>確認了</h3>${n.learn.map(x => `<p>・${esc(x)}</p>`).join('')}</div>`) : ''}${n.fig ? `<p class="sec-title">照這張卡走</p>${figHtml(n.fig)}` : ''}
       <details class="card flat"><summary style="cursor:pointer;font-weight:700">拆開來看（點句塊看說明）</summary><div class="list" style="margin-top:10px">${(easy ? n.c.concat(n.easy.c.filter(id => !n.c.includes(id))) : n.c).map(id => `<button class="li" data-a="ckInfo" data-v="${id}"><div class="grow"><div class="jpf" style="font-weight:700;font-size:17px">${rubyHtml(CK[id].jp)}</div><div class="zh" style="white-space:normal">${esc(CK[id].zh)}<span class="muted">・${CAT[CK[id].cat]}</span></div></div>${IC.chev}</button>`).join('')}</div></details>`;
   }
   let f;
