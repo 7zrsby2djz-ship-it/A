@@ -39,7 +39,7 @@ const SCENE_MAP = Object.fromEntries(SCENES.map(s => [s.id, s]));
 
 /* ================= state ================= */
 const LSK = 'bnk-state-v1';
-const DEF = () => ({v:1, updatedAt:0, created:Date.now(), settings:{romaji:true, read:'furi', dlgLen:1, dailyNew:5, rate:1, autoSpeak:true},
+const DEF = () => ({v:1, updatedAt:0, created:Date.now(), settings:{romaji:true, read:'furi', dlgLen:1, dailyNew:5, rate:1, autoSpeak:true, jaVoice:''},
   en:{}, custom:{}, gm:{}, kana:{v:1, prefs:{script:'mixed', romaji:false}, cards:{}, wordFamiliarity:{}, active:null}, jp:{}, dlg:{}, dlgMiss:{}, jpw:{}, ck:{}, tk:{}, run:null, lsp:null, migDlg:0, jpConf:{}, scenes:{}, favs:[], pastes:[], log:{}, xp:0, streak:{n:0, last:''}, newDay:{d:'', n:0}, boost:[], again:{d:'', ids:[]}});
 function migrate(o) { const d = DEF(); if (!o || typeof o !== 'object') return d; for (const k in d) if (o[k] === undefined) o[k] = d[k];
   const had = o.settings || {}; o.settings = Object.assign(d.settings, had); if (had.read === undefined) o.settings.read = had.romaji === false ? 'none' : 'furi'; return o; }
@@ -173,7 +173,30 @@ function newCandidates(extra = 0) {
 /* ================= speech (sound matters more than pictures here) ================= */
 const canSpeak = 'speechSynthesis' in window;
 let VOICES = [];
-function loadVoices() { try { VOICES = speechSynthesis.getVoices(); } catch (e) {} }
+function loadVoices() { try { VOICES = speechSynthesis.getVoices() || []; } catch (e) {} if (typeof UI !== 'undefined' && UI.tab === 'me' && document.querySelector('#jaVoiceSel') && !document.querySelector('#jaVoiceSel:focus')) render(); }
+/* ---- 日文聲音：全 App 共用同一個挑選規則（不影響鎖屏聽力的 MP3） ----
+   使用者指定 → Premium／加強版（Enhanced）→ Siri → 手機內建 → 其他。
+   iOS 17 起 ja-JP 也會列出 Eddy、Flo、Grandma 等 Eloquence 聲音，聽起來機械又斷續，放到最後。 */
+const JA_ROBOTIC = /\b(eddy|flo|grandma|grandpa|reed|rocko|sandy|shelley|eloquence|compact|novelty|bells|bubbles|jester|organ|whisper|zarvox|trinoids|bahh|boing|cellos|albert|bad news|good news|superstar|wobble)\b/i;
+function jaVoices() { return VOICES.filter(v => v && v.lang && /^ja([_-]|$)/i.test(v.lang)); }
+function jaVoiceScore(v) {
+  const n = (v.name || '') + ' ' + (v.voiceURI || ''); let s = 0;
+  if (/premium/i.test(n)) s += 40;
+  if (/enhanced|強化|增強|高品質|拡張/i.test(n)) s += 30;
+  if (/siri/i.test(n)) s += 20;
+  if (/kyoko|o-ren|otoya|hattori|haruka|ayumi|nanami|ichiro|sayaka|google/i.test(n)) s += 6;
+  if (v.localService) s += 3;
+  if (JA_ROBOTIC.test(n)) s -= 50;
+  return s;
+}
+function jaVoiceLabel(v) { const n = (v.name || '') + ' ' + (v.voiceURI || ''); return v.name + (/premium/i.test(n) ? '（高品質）' : /enhanced|強化|增強|拡張/i.test(n) ? '（加強版）' : JA_ROBOTIC.test(n) ? '（機械音）' : ''); }
+function pickJaVoice() {
+  const all = jaVoices(); if (!all.length) return null;
+  const want = S.settings && S.settings.jaVoice;
+  if (want) { const m = all.find(v => v.voiceURI === want || v.name === want); if (m) return m; }
+  return all.slice().sort((a, b) => jaVoiceScore(b) - jaVoiceScore(a))[0];
+}
+window.pickJaVoice = pickJaVoice;
 if (canSpeak) { loadVoices(); try { speechSynthesis.onvoiceschanged = loadVoices; } catch (e) {} }
 function speak(text, lang, rate, onend) {
   if (!canSpeak || !text) return;
@@ -181,7 +204,7 @@ function speak(text, lang, rate, onend) {
     speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(text.replace(/[（(].*?[）)]/g, ''));
     u.lang = lang; u.rate = (rate || (lang.startsWith('ja') ? 0.9 : 0.95)) * S.settings.rate;
-    const v = VOICES.find(v => v.lang && v.lang.replace('_', '-').startsWith(lang)) || VOICES.find(v => v.lang && v.lang.startsWith(lang.slice(0, 2)));
+    const v = lang.startsWith('ja') ? pickJaVoice() : (VOICES.find(v => v.lang && v.lang.replace('_', '-').startsWith(lang)) || VOICES.find(v => v.lang && v.lang.startsWith(lang.slice(0, 2))));
     if (v) u.voice = v;
     if (onend) { u.onend = onend; u.onerror = onend; }
     speechSynthesis.speak(u);
@@ -524,6 +547,10 @@ function vMe() {
       <div class="set-row"><div class="grow"><b>答題時自動發音</b><p class="small muted">看到新字、答完題時念出來</p></div><button class="switch" role="switch" aria-checked="${S.settings.autoSpeak}" aria-label="自動發音" data-a="set" data-k="autoSpeak" data-v="${!S.settings.autoSpeak}"></button></div>
       <div class="set-row" style="flex-wrap:wrap"><div class="grow"><b>每天新英文字</b></div>${seg('dailyNew', [[3, '3'], [5, '5'], [8, '8']], S.settings.dailyNew)}</div>
       <div class="set-row" style="flex-wrap:wrap"><div class="grow"><b>發音速度</b></div>${seg('rate', [[0.75, '慢'], [1, '正常']], S.settings.rate)}</div>
+      ${canSpeak ? (() => { const vs = jaVoices().slice().sort((a, b) => jaVoiceScore(b) - jaVoiceScore(a)), cur = pickJaVoice();
+        return `<div class="set-row" style="flex-wrap:wrap;gap:8px"><div class="grow" style="min-width:100%"><b>日文聲音</b><p class="small muted">對話、五十音、耳機模式、口語聽力共用（鎖屏聽力是固定音檔，不受影響）。聲音斷續或像機器人時，換一個「加強版／高品質」。iPhone 可到「設定 → 輔助使用 → 朗讀內容 → 聲音 → 日文」下載。</p></div>
+        ${vs.length ? `<select id="jaVoiceSel" aria-label="日文聲音" style="flex:1;min-width:0;min-height:44px;font-size:16px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:0 10px"><option value="" ${S.settings.jaVoice ? '' : 'selected'}>自動挑選${cur ? '（目前：' + esc(cur.name) + '）' : ''}</option>${vs.map(v => `<option value="${esc(v.voiceURI)}" ${S.settings.jaVoice === v.voiceURI ? 'selected' : ''}>${esc(jaVoiceLabel(v))}</option>`).join('')}</select>` : '<p class="small muted" style="flex:1">還沒讀到日文聲音，先按試聽。</p>'}
+        <button class="btn sm" data-a="jaVoiceTest" style="min-height:44px">試聽</button></div>`; })() : ''}
     </div>
     <p class="sec-title">資料</p>
     <div class="card flat stack" style="gap:10px"><p class="small" id="syncText">${syncText()}</p>
@@ -960,6 +987,7 @@ document.addEventListener('click', e => {
     case 'manualSave': { const ok = addCustom($('#mW').value, $('#mZ').value, $('#mN').value, UI.look.text); if (!ok) { toast('請填英文和中文意思'); break; } closeSheet(); toast('已加入練習'); render(); } break;
     case 'hist': { const p = S.pastes[+v]; if (p) { UI.look.text = p.text; UI.look.res = analyze(p.text); UI.look.ai = null; render(); window.scrollTo(0, 0); } } break;
     case 'bakCopy': { const b = bnkBackups(); let txt = ''; try { txt = localStorage.getItem(b[b.length - 1]) || ''; } catch (x) {} const sheet = () => showSheet(() => `<h2 style="font-size:20px">舊存檔原始資料</h2><p class="small muted">${esc(b[b.length - 1] || '')}。全選下面的文字複製起來，之後可以請人幫忙救回。</p><textarea readonly style="min-height:200px">${esc(txt)}</textarea>`); try { navigator.clipboard.writeText(txt).then(() => toast('舊存檔已複製'), sheet); } catch (x) { sheet(); } } break;
+    case 'jaVoiceTest': speak('こんにちは。つぎは、きんかくじみちです。', 'ja-JP'); break;
     case 'backup': { const txt = JSON.stringify(S); const done = () => toast('備份已複製，貼到記事本存起來'); try { navigator.clipboard.writeText(txt).then(done, () => showSheet(() => `<h2 style="font-size:20px">備份資料</h2><p class="small muted">全選下面的文字，複製起來。</p><textarea readonly style="min-height:200px">${esc(txt)}</textarea>`)); } catch (x) { showSheet(() => `<textarea readonly>${esc(txt)}</textarea>`); } } break;
     case 'restoreOpen': showSheet(() => `<h2 style="font-size:20px">貼上備份還原</h2><p class="small muted">會取代目前的所有進度。</p><textarea id="restoreBox" placeholder="把備份文字貼在這裡"></textarea><button class="btn primary block" data-a="restoreDo">還原</button>`); break;
     case 'restoreDo': { try { const o = JSON.parse($('#restoreBox').value); if (!o || !o.settings) throw 0; S = migrate(o); S.updatedAt = Date.now(); saveLocal(); scheduleCloud(0); buildIndex(); closeSheet(); render(); toast('已還原'); } catch (x) { toast('這段文字不是備份資料'); } } break;
@@ -985,6 +1013,7 @@ document.addEventListener('keydown', e => {
 });
 
 $('#tabs').innerHTML = [['home','今天',IC.home,''],['en','英文',IC.en,''],['look','查',IC.look,'look'],['jp','日文',IC.jp,'jp'],['oral','口語聽力',IC.speak,'jp'],['me','我的',IC.me,'']].map(([v,l,ic,c]) => `<button class="tab ${c}" data-a="tab" data-v="${v}">${c==='look'?`<span class="dot">${ic}</span>`:ic}<span>${l}</span></button>`).join('');
+document.addEventListener('change', e => { if (e.target && e.target.id === 'jaVoiceSel') { S.settings.jaVoice = e.target.value; persist(); speak('こんにちは。', 'ja-JP'); } });
 try { history.scrollRestoration = 'manual'; } catch (e) {}
 buildIndex();
 render();

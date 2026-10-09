@@ -62,7 +62,7 @@ function knStatus(key) {
 const KN_ST = {new:['', '未練'], seen:['·', '看過'], review:['⟳', '需複習'], due:['⟳', '該複習'], ok:['✓', '已練'], solid:['✓✓', '熟']};
 
 /* ---------- 發音（分清成功與失敗，過期的回呼一律忽略） ---------- */
-function knJaVoice() { return VOICES.find(v => v.lang && v.lang.replace('_', '-').toLowerCase().startsWith('ja')); }
+function knJaVoice() { return pickJaVoice(); }
 function knSay(text, rate, cb) {
   knStop();
   const tok = ++KG.tok;
