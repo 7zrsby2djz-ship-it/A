@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <!-- 按鈕與積木 App 圖示：首頁吉祥物（積木臉）放大。iOS 會自己裁圓角，所以背景滿版。 -->
+  <rect width="512" height="512" fill="#0B7F6A"/>
+  <rect x="86" y="120" width="340" height="272" rx="68" fill="#FFFFFF"/>
+  <rect x="86" y="96" width="120" height="44" rx="16" fill="#D9F1EB"/>
+  <rect x="306" y="96" width="120" height="44" rx="16" fill="#D9F1EB"/>
+  <circle cx="200" cy="242" r="27" fill="#0B7F6A"/>
+  <circle cx="312" cy="242" r="27" fill="#0B7F6A"/>
+  <path d="M206 304q50 38 100 0" stroke="#0B7F6A" stroke-width="24" fill="none" stroke-linecap="round"/>
+</svg>

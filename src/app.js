@@ -557,6 +557,7 @@ function vMe() {
       ${(() => { const b = bnkBackups(); return LOADERR.failed ? `<p class="small" style="color:var(--bad)">上次打開時讀不懂存檔，也沒辦法另存原始資料。請先別清除瀏覽器資料。</p>` : b.length ? `<p class="small" style="color:var(--warn)">有 ${b.length} 份讀不懂、已另存的舊存檔（不會自動刪除）。</p><div class="row wrap"><button class="btn sm" data-a="bakCopy">複製最新一份舊存檔</button></div>` : ''; })()}
       <div class="row wrap"><button class="btn sm" data-a="backup">複製備份</button><button class="btn sm" data-a="restoreOpen">貼上備份還原</button><button class="btn sm" data-a="resetAsk" style="color:var(--bad)">全部重來</button></div></div>
     <p class="small muted" style="text-align:center">加到 iPhone 主畫面：用 Safari 打開這頁 → 分享 → 加入主畫面。</p>
+    <p class="small muted" style="text-align:center">注意：從主畫面打開的 App 和 Safari 分開存進度。加入前先在 Safari 按「複製備份」，再到主畫面的 App 按「貼上備份還原」（口語聽力在它的設定頁另外匯出／匯入）。</p>
   </div>`;
 }
 

@@ -1,0 +1,16 @@
+{
+  "name": "按鈕與積木",
+  "short_name": "按鈕與積木",
+  "description": "看懂 AI 介面的英文，去日本獨旅能把一段對話走完。",
+  "lang": "zh-Hant-TW",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#EEF1F6",
+  "theme_color": "#0B7F6A",
+  "icons": [
+    {"src": "icon-192.png", "sizes": "192x192", "type": "image/png"},
+    {"src": "icon-512.png", "sizes": "512x512", "type": "image/png"},
+    {"src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  ]
+}
