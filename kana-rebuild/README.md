@@ -1,4 +1,6 @@
-# 五十音重建 1.1：教材與真人錄音資料包
+# 五十音重建 1.1：教材資料包
+
+> **2026-10-09：** 真人錄音已移除（bd8d47e），基本假名改用手機內建日文語音。下表中 `audio/`、`generated/kana-audio.js`、`tools/build-audio.cjs`、`tools/fetch-audio.py` 各列與建置說明裡的錄音步驟為歷史紀錄，檔案已不在倉庫。
 
 這個資料夾是同 App 五十音模組的教材來源與施工交接。更新日期：2026-10-07。原版 UI 已於 `8253560` 完成；本次沿用介面，擴充至 324 詞並接入 44 個真人單音。最新更新與發布驗收見 [UPDATE_1.1.md](UPDATE_1.1.md)。
 
@@ -33,7 +35,6 @@
 
 ```sh
 node kana-rebuild/tools/build-data.cjs
-node kana-rebuild/tools/build-audio.cjs
 node kana-rebuild/tools/validate.cjs
 ./build.sh
 ```

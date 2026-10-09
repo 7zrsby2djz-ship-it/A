@@ -13,7 +13,7 @@
 
 [Claude 從這裡開始](START_HERE_五十音給Claude.md) · [給使用者的閱讀版](kana-rebuild/READING_VERSION.md) · [正式施工企劃](kana-rebuild/CLAUDE_IMPLEMENTATION_PLAN.md) · [資料包](kana-rebuild/README.md)
 
-五十音模組已在同一個 App 完成；1.1 版把代表詞由 146 擴充到 **324 個**，並將 44 個基本單音換成可離線播放的真人錄音。沿用 46 組平片假名、732 筆現有教材來源與 2,963 筆 N5～N3 備用詞庫；拼音預設隱藏，按讀音分類。最新內容與手機發布交接見 [UPDATE_1.1.md](kana-rebuild/UPDATE_1.1.md)。Claude 接手更新使用者目前的同一個成品入口。
+五十音模組已在同一個 App 完成；1.1 版把代表詞由 146 擴充到 **324 個**，（1.1 版曾內嵌 44 個真人單音，已於 2026-10-09 移除，改用手機內建日文語音）。沿用 46 組平片假名、732 筆現有教材來源與 2,963 筆 N5～N3 備用詞庫；拼音預設隱藏，按讀音分類。最新內容與手機發布交接見 [UPDATE_1.1.md](kana-rebuild/UPDATE_1.1.md)。Claude 接手更新使用者目前的同一個成品入口。
 
 ## 同 App 的「口語聽力」分頁
 
@@ -33,7 +33,8 @@
 | 檔案 | 內容 |
 |---|---|
 | `index.html` | 組好的完整 App（直接用瀏覽器打開）。**不要直接改**，改 `src/` 後執行 `./build.sh`。 |
-| `build.sh` | 把 `src/` 組成 `index.html`，並做語法檢查（需要 Node.js）。 |
+| `build.sh` | 把 `src/` 組成 `index.html`（也重建獨立入口 `listening-jp/index.html`），並做語法檢查（需要 Node.js）。 |
+| `tools/check-all.sh` | **一鍵檢查**：兩個教材檢查 → `./build.sh` → 確認生成檔和 `git add` 的版本一致 → 5 支瀏覽器回歸（另加 `tools/test-*.extra.cjs`）。流程：改來源 → `./build.sh` → `git add -A` → `tools/check-all.sh` → commit。 |
 | `tools/validate.js` | **教材一致性檢查**：`node tools/validate.js`。改教材後一定要跑。 |
 | `src/head.html` | `<title>` 與全部 CSS（淺色／深色兩套顏色變數）。 |
 | `src/shell.html` | 頁面外框。 |
@@ -125,8 +126,8 @@
 - 清音與整詞都用手機內建日文語音（Web Speech）；不再內嵌真人錄音。
 - 進度在 `S.kana`（隨主存檔）；`hira:e`、`kata:e` 分開記，四種能力（看字、聽音、平片配對、單字找字）分開記。兩個不同日期無提示答對才顯示「熟」。舊存檔沒有或只有部分 `kana` 時會自動補齊，不動其他紀錄。
 - 特殊字：ん 用字中／字尾、を 用「水をください」、ム 保留 ハム 字中例，也新增 ムービー／ムード 字首例、ヲ 只配對認識；不出 ん／を 的聽音題，お 的題目不放 を 當錯誤選項。濁音詞（でんち、グレー）列在「全部代表詞」最後，下一版再練。
-- 建置：`./build.sh` 會自動重建教材與音訊包，再組成單檔。正常建置不連網、不需 ffmpeg。
-- 測試：`node tools/test-kana.cjs`（Node Playwright）涵蓋新代表詞輪替、內建語音事件、舊存檔／接續、360／390／430 深淺色，並實際解碼 44 個 MP3 和離線播放。原回歸 `python3 tools/test-kana.py` 也保留；真機聽感另行驗收。
+- 建置：`./build.sh` 會自動重建教材，再組成單檔。正常建置不連網、不需 ffmpeg。
+- 測試：`node tools/test-kana.cjs`（Node Playwright）涵蓋新代表詞輪替、內建語音事件、舊存檔／接續、360／390／430 深淺色，並確認不再內嵌錄音、單音改走內建語音。原回歸 `python3 tools/test-kana.py` 也保留；真機聽感另行驗收。
 
 ## 小店遊戲（你是日本小店的店長）
 - 入口：首頁、日文頁的「小店遊戲」卡片。檔案：`src/data_game.js`（店、話題、客人回答）、`src/game.js`（遊戲程式）。

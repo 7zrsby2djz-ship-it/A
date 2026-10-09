@@ -2,6 +2,7 @@
 # 把 src/ 裡的檔案組成一個完整的 index.html
 cd "$(dirname "$0")"
 set -e
+node listening-jp/build.js
 node listening-jp/build-embedded.js
 node kana-rebuild/tools/build-data.cjs
 node kana-rebuild/tools/validate.cjs

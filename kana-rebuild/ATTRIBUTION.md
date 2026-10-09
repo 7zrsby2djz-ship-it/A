@@ -51,10 +51,10 @@
 
 `expansion.cjs` 追加 178 個人工編輯的旅行／日常詞，與原版合併為 324 詞、325 個代表詞連結。正常寫法、假名讀音、輔助拼音、繁中詞義與易混用法由本次編輯；來源接觸證據及可匹配的 OpenJLPT 近似難度仍由既有生成器核對。衍生教材繼續按上述 CC BY-SA 4.0 提供，不因此變更既有 App 程式碼的授權。
 
-真人單音來自 **Hakatanoshio117117／Wikimedia Commons**，44 個基本清音。逐檔 API metadata 均顯示作者自作、`LicenseShortName: Public domain`、`License: pd`；假名描述、作者、原始頁面、來源格式與雜湊列在 [audio/manifest.json](audio/manifest.json)，原始 metadata 保存於 [audio/source-metadata.json](audio/source-metadata.json)。
+真人單音來自 **Hakatanoshio117117／Wikimedia Commons**，44 個基本清音。逐檔 API metadata 均顯示作者自作、`LicenseShortName: Public domain`、`License: pd`；假名描述、作者、原始頁面、來源格式與雜湊列在 audio/manifest.json（`audio/manifest.json`，已於 bd8d47e 移除），原始 metadata 保存於 audio/source-metadata.json（`audio/source-metadata.json`，已於 bd8d47e 移除）。
 
 [作者的假名錄音集](https://commons.wikimedia.org/wiki/Category:Audio_files_of_hiragana_(set_by_Hakatanoshio117117))、[か 的來源頁](https://commons.wikimedia.org/wiki/File:Ja-Ka.oga)、[そ 的來源頁](https://commons.wikimedia.org/wiki/File:Ja-So.oga)。各檔均由作者釋出至公共領域（PD-self），可重製、轉碼與再散布。仍在 App「說明與來源」內提供作者與來源連結，以便核對。
 
-來源下載包含 Commons 原始 Ogg，以及同一來源由 Commons 官方提供的 MP3 轉碼副本。`sourceSha1` 對應實際下載位元組；`commonsOriginalSha1` 對應 Commons 的原始 Ogg metadata，兩者明確區分。供 App 使用的副本轉為單聲道 MP3、44.1 kHz、64 kbps，正規化響度，完整保留原錄音，不從一般單字剪出基本音。編輯／轉碼資訊逐檔記錄；詳見 [音訊說明](audio/README.md)。
+來源下載包含 Commons 原始 Ogg，以及同一來源由 Commons 官方提供的 MP3 轉碼副本。`sourceSha1` 對應實際下載位元組；`commonsOriginalSha1` 對應 Commons 的原始 Ogg metadata，兩者明確區分。供 App 使用的副本轉為單聲道 MP3、44.1 kHz、64 kbps，正規化響度，完整保留原錄音，不從一般單字剪出基本音。編輯／轉碼資訊逐檔記錄；詳見 音訊說明（`audio/README.md`，已於 bd8d47e 移除）。
 
 已查核但未使用：Tofugu／WaniKani 的 [japanese-vocabulary-pronunciation-audio](https://github.com/tofugu/japanese-vocabulary-pronunciation-audio)（CC BY-SA 4.0，README 指明日語母語者錄音）。該庫主要為完整詞彙，缺少本次所需的完整基本單音；本次未複製其音檔，也未硬切單字來補缺音。

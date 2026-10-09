@@ -1,5 +1,7 @@
 # 五十音 1.1：詞彙擴充與真人單音
 
+> **2026-10-09：本頁的真人錄音內容已過時。** 44 段錄音、`audio/`、`generated/kana-audio.js`、`build-audio.cjs`、`fetch-audio.py` 已於 commit bd8d47e 移除，基本假名改用手機內建日文語音。以下保留為歷史紀錄。
+
 日期：2026-10-07。基底：已完成五十音介面的 `8253560c217ba2c7a7f84c66596edde0762e50ba`。
 
 ## 完成內容
@@ -20,7 +22,7 @@
 
 ## 單音發音
 
-原本單一假名也走手機 Web Speech；詞彙正常，單音在使用者手機上聽起來怪。本次改為固定錄音：**44 個基本清音使用 Hakatanoshio117117 的 Wikimedia Commons 錄音**，平、片共用。每個來源頁均標為作者自作且釋出公共領域。逐檔作者、假名描述、來源、格式和雜湊見 [音訊 manifest](audio/manifest.json)；[原始來源 metadata](audio/source-metadata.json) 一併保留。
+原本單一假名也走手機 Web Speech；詞彙正常，單音在使用者手機上聽起來怪。本次改為固定錄音：**44 個基本清音使用 Hakatanoshio117117 的 Wikimedia Commons 錄音**，平、片共用。每個來源頁均標為作者自作且釋出公共領域。逐檔作者、假名描述、來源、格式和雜湊見 音訊 manifest（`audio/manifest.json`，已於 bd8d47e 移除）；原始來源 metadata（`audio/source-metadata.json`，已於 bd8d47e 移除） 一併保留。
 
 `audio/original/` 保存已取得的 Commons 原檔或 Commons 官方 MP3 轉碼副本。供 App 使用的版本轉為單聲道 MP3、44.1 kHz、64 kbps 並調整響度，完整保留錄音，不從普通單字切聲音。部分錄音會重複同一音。取得來源時 Ogg 個別檔案被限流，改用 Commons 本身提供的 MP3 格式；`canonicalOriginalUrl`、`sourceFormat` 和 Commons 原檔雜湊另列，沒有把轉碼 MP3 的雜湊冒充原始 Ogg 雜湊。
 
