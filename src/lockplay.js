@@ -6,14 +6,22 @@
 const LPK = 'bnk-lockplay-v1';
 const LP = {open:false, playing:false, urls:{}};
 function lpItems() { return (globalThis.ORAL_AUDIO && ORAL_AUDIO.items) || []; }
+function lpStored() {
+  if (LP.o !== undefined) return LP.o;
+  let o = null, raw = null; try { raw = localStorage.getItem(LPK); o = JSON.parse(raw || 'null'); } catch (e) { o = null; bnkBackupRaw(LPK, raw); }
+  return (LP.o = o);
+}
 function lpPref() {
   if (LP.p) return LP.p;
-  let o = null, raw = null; try { raw = localStorage.getItem(LPK); o = JSON.parse(raw || 'null'); } catch (e) { o = null; bnkBackupRaw(LPK, raw); }
-  const n = lpItems().length;
-  LP.p = {i:o && o.i >= 0 && o.i < n ? o.i | 0 : 0, speed:o && o.speed === 'slow' ? 'slow' : 'normal', auto:!(o && o.auto === false)};
-  return LP.p;
+  const o = lpStored(), n = lpItems().length;
+  const p = {i:o && o.i >= 0 && (!n || o.i < n) ? o.i | 0 : 0, speed:o && o.speed === 'slow' ? 'slow' : 'normal', auto:!(o && o.auto === false)};
+  if (n) LP.p = p; // 音檔資料還沒載完時不定案，避免把上次的位置夾成 0
+  return p;
 }
-function lpSave() { try { localStorage.setItem(LPK, JSON.stringify(lpPref())); } catch (e) {} }
+function lpReady() { return lpItems().length > 0; }
+function lpSave() { if (!lpReady()) return; try { localStorage.setItem(LPK, JSON.stringify(lpPref())); } catch (e) {} }
+/* 音檔資料放在 index.html 最後一段 script 標籤（第一個畫面先出來），載完會發 bnk-audio-ready */
+window.addEventListener('bnk-audio-ready', () => { if (LP.open) lpRender(); const s = $('#lpSlot'); if (s) s.outerHTML = lpCardHtml(); });
 function lpAudio() {
   let a = $('#lpAudio');
   if (!a) { a = document.createElement('audio'); a.id = 'lpAudio'; a.preload = 'auto'; a.setAttribute('playsinline', ''); document.body.append(a);
@@ -71,7 +79,7 @@ function lpClose() { const a = $('#lpAudio'); if (a) a.pause(); lpSave(); LP.ope
 function lpRender() {
   const el = $('#lpv'); if (!el || !LP.open) return;
   const items = lpItems(), p = lpPref(), it = items[p.i];
-  if (!it) { el.innerHTML = `<div class="ov-head"><button class="icon-btn" data-a="lpClose" aria-label="關閉">${IC.x}</button></div><div class="ov-body"><div class="in"><p>沒有音檔。</p></div></div>`; return; }
+  if (!it) { el.innerHTML = `<div class="ov-head"><button class="icon-btn" data-a="lpClose" aria-label="關閉">${IC.x}</button></div><div class="ov-body"><div class="in"><p role="status">${lpReady() ? '沒有音檔。' : '音檔載入中…（第一次打開需要多等幾秒）'}</p></div></div>`; return; }
   el.innerHTML = `<div class="ov-head"><button class="icon-btn" data-a="lpClose" aria-label="關閉鎖屏聽力">${IC.x}</button><div class="prog" aria-hidden="true"><i style="width:${(p.i + 1) / items.length * 100}%"></i></div><span class="small muted tnum">${p.i + 1}/${items.length}</span></div>
     <div class="ov-body"><div class="in">
       <div><p class="small muted">鎖屏聽力・${esc(it.task)}</p><h2 style="font-size:21px">第 ${it.n} 句</h2></div>
@@ -94,9 +102,11 @@ function lpRender() {
     </div></div>`;
 }
 function lpCardHtml() {
-  const n = lpItems().length; if (!n) return '';
+  const n = lpItems().length;
+  if (!n) return `<section class="card stack" style="gap:8px" id="lpSlot"><div><p class="small muted">螢幕鎖住也能聽・交通＋生活</p><p style="font-size:19px;font-weight:800">鎖屏聽力</p>
+    <p class="small muted" role="status">音檔載入中…</p></div><button class="btn jp-b block" disabled>開始聽</button></section>`;
   const p = lpPref();
-  return `<section class="card stack" style="gap:8px"><div><p class="small muted">螢幕鎖住也能聽・交通＋生活</p><p style="font-size:19px;font-weight:800">鎖屏聽力</p>
+  return `<section class="card stack" style="gap:8px" id="lpSlot"><div><p class="small muted">螢幕鎖住也能聽・交通＋生活</p><p style="font-size:19px;font-weight:800">鎖屏聽力</p>
     <p class="small muted">${n} 句・正常／慢速${p.i ? `・上次到第 ${p.i + 1} 句` : ''}</p></div>
     <button class="btn jp-b block" data-a="lpOpen">${p.i ? '接著聽' : '開始聽'}</button></section>`;
 }

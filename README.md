@@ -49,7 +49,7 @@
 | `src/today5.js` | 首頁「今天 5 分鐘」一鍵流程（到期複習 → 一段對話 → 五個假名），狀態另存 `bnk-today5-v1`。設計見 [docs/TODAY5_DESIGN.md](docs/TODAY5_DESIGN.md)。 |
 | `src/app.js` | 主程式：存檔、英文功能、分頁、事件。**必須最後載入**（它在最後一行啟動畫面）。 |
 | `src/lockplay.js` | 「全部」裡的**鎖屏聽力**：用 `<audio>`（不是 Web Speech）播 `oral-audio/batch01` 的 30 句（正常／慢速 0.8、上一句／下一句、自動下一句），並設定 Media Session，讓 iPhone 鎖定畫面／耳機按鈕可以暫停、跳句。位置與速度另存 `bnk-lockplay-v1`，不動 `bnk-state-v1`。 |
-| `oral-audio/` | 鎖屏聽力用的離線 MP3（第一批 30 句 × 正常／慢速，合成語音）。`build.sh` 會跑 `oral-audio/tools/build-embed.cjs`，把 60 個逐句 MP3 檢查 sha256 後以 data URI 打包進 `index.html`（約 +2.1 MB；連播檔 `batch01_playlist.mp3` 不打包）。見 [oral-audio/README.md](oral-audio/README.md)。 |
+| `oral-audio/` | 鎖屏聽力用的離線 MP3（第一批 30 句 × 正常／慢速，合成語音）。`build.sh` 會跑 `oral-audio/tools/build-embed.cjs`，把 60 個逐句 MP3 檢查 sha256 後以 data URI 打包進 `index.html`（約 +2.1 MB；連播檔 `batch01_playlist.mp3` 不打包）。音檔資料放在 `index.html` **最後一段** `<script>`：主程式先跑、畫面先出來（慢速 4G 實測首屏約 9.3 秒 → 1.5 秒），音檔載完發出 `bnk-audio-ready` 事件；載完前鎖屏聽力顯示「音檔載入中」，也不會寫入 `bnk-lockplay-v1`。見 [oral-audio/README.md](oral-audio/README.md)。 |
 | `tools/test-lockplay.cjs` | 鎖屏聽力回歸測試（Playwright，實際解碼 MP3；iPhone 鎖屏行為無法在這裡測）。 |
 | `tools/test-today5.cjs` | 「今天 5 分鐘」流程回歸測試（Playwright）。 |
 
