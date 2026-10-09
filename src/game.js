@@ -207,7 +207,7 @@ function gmEndDay() {
 
 /* ---------- 畫面 ---------- */
 function gmJp(c, tap) { // 一句話：每個句塊可以點
-  return `<span class="gl">${gmLine(c).map(id => tap ? `<button class="gck" data-g="peek" data-v="${id}">${rubyHtml(CK[id].jp)}</button>` : `<span>${rubyHtml(CK[id].jp)}</span>`).join('')}</span>`;
+  return `<span class="gl" lang="ja">${gmLine(c).map(id => tap ? `<button class="gck" data-g="peek" data-v="${id}">${rubyHtml(CK[id].jp)}</button>` : `<span>${rubyHtml(CK[id].jp)}</span>`).join('')}</span>`;
 }
 function gmDots(p) { return `<span class="gpat" aria-label="耐心 ${p}/4">${[0, 1, 2, 3].map(i => `<i class="${i < p ? 'on' : ''}"></i>`).join('')}</span>`; }
 function gmRender() {
@@ -225,7 +225,7 @@ function gmShopsHtml() {
       <p class="muted">客人用日文跟你說話，你按日文按鈕回應。看不懂就點一下，會念給你聽、告訴你中文。按「說這句」才真的說出口。</p>
       <div class="list">${GSHOP_ORDER.map(id => { const s = GSHOP[id], ok = gmUnlocked(id);
         return `<button class="li" data-g="${ok ? 'shop' : 'locked'}" data-v="${id}" ${ok ? '' : 'aria-disabled="true"'}><div class="grow">
-          <div style="font-weight:800"><span class="jpf">${rubyHtml(CK[s.nm].jp)}</span>　${esc(s.zh)}</div>
+          <div style="font-weight:800"><span lang="ja" class="jpf">${rubyHtml(CK[s.nm].jp)}</span>　${esc(s.zh)}</div>
           <div class="zh">${ok ? `第 ${gmLv(id)} 級・開店 ${g.days[id] || 0} 天・最佳 ${g.best[id] || 0}★` : `累積 ${s.need}★ 解鎖（還差 ${s.need - g.star}★）`}</div></div>${ok ? IC.chev : '<span class="pill st-new">未解鎖</span>'}</button>`; }).join('')}</div>
       <section class="card flat stack" style="gap:10px"><p class="sec-title" style="margin:0">玩法設定</p>
         <button class="set-row gset" data-g="fast"><div class="grow"><b>熟練模式</b><p class="small muted">點日文按鈕就直接說，不先跳出說明。全對的客人多給 50 円。</p></div><span class="switch" role="switch" aria-checked="${g.fast}"></span></button>
@@ -238,12 +238,12 @@ function gmShopsHtml() {
 function gmPlayHtml() {
   const shop = GSHOP[G.shop], c = G.cust, d = G.day, g = gmSt();
   const head = `<div class="ov-head"><button class="icon-btn" data-g="close" aria-label="關閉（這一天不會存）">${IC.x}</button>
-    <div style="flex:1;min-width:0"><div style="font-weight:800"><span class="jpf">${rubyHtml(CK[shop.nm].jp)}</span>・第 ${d.n} 天</div><div class="small muted">客人 ${d.i}/${G_PER_DAY}・第 ${d.lv} 級${g.fast ? '・熟練' : ''}${g.listen ? '・只聽' : ''}</div></div>
+    <div style="flex:1;min-width:0"><div style="font-weight:800"><span lang="ja" class="jpf">${rubyHtml(CK[shop.nm].jp)}</span>・第 ${d.n} 天</div><div class="small muted">客人 ${d.i}/${G_PER_DAY}・第 ${d.lv} 級${g.fast ? '・熟練' : ''}${g.listen ? '・只聽' : ''}</div></div>
     <span class="gstar"><b class="tnum">${d.yen}</b> 円　★ <b class="tnum">${d.star}</b></span></div>`;
   let b = '';
   if (d.n === 1 && d.i === 1 && !c.acts) b += `<div class="point"><span class="bk">玩法</span>${esc(shop.intro)}</div>`;
   b += `<section class="gcust"><div class="gwho">${gmFace(c.look, c.face, 'big')}<div>${gmDots(c.pat)}<p class="small muted">${c.left ? (c.result.star ? '客人滿意地離開' : '客人生氣走了') : c.pat >= 4 ? '心情很好' : c.pat >= 3 ? '還可以' : c.pat >= 2 ? '有點不耐煩' : '快生氣了'}</p></div></div>`;
-  if (c.items.length) b += `<div class="gitems">${c.shown ? c.items.map(x => `<button class="chip jpf" data-g="peek" data-v="${shop.items[x].c}"><span>${rubyHtml(CK[shop.items[x].c].jp)}</span></button>`).join('') : '<span class="small muted">（客人還沒給你餐券）</span>'}</div>`;
+  if (c.items.length) b += `<div class="gitems">${c.shown ? c.items.map(x => `<button lang="ja" class="chip jpf" data-g="peek" data-v="${shop.items[x].c}"><span>${rubyHtml(CK[shop.items[x].c].jp)}</span></button>`).join('') : '<span class="small muted">（客人還沒給你餐券）</span>'}</div>`;
   // 對話紀錄：只顯示最近 4 句，最後一句客人說的話最大
   const recent = c.said.slice(-4);
   b += `<div class="glog">${recent.map((x, k) => { const idx = c.said.length - recent.length + k, isLastC = x.who === 'c' && k === recent.length - 1;
@@ -259,7 +259,7 @@ function gmPlayHtml() {
     b += `<section class="card stack gjudge" style="gap:10px"><p class="small muted">客人回答了「${gmJp(t.ask, false)}」</p><p class="q" style="font-size:18px">他的意思是？</p>
       ${last ? `<div class="qfb no">不對喔，再聽一次客人說的話。點客人的話可以看中文。</div>` : ''}
       <div class="opts gopts">${t.kind === 'yn' ? `<button class="opt" data-g="judge" data-v="yes">要（はい）</button><button class="opt" data-g="judge" data-v="no">不要</button>`
-        : Object.entries(t.opts).map(([v, cid]) => `<button class="opt jpf" data-g="judge" data-v="${v}">${rubyHtml(CK[cid].jp)}</button>`).join('')}</div></section>`;
+        : Object.entries(t.opts).map(([v, cid]) => `<button lang="ja" class="opt jpf" data-g="judge" data-v="${v}">${rubyHtml(CK[cid].jp)}</button>`).join('')}</div></section>`;
     f = `<p class="small muted" style="text-align:center">先判斷，再繼續問</p>`;
   } else {
     if (c.last && c.last.ok) { const t = gmTopic(shop, c.last.t), v = c.last.val;
@@ -294,8 +294,8 @@ function gmEndHtml() {
       <div class="done-hero"><h2 style="font-size:26px">打烊了</h2><p style="font-size:22px;font-weight:800"><span class="tnum">${d.yen}</span> 円　★ <span class="tnum">${d.star}</span> / ${G_PER_DAY * 3}</p>
         <div class="gfaces">${d.list.map(x => gmFace(x.look, x.angry ? 'angry' : x.star === 3 ? 'laugh' : 'smile', 'mini')).join('')}</div>
         <p class="small muted">累積 ★ ${g.star}${next ? `・再 ${GSHOP[next].need - g.star}★ 開「${esc(GSHOP[next].zh)}」` : ''}</p></div>
-      ${wrong.length ? `<section class="stack" style="gap:8px"><p class="sec-title" style="margin:0">今天聽錯的（已排進句塊複習）</p><div class="list">${wrong.map(l => `<button class="li" data-g="peek" data-v="${gmLine(l)[0]}"><div class="grow"><div class="jpf" style="font-weight:700">${gmJp(l, false)}</div><div class="zh">${esc(gmLine(l).map(id => CK[id].zh).join('；'))}</div></div></button>`).join('')}</div></section>` : ''}
-      <section class="stack" style="gap:8px"><p class="sec-title" style="margin:0">今天店裡出現的日文（點了看意思）</p><div class="chips">${used.map(id => `<button class="chip jpf" data-g="peek" data-v="${id}"><span>${rubyHtml(CK[id].jp)}</span></button>`).join('')}</div></section>
+      ${wrong.length ? `<section class="stack" style="gap:8px"><p class="sec-title" style="margin:0">今天聽錯的（已排進句塊複習）</p><div class="list">${wrong.map(l => `<button class="li" data-g="peek" data-v="${gmLine(l)[0]}"><div class="grow"><div lang="ja" class="jpf" style="font-weight:700">${gmJp(l, false)}</div><div class="zh">${esc(gmLine(l).map(id => CK[id].zh).join('；'))}</div></div></button>`).join('')}</div></section>` : ''}
+      <section class="stack" style="gap:8px"><p class="sec-title" style="margin:0">今天店裡出現的日文（點了看意思）</p><div class="chips">${used.map(id => `<button lang="ja" class="chip jpf" data-g="peek" data-v="${id}"><span>${rubyHtml(CK[id].jp)}</span></button>`).join('')}</div></section>
       <section class="card hero-jp stack" style="gap:8px"><p class="small muted">這些句子，對話裡都有</p><p style="font-size:18px;font-weight:800">${esc(t.name)}・第 ${lv} 級</p>
         <p class="small muted">剛玩過，對話裡的提示會變少。換你當客人，聽店員說。</p>
         <button class="btn onhero block" data-g="goDlg" data-v="${shop.task}:${lv}">去練這段對話</button></section>

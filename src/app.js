@@ -244,12 +244,12 @@ function groupCmp(gid, meId) {
 /* ================= Japanese building blocks ================= */
 function blk(id, o = {}) {
   const [jp, ro, zh, role] = B[id];
-  return `<${o.tag || 'span'} class="blk role-${role} ${role === 'pt' ? 'pt' : ''} ${o.cls || ''}" ${o.attrs || ''}>${`<span class="ro">${esc(ro)}</span>`}<span>${esc(jp)}</span>${o.label ? `<span class="rl">${o.label === 'zh' ? esc(zh) : ROLES[role].n}</span>` : ''}</${o.tag || 'span'}>`;
+  return `<${o.tag || 'span'} class="blk role-${role} ${role === 'pt' ? 'pt' : ''} ${o.cls || ''}" ${o.attrs || ''}>${`<span class="ro">${esc(ro)}</span>`}<span lang="ja">${esc(jp)}</span>${o.label ? `<span class="rl">${o.label === 'zh' ? esc(zh) : ROLES[role].n}</span>` : ''}</${o.tag || 'span'}>`;
 }
 function sentText(seq) { return seq.map(b => B[b][0]).join(''); }
 function sentRo(seq) { return seq.map(b => B[b][1]).join(' '); }
 function sentHtml(seq, label) { return `<div class="sent">${seq.map(b => blk(b, {label})).join('')}</div>`; }
-function jline(jp, ro, big) { return `<div class="jline" data-a="peek" role="button" tabindex="0">${ro ? `<span class="ro">${esc(ro)}</span>` : ''}<span class="jp" ${big ? 'style="font-size:26px"' : ''}>${esc(jp)}</span></div>`; }
+function jline(jp, ro, big) { return `<div class="jline" data-a="peek" role="button" tabindex="0">${ro ? `<span class="ro">${esc(ro)}</span>` : ''}<span class="jp" lang="ja" ${big ? 'style="font-size:26px"' : ''}>${esc(jp)}</span></div>`; }
 function patTask(pid) {
   const p = PAT_MAP[pid], seq = [], args = [];
   p.parts.forEach(part => { if (typeof part === 'string') seq.push(part); else { const b = pick(part.opt); seq.push(b); args.push(B[b][2]); } });
@@ -480,10 +480,10 @@ function vJp() {
       <p class="small muted">每個情境都是真的會遇到的對話。你從積木裡拼出回答，錯了會告訴你錯在哪一塊。</p>`;
   } else if (UI.jpSeg === 'pat') {
     body = `<div class="legend">${Object.keys(ROLES).filter(r => r !== 'reply').map(r => `<span class="role-${r}">${ROLES[r].n}</span>`).join('')}</div>
-      <div class="list">${PAT.map(p => `<button class="li" data-a="pat" data-v="${p.id}"><div class="grow"><div class="jpf" style="font-weight:700;font-size:17px">${esc(p.name)}</div><div class="zh">${esc(fmt(p.zh, p.parts.filter(x => typeof x !== 'string').map(x => '〔' + ROLES[B[x.opt[0]][3]].n + '〕')))}</div></div>${pill(status(S.jp[p.id]))}</button>`).join('')}</div>`;
+      <div class="list">${PAT.map(p => `<button class="li" data-a="pat" data-v="${p.id}"><div class="grow"><div lang="ja" class="jpf" style="font-weight:700;font-size:17px">${esc(p.name)}</div><div class="zh">${esc(fmt(p.zh, p.parts.filter(x => typeof x !== 'string').map(x => '〔' + ROLES[B[x.opt[0]][3]].n + '〕')))}</div></div>${pill(status(S.jp[p.id]))}</button>`).join('')}</div>`;
   } else {
     const conf = Object.entries(S.jpConf).sort((a, b) => b[1] - a[1]).slice(0, 4);
-    body = `${conf.length ? `<div class="card flat stack" style="gap:6px"><p class="sec-title" style="margin:0">你常搞混的助詞</p>${conf.map(([k, n]) => { const [e, u] = k.split('>'); return `<p>該用「<b class="jpf">${esc(B[e][0])}</b>」時用了「<b class="jpf">${esc(B[u][0])}</b>」<span class="muted small">・${n} 次</span></p>`; }).join('')}</div>` : ''}
+    body = `${conf.length ? `<div class="card flat stack" style="gap:6px"><p class="sec-title" style="margin:0">你常搞混的助詞</p>${conf.map(([k, n]) => { const [e, u] = k.split('>'); return `<p>該用「<b lang="ja" class="jpf">${esc(B[e][0])}</b>」時用了「<b lang="ja" class="jpf">${esc(B[u][0])}</b>」<span class="muted small">・${n} 次</span></p>`; }).join('')}</div>` : ''}
       <div class="list">${Object.entries(PT_RULE).map(([k, r]) => `<div class="li" style="align-items:flex-start">${blk(k)}<p style="flex:1;min-width:0;padding-top:6px">${esc(r.split('＝')[1] || r)}</p></div>`).join('')}</div>
       ${PT_EXAMPLES.map(ex => `<section class="card stack" style="gap:12px"><p style="font-weight:800">${esc(ex.t)}</p>${ex.rows.map(seq => `<div class="row" style="align-items:flex-end"><div style="flex:1;min-width:0">${sentHtml(seq)}<p class="small muted" style="margin-top:4px">${esc(zhOfSeq(seq))}</p></div>${spkBtn(sentText(seq), 'ja-JP')}</div>`).join('')}</section>`).join('')}`;
   }
@@ -505,7 +505,7 @@ function vMe() {
   const confEn = [];
   allEnIds().forEach(id => Object.entries((S.en[id] || {}).conf || {}).forEach(([o, n]) => { if (getEn(o)) confEn.push([id, o, n]); }));
   confEn.sort((a, b) => b[2] - a[2]);
-  const favs = S.favs.map(k => { const [t, id] = k.split(':'); return t === 'en' && getEn(id) ? `<button class="li" data-a="word" data-v="${id}"><div class="grow"><div class="w">${esc(getEn(id).w)}</div><div class="zh">${esc(getEn(id).zh)}</div></div>${IC.chev}</button>` : t === 'jp' && PAT_MAP[id] ? `<button class="li" data-a="pat" data-v="${id}"><div class="grow"><div class="jpf" style="font-weight:700">${esc(PAT_MAP[id].name)}</div></div>${IC.chev}</button>` : ''; }).join('');
+  const favs = S.favs.map(k => { const [t, id] = k.split(':'); return t === 'en' && getEn(id) ? `<button class="li" data-a="word" data-v="${id}"><div class="grow"><div class="w">${esc(getEn(id).w)}</div><div class="zh">${esc(getEn(id).zh)}</div></div>${IC.chev}</button>` : t === 'jp' && PAT_MAP[id] ? `<button class="li" data-a="pat" data-v="${id}"><div class="grow"><div lang="ja" class="jpf" style="font-weight:700">${esc(PAT_MAP[id].name)}</div></div>${IC.chev}</button>` : ''; }).join('');
   const my = Object.keys(S.custom);
   const seg = (key, vals, cur) => `<div class="seg" style="min-width:150px">${vals.map(([v, l]) => `<button data-a="set" data-k="${key}" data-v="${v}" aria-pressed="${String(cur) === String(v)}">${l}</button>`).join('')}</div>`;
   return topbar('我的') + `<div class="stack">
@@ -573,7 +573,7 @@ function patSheet() {
   const seq = p.parts.map((part, i) => typeof part === 'string' ? part : WB.fill[i]);
   const args = p.parts.map((part, i) => typeof part === 'string' ? null : B[WB.fill[i]][2]).filter(x => x !== null);
   const sel = p.parts[WB.sel];
-  return `<div class="row"><h2 class="jpf" style="font-size:22px;flex:1">${esc(p.name)}</h2><button class="icon-btn" data-a="fav" data-v="jp:${p.id}" aria-label="收藏" style="color:${fav ? 'var(--warn)' : 'var(--muted)'}">${fav ? IC.starf : IC.star}</button></div>
+  return `<div class="row"><h2 lang="ja" class="jpf" style="font-size:22px;flex:1">${esc(p.name)}</h2><button class="icon-btn" data-a="fav" data-v="jp:${p.id}" aria-label="收藏" style="color:${fav ? 'var(--warn)' : 'var(--muted)'}">${fav ? IC.starf : IC.star}</button></div>
     <p class="small muted">點有虛線的積木，換成別的，句子會跟著變。</p>
     <div class="card stack" style="gap:12px">
       <div class="sent">${seq.map((b, i) => typeof p.parts[i] === 'string' ? blk(b, {label:true}) : blk(b, {tag:'button', label:true, cls:'slot' + (i === WB.sel ? ' good' : ''), attrs:`data-a="wbSlot" data-v="${i}" aria-label="換掉這塊"`})).join('')}</div>
@@ -707,7 +707,7 @@ function sesPTeach(c) {
   const p = PAT_MAP[c.pid];
   const frame = p.parts.map(part => typeof part === 'string' ? blk(part, {label:true}) : `<span class="blk slot role-${B[part.opt[0]][3]}"><span>〔${ROLES[B[part.opt[0]][3]].n}〕</span></span>`).join('');
   const ex = [0, 1, 2].map(() => patTask(p.id)).filter((t, i, a) => a.findIndex(x => x.ans[0].join() === t.ans[0].join()) === i);
-  const b = `<p class="small muted">新的句型骨架</p><h2 class="jpf" style="font-size:24px">${esc(p.name)}</h2>
+  const b = `<p class="small muted">新的句型骨架</p><h2 lang="ja" class="jpf" style="font-size:24px">${esc(p.name)}</h2>
     <div class="card stack"><div class="sent">${frame}</div><p class="small muted">有虛線的是「可以換的積木」，其他的固定不動。</p></div>
     <div class="parts">${p.parts.map(part => { if (typeof part !== 'string') { const r = B[part.opt[0]][3]; return `<div class="part"><span class="blk slot role-${r}"><span>〔${ROLES[r].n}〕</span></span><p>${esc(ROLES[r].d)}。可以放：${esc(part.opt.map(o => B[o][0]).join('、'))}</p></div>`; }
       const r = B[part][3]; return `<div class="part">${blk(part)}<p>${esc(r === 'pt' ? PT_RULE[part] : '句尾：「' + B[part][2] + '」，固定放最後。')}</p></div>`; }).join('')}</div>
@@ -721,7 +721,7 @@ function sesSceneIntro(c) {
   const pats = [...new Set(sc.steps.map(s => s.pat).filter(Boolean))];
   const b = `<p class="small muted">情境</p><h2 style="font-size:26px">【${esc(sc.name)}】</h2><p class="muted">${esc(sc.sub)}・${sc.steps.length} 句對話</p>
     <p>對方說一句，你從積木裡拼出回答。不用背整句：看懂每一塊的角色，換掉該換的就好。</p>
-    ${pats.length ? `<p class="sec-title">會用到的骨架</p><div class="chips">${pats.map(pid => `<span class="chip jpf">${esc(PAT_MAP[pid].name)}</span>`).join('')}</div>` : ''}`;
+    ${pats.length ? `<p class="sec-title">會用到的骨架</p><div class="chips">${pats.map(pid => `<span lang="ja" class="chip jpf">${esc(PAT_MAP[pid].name)}</span>`).join('')}</div>` : ''}`;
   return [b, `<button class="btn jp-b block" data-a="next">開始</button>`];
 }
 function sesBuild(c) {

@@ -77,7 +77,7 @@ function lpRender() {
       <div><p class="small muted">鎖屏聽力・${esc(it.task)}</p><h2 style="font-size:21px">第 ${it.n} 句</h2></div>
       <section class="card stack" style="gap:8px;min-height:170px;justify-content:center" id="lpCard" data-id="${esc(it.id)}">
         <p class="who">${esc(it.who)}</p>
-        <div class="jl"><div class="xro">${esc(it.romaji)}</div><div class="jp big">${rubyHtml(it.jaRuby)}</div></div>
+        <div class="jl"><div class="xro">${esc(it.romaji)}</div><div class="jp big" lang="ja">${rubyHtml(it.jaRuby)}</div></div>
         <p class="muted" style="font-size:16px">${esc(it.zh)}</p>
       </section>
       <div class="row" style="justify-content:center;gap:12px">

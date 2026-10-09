@@ -32,7 +32,7 @@ function lineHtml(c, o = {}) {
   const jp = c.map(id => { const k = CK[id];
     if (mask.has(id)) return `<span class="mask">［${CAT[k.cat] || '？'}］</span>`;
     return o.tap ? `<button class="ckb" data-a="ckInfo" data-v="${id}">${rubyHtml(k.jp)}</button>` : `<span class="ck">${rubyHtml(k.jp)}</span>`; }).join('');
-  return `<div class="jl"><div class="xro">${ro}</div><div class="jp${o.big ? ' big' : ''}">${jp}</div></div>`;
+  return `<div class="jl"><div class="xro">${ro}</div><div class="jp${o.big ? ' big' : ''}" lang="ja">${jp}</div></div>`;
 }
 function mkRec() { return {s:0, due:0, ok:0, ng:0, lapse:0, conf:{}, t0:Date.now(), last:0}; }
 function ckSt(id, create) { if (!S.ck[id] && create) S.ck[id] = {seen:Date.now(), t:mkRec(), l:mkRec(), weak:false}; return S.ck[id]; }
@@ -213,7 +213,7 @@ function sayHtml(n) {
   const r = S.run, sk = SKEL[n.skel], shown = r.said[n.id];
   const b = `<p class="small muted">${esc(TASK[r.tid].place)}</p><p style="font-size:16px">${esc(curVar().setup || TASK[r.tid].setup)}</p>
     <section class="card stack" style="gap:8px"><p class="who" style="color:var(--en-ink)">你先開口</p><p style="font-size:19px;font-weight:800">${esc(n.intent)}</p>
-      ${sk ? `<p class="small">骨架：<b class="jpf">${esc(sk.f)}</b><br><span class="muted">${esc(sk.zh)}</span></p>` : ''}
+      ${sk ? `<p class="small">骨架：<b lang="ja" class="jpf">${esc(sk.f)}</b><br><span class="muted">${esc(sk.zh)}</span></p>` : ''}
       ${shown ? `<div class="row" style="align-items:flex-end"><div style="flex:1;min-width:0">${lineHtml(n.c, {tap:true})}<p class="small muted">${esc(n.zh)}</p></div>${spkBtn(lineText(n.c), 'ja-JP')}</div>` : '<p class="small muted">先自己小聲說說看，再看參考答案。說得不一樣也沒關係。</p>'}
     </section>`;
   const f = shown ? `<button class="btn primary block" data-a="runNext">說完了，聽對方回答</button>` : `<button class="btn primary block" data-a="sayShow">看參考答案</button>`;
@@ -241,15 +241,15 @@ function hearHtml(n) {
     <div class="row"><button class="btn ghost" style="flex:1" data-a="hearRep" data-v="slow">放慢重播</button></div>
     <p class="small muted">廣播沒辦法請它重說。聽不懂可以重播，或在下一步問旁邊的人、站員。</p>`;
   else if (canSpeak) b += `<button class="btn jp-b block" data-a="hearPlay">${IC.speak}再聽一次</button>
-    <div class="repair3">${['again', 'slow', 'easy'].map(k => `<button class="rep" data-a="hearRep" data-v="${k}"><span class="jpf">${rubyHtml(REP[k].jp)}</span><span class="small muted"><span class="xro">${esc(REP[k].ro)}・</span>${esc(REP[k].zh)}</span></button>`).join('')}</div>`;
+    <div class="repair3">${['again', 'slow', 'easy'].map(k => `<button class="rep" data-a="hearRep" data-v="${k}"><span lang="ja" class="jpf">${rubyHtml(REP[k].jp)}</span><span class="small muted"><span class="xro">${esc(REP[k].ro)}・</span>${esc(REP[k].zh)}</span></button>`).join('')}</div>`;
   else b += `<p class="small muted">這台裝置不能播放聲音，先用看的練習（這次會記成「看字完成」）。</p>`;
   if (!allDone && canSpeak) b += `<div class="row wrap" style="justify-content:center">${vis === 'listen' ? '<button class="btn ghost sm" data-a="hearVis" data-v="part">給我提示</button>' : ''}${vis !== 'full' ? '<button class="btn ghost sm" data-a="hearVis" data-v="full">顯示全文</button>' : ''}${!r.zh[n.id] ? '<button class="btn ghost sm" data-a="hearZh">看中文</button>' : ''}</div>`;
   if (cur && (!allDone || ans[cur.i] !== undefined)) {
     const a = ans[cur.i], answered = a !== undefined, key = keyOf(n, cur.q);
     b += `<section class="card stack qcard" style="gap:10px"><p class="small muted">問題 ${qs.findIndex(x => x.i === cur.i) + 1} / ${qs.length}</p><p class="q" style="font-size:18px">${esc(cur.q.q)}</p>
       <div class="opts">${r.ord[n.id][cur.i].map(oi => `<button class="opt ${answered && oi === 0 ? 'correct' : answered && oi === a ? 'wrong' : ''}" data-a="hearQ" data-v="${oi}" ${answered ? 'disabled' : ''}>${esc(cur.q.o[oi])}</button>`).join('')}</div>
-      ${answered ? (a === 0 ? `<div class="qfb ok">對了。關鍵：<b class="jpf">${rubyHtml(CK[key].jp)}</b>＝${esc(CK[key].zh)}</div>`
-        : `<div class="qfb no">答案是「${esc(cur.q.o[0])}」。可以先確認這一塊：<b class="jpf">${rubyHtml(CK[key].jp)}</b>（${esc(CK[key].zh)}）。
+      ${answered ? (a === 0 ? `<div class="qfb ok">對了。關鍵：<b lang="ja" class="jpf">${rubyHtml(CK[key].jp)}</b>＝${esc(CK[key].zh)}</div>`
+        : `<div class="qfb no">答案是「${esc(cur.q.o[0])}」。可以先確認這一塊：<b lang="ja" class="jpf">${rubyHtml(CK[key].jp)}</b>（${esc(CK[key].zh)}）。
           <details><summary>還可以怎麼做</summary><p class="small">不確定時可以按「もう一度」「ゆっくり」或「簡単に」，或在下一步用「〜ですね」確認。${CK[key].note ? '<br>' + esc(CK[key].note) : ''}</p></details></div>`) : ''}
     </section>`;
   }
@@ -259,7 +259,7 @@ function hearHtml(n) {
     b += `${(n.learn || []).length ? (anyWrong
       ? `<div class="fb mid" style="animation:none" data-learn="wrong"><h3>他其實是說</h3>${n.learn.map(x => `<p>・${esc(x)}</p>`).join('')}<p class="small">這次沒聽出來也沒關係。下一步可以用「〜ですね」再確認一次。</p></div>`
       : `<div class="fb ok" style="animation:none" data-learn="ok"><h3>確認了</h3>${n.learn.map(x => `<p>・${esc(x)}</p>`).join('')}</div>`) : ''}${n.fig ? `<p class="sec-title">照這張卡走</p>${figHtml(n.fig)}` : ''}
-      <details class="card flat"><summary style="cursor:pointer;font-weight:700">拆開來看（點句塊看說明）</summary><div class="list" style="margin-top:10px">${(easy ? n.c.concat(n.easy.c.filter(id => !n.c.includes(id))) : n.c).map(id => `<button class="li" data-a="ckInfo" data-v="${id}"><div class="grow"><div class="jpf" style="font-weight:700;font-size:17px">${rubyHtml(CK[id].jp)}</div><div class="zh" style="white-space:normal">${esc(CK[id].zh)}<span class="muted">・${CAT[CK[id].cat]}</span></div></div>${IC.chev}</button>`).join('')}</div></details>`;
+      <details class="card flat"><summary style="cursor:pointer;font-weight:700">拆開來看（點句塊看說明）</summary><div class="list" style="margin-top:10px">${(easy ? n.c.concat(n.easy.c.filter(id => !n.c.includes(id))) : n.c).map(id => `<button class="li" data-a="ckInfo" data-v="${id}"><div class="grow"><div lang="ja" class="jpf" style="font-weight:700;font-size:17px">${rubyHtml(CK[id].jp)}</div><div class="zh" style="white-space:normal">${esc(CK[id].zh)}<span class="muted">・${CAT[CK[id].cat]}</span></div></div>${IC.chev}</button>`).join('')}</div></details>`;
   }
   let f;
   if (allDone) f = `<button class="btn primary block" data-a="hearDone">繼續</button>`;
@@ -273,7 +273,7 @@ function actHtml(n) {
   const lh = lastHear(r), skels = [...new Set(n.o.map(o => o.skel).filter(Boolean))];
   let b = lh ? `<div class="bubble"><div class="grow"><p class="who">${esc(nodeWho(lh))}剛剛說</p>${lineHtml(r.easy[lh.id] && lh.easy ? lh.easy.c : lh.c)}<p class="small muted" style="margin-top:4px">${esc(r.easy[lh.id] && lh.easy ? lh.easy.zh : lh.zh)}</p></div></div>` : '';
   b += `<p class="q">${esc(n.q)}</p>`;
-  if (skels.length && !picked) b += `<details class="card flat"><summary style="cursor:pointer">先自己說說看（可用的骨架）</summary>${skels.map(s => `<p class="small" style="margin-top:6px"><b class="jpf">${esc(SKEL[s].f)}</b><br><span class="muted">${esc(SKEL[s].zh)}</span></p>`).join('')}</details>`;
+  if (skels.length && !picked) b += `<details class="card flat"><summary style="cursor:pointer">先自己說說看（可用的骨架）</summary>${skels.map(s => `<p class="small" style="margin-top:6px"><b lang="ja" class="jpf">${esc(SKEL[s].f)}</b><br><span class="muted">${esc(SKEL[s].zh)}</span></p>`).join('')}</details>`;
   b += `<div class="opts">${r.ord[n.id].map(i => { const o = n.o[i];
     const cls = picked && i === p ? (o.g === 'ok' ? 'correct' : o.g === 'part' ? 'partial' : 'wrong') : '';
     return `<button class="opt ${cls}" data-a="actPick" data-v="${i}" ${picked ? 'disabled' : ''}><span style="min-width:0;display:block">${o.c ? lineHtml(o.c) : ''}${o.do ? `<span class="sub">（${esc(o.do)}）</span>` : ''}${showZh ? `<span class="sub">${esc(o.zh)}</span>` : ''}</span></button>`; }).join('')}</div>`;
@@ -281,7 +281,7 @@ function actHtml(n) {
   let f = `<p class="small muted" style="text-align:center">選一個你會說或會做的</p>`;
   if (picked) {
     const o = n.o[p];
-    b += `<div class="fb ${o.g === 'ok' ? 'ok' : o.g === 'part' ? 'mid' : 'no'}"><h3>${G_LABEL[o.g]}</h3><p>${esc(o.why)}</p>${o.skel ? `<p class="small">用到的骨架：<b class="jpf">${esc(SKEL[o.skel].f)}</b></p>` : ''}</div>`;
+    b += `<div class="fb ${o.g === 'ok' ? 'ok' : o.g === 'part' ? 'mid' : 'no'}"><h3>${G_LABEL[o.g]}</h3><p>${esc(o.why)}</p>${o.skel ? `<p class="small">用到的骨架：<b lang="ja" class="jpf">${esc(SKEL[o.skel].f)}</b></p>` : ''}</div>`;
     f = o.next ? `<button class="btn primary block" data-a="actGo">${o.g === 'bad' ? '看看會發生什麼' : '繼續'}</button>` : `<button class="btn primary block" data-a="actRe">重新選</button>`;
   }
   return [b, f];
@@ -299,7 +299,7 @@ function runEndHtml() {
         <div class="chips">${types.length ? types.map(tp => `<span class="pill ${tp === 'text' ? 'st-short' : 'st-mast'}">${TYPE_LABEL[tp]}</span>`).join('') : '<span class="pill st-conf">走完了，但有關鍵資訊沒抓到</span>'}</div>
         <p class="small muted">${types.includes('listen') || types.includes('transfer') ? '不看字也聽懂了。' : types.includes('repair') ? '用了重說、簡單說法或確認，在日本這樣做完全沒問題。' : types.includes('text') ? '這次有看字或提示，下次同一級會試著少一點提示。' : '下次再練一次就好。'}${r.rep ? `（請對方重說 ${r.rep} 次）` : ''}</p></section>
       ${r.board.known.length ? `<section class="card flat stack" style="gap:4px"><p class="sec-title" style="margin:0">你確認了</p>${r.board.known.map(x => `<p>・${esc(x)}</p>`).join('')}</section>` : ''}
-      ${wrong.length ? `<section class="stack" style="gap:8px"><p class="sec-title" style="margin:0">可以再確認的句塊（已排進句塊複習）</p><div class="list">${wrong.map(id => `<button class="li" data-a="ckInfo" data-v="${id}"><div class="grow"><div class="jpf" style="font-weight:700">${rubyHtml(CK[id].jp)}</div><div class="zh">${esc(CK[id].zh)}</div></div>${IC.chev}</button>`).join('')}</div></section>` : ''}
+      ${wrong.length ? `<section class="stack" style="gap:8px"><p class="sec-title" style="margin:0">可以再確認的句塊（已排進句塊複習）</p><div class="list">${wrong.map(id => `<button class="li" data-a="ckInfo" data-v="${id}"><div class="grow"><div lang="ja" class="jpf" style="font-weight:700">${rubyHtml(CK[id].jp)}</div><div class="zh">${esc(CK[id].zh)}</div></div>${IC.chev}</button>`).join('')}</div></section>` : ''}
       <p class="small muted">${esc(t.sim)}</p>
     </div></div>
     <div class="ov-foot"><div class="in">

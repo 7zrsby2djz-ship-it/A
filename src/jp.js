@@ -56,13 +56,13 @@ function ckListHtml() {
     const groups = {}; ids.forEach(id => { const c = CK[id].cat; (groups[c] = groups[c] || []).push(id); });
     Object.keys(CAT).filter(c => groups[c]).sort((a, b) => CRIT.has(b) - CRIT.has(a)).forEach(c => {
       h += `<p class="sec-title">${CAT[c]}${CRIT.has(c) ? '・會影響行動' : ''}</p><div class="list">${groups[c].map(id => { const s = S.ck[id];
-        return `<button class="li" data-a="ckInfo" data-v="${id}"><div class="grow"><div class="jpf" style="font-weight:700;font-size:17px">${rubyHtml(CK[id].jp)}</div><div class="zh">${esc(CK[id].zh)}</div></div>
+        return `<button class="li" data-a="ckInfo" data-v="${id}"><div class="grow"><div lang="ja" class="jpf" style="font-weight:700;font-size:17px">${rubyHtml(CK[id].jp)}</div><div class="zh">${esc(CK[id].zh)}</div></div>
           <div class="small muted" style="text-align:right;line-height:1.6">看 ${dot(s.t)}<br>聽 ${dot(s.l)}</div></button>`; }).join('')}</div>`;
     });
   }
   const old = Object.keys(S.jpw || {});
   if (old.length) h += `<p class="sec-title">舊版單字卡（${old.length}）</p><button class="btn block" data-a="startWords">練習舊單字卡</button>
-    <div class="list">${old.map(k => `<div class="li"><div class="grow"><div class="jpf" style="font-weight:700">${esc(S.jpw[k].jp)}</div><div class="zh">${esc(S.jpw[k].zh)}</div></div>${spkBtn(S.jpw[k].jp.replace(/^〜/, ''), 'ja-JP')}<button class="chip" data-a="wDel" data-v="${esc(k)}" style="flex:none">移除</button></div>`).join('')}</div>`;
+    <div class="list">${old.map(k => `<div class="li"><div class="grow"><div lang="ja" class="jpf" style="font-weight:700">${esc(S.jpw[k].jp)}</div><div class="zh">${esc(S.jpw[k].zh)}</div></div>${spkBtn(S.jpw[k].jp.replace(/^〜/, ''), 'ja-JP')}<button class="chip" data-a="wDel" data-v="${esc(k)}" style="flex:none">移除</button></div>`).join('')}</div>`;
   return h;
 }
 
@@ -81,7 +81,7 @@ function makeWq(jp) {
 }
 function sesWq(c) {
   const w = S.jpw[c.jp], res = SES.res;
-  let b = `<p class="small muted">舊單字卡・意思是？</p><div class="card stack" style="align-items:center;gap:10px;padding:22px"><p class="jpf" style="font-size:28px;font-weight:700">${esc(w.jp)}</p><p class="small muted xro">${esc(w.ro)}</p>
+  let b = `<p class="small muted">舊單字卡・意思是？</p><div class="card stack" style="align-items:center;gap:10px;padding:22px"><p lang="ja" class="jpf" style="font-size:28px;font-weight:700">${esc(w.jp)}</p><p class="small muted xro">${esc(w.ro)}</p>
     ${canSpeak ? `<button class="btn jp-b" data-a="speak" data-v="${esc(w.jp.replace(/^〜/, ''))}" data-l="ja-JP">${IC.speak}再聽一次</button>` : ''}</div>
     <div class="opts">${c.opts.map((o, i) => `<button class="opt ${res ? (o === w.zh ? 'correct' : i === res.chosen ? 'wrong' : '') : ''}" data-a="wq" data-v="${i}" ${res ? 'disabled' : ''}>${esc(o)}</button>`).join('')}</div>`;
   if (res) b += `<div class="${res.ok ? 'fb ok' : 'fb no'}"><h3>${res.ok ? '對了' : '是「' + esc(w.zh) + '」'}</h3></div>`;
