@@ -7,7 +7,8 @@ node listening-jp/build-embedded.js
 node kana-rebuild/tools/build-data.cjs
 node kana-rebuild/tools/validate.cjs
 node oral-audio/tools/build-embed.cjs batch01
-{ echo '<!doctype html><html lang="zh-Hant-TW"><head>'; cat src/head.html; echo '<style>'; cat src/oral.generated.css; echo '</style></head><body>'; cat src/shell.html; echo '<script>'; cat src/data_en.js src/data_jp.js src/data_tasks.js src/data_life.js src/data_game.js kana-rebuild/generated/kana-data.js src/run.js src/jp.js src/listen.js src/game.js src/kana.js src/today5.js src/lockplay.js src/oral.generated.js src/app.js; echo '</script>'
+node tools/build-sfx.cjs
+{ echo '<!doctype html><html lang="zh-Hant-TW"><head>'; cat src/head.html; echo '<style>'; cat src/oral.generated.css src/motion.css; echo '</style></head><body>'; cat src/shell.html; echo '<script>'; cat src/theme-boot.js src/data_en.js src/data_jp.js src/data_tasks.js src/data_life.js src/data_game.js kana-rebuild/generated/kana-data.js src/run.js src/jp.js src/listen.js src/game.js src/kana.js src/today5.js src/lockplay.js src/oral.generated.js src/sfx.generated.js src/fx.js src/theme.js src/app.js; echo '</script>'
   # 鎖屏聽力的 MP3（約 2 MB）放最後一段 script：主程式先執行、第一個畫面先出來，音檔資料再串流進來
   echo '<script>'; cat oral-audio/generated/batch01-audio.js; echo ';try{window.dispatchEvent(new Event("bnk-audio-ready"))}catch(e){}'; echo '</script></body></html>'; } > index.html
 # 離線用的 service worker：版本＝index.html 的雜湊，內容一變瀏覽器就會換新版

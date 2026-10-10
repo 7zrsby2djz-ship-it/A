@@ -39,7 +39,7 @@ const SCENE_MAP = Object.fromEntries(SCENES.map(s => [s.id, s]));
 
 /* ================= state ================= */
 const LSK = 'bnk-state-v1';
-const DEF = () => ({v:1, updatedAt:0, created:Date.now(), settings:{romaji:true, read:'furi', dlgLen:1, dailyNew:5, rate:1, autoSpeak:true, jaVoice:''},
+const DEF = () => ({v:1, updatedAt:0, created:Date.now(), settings:{romaji:true, read:'furi', dlgLen:1, dailyNew:5, rate:1, autoSpeak:true, jaVoice:'', sfx:true, motion:'auto'},
   en:{}, custom:{}, gm:{}, kana:{v:1, prefs:{script:'mixed', romaji:false}, cards:{}, wordFamiliarity:{}, active:null}, jp:{}, dlg:{}, dlgMiss:{}, jpw:{}, ck:{}, tk:{}, run:null, lsp:null, migDlg:0, jpConf:{}, scenes:{}, favs:[], pastes:[], log:{}, xp:0, streak:{n:0, last:''}, newDay:{d:'', n:0}, boost:[], again:{d:'', ids:[]}});
 function migrate(o) { const d = DEF(); if (!o || typeof o !== 'object') return d; for (const k in d) if (o[k] === undefined) o[k] = d[k];
   const had = o.settings || {}; o.settings = Object.assign(d.settings, had); if (had.read === undefined) o.settings.read = had.romaji === false ? 'none' : 'furi'; return o; }
@@ -547,6 +547,7 @@ function vMe() {
       <div class="set-row"><div class="grow"><b>答題時自動發音</b><p class="small muted">看到新字、答完題時念出來</p></div><button class="switch" role="switch" aria-checked="${S.settings.autoSpeak}" aria-label="自動發音" data-a="set" data-k="autoSpeak" data-v="${!S.settings.autoSpeak}"></button></div>
       <div class="set-row" style="flex-wrap:wrap"><div class="grow"><b>每天新英文字</b></div>${seg('dailyNew', [[3, '3'], [5, '5'], [8, '8']], S.settings.dailyNew)}</div>
       <div class="set-row" style="flex-wrap:wrap"><div class="grow"><b>發音速度</b></div>${seg('rate', [[0.75, '慢'], [1, '正常']], S.settings.rate)}</div>
+      ${typeof fxSettingsHtml === 'function' ? fxSettingsHtml() : ''}${typeof themeSettingsHtml === 'function' ? themeSettingsHtml() : ''}
       ${canSpeak ? (() => { const vs = jaVoices().slice().sort((a, b) => jaVoiceScore(b) - jaVoiceScore(a)), cur = pickJaVoice();
         return `<div class="set-row" style="flex-wrap:wrap;gap:8px"><div class="grow" style="min-width:100%"><b>日文聲音</b><p class="small muted">對話、五十音、耳機模式、口語聽力共用（鎖屏聽力是固定音檔，不受影響）。聲音斷續或像機器人時，換一個「加強版／高品質」。iPhone 可到「設定 → 輔助使用 → 朗讀內容 → 聲音 → 日文」下載。</p></div>
         ${vs.length ? `<select id="jaVoiceSel" aria-label="日文聲音" style="flex:1;min-width:0;min-height:44px;font-size:16px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:0 10px"><option value="" ${S.settings.jaVoice ? '' : 'selected'}>自動挑選${cur ? '（目前：' + esc(cur.name) + '）' : ''}</option>${vs.map(v => `<option value="${esc(v.voiceURI)}" ${S.settings.jaVoice === v.voiceURI ? 'selected' : ''}>${esc(jaVoiceLabel(v))}</option>`).join('')}</select>` : '<p class="small muted" style="flex:1">還沒讀到日文聲音，先按試聽。</p>'}
@@ -972,7 +973,8 @@ document.addEventListener('click', e => {
     case 'enSeg': UI.enSeg = v; render(); break;
     case 'jpSeg': UI.jpSeg = v; render(); break;
     case 'romaji': S.settings.read = S.settings.read === 'none' ? 'furi' : 'none'; persist(); render(); break;
-    case 'set': { const k = t.dataset.k; let val = v; if (k === 'dailyNew' || k === 'rate' || k === 'dlgLen') val = +v; if (k === 'autoSpeak') val = v === 'true'; S.settings[k] = val; persist(); render(); } break;
+    case 'theme': if (typeof themeSet === 'function') themeSet(v); break;
+    case 'set': { const k = t.dataset.k; let val = v; if (k === 'dailyNew' || k === 'rate' || k === 'dlgLen') val = +v; if (k === 'autoSpeak' || k === 'sfx') val = v === 'true'; S.settings[k] = val; persist(); render(); } break;
     case 'analyze': {
       const txt = ($('#pasteBox')?.value || '').trim(); UI.look.text = txt; if (!txt) { toast('先貼上一段英文'); break; }
       const res = analyze(txt); UI.look.res = res; UI.look.ai = null; UI.look.err = '';
