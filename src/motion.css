@@ -1,0 +1,53 @@
+/* ================= motion.css：Duolingo 式微動畫（只用 CSS 變數，不寫死色碼；顏色 token 由 head.html 提供） =================
+   立體按鈕的底邊顏色：若主題定義了 --btn-lip 就用它（主題設計的約定），否則依按鈕種類用現有 token。 */
+.btn:not(.ghost),.opt,.rep,.gbtn,.kcell:not(.empty){--lip:var(--btn-lip,var(--line));box-shadow:0 4px 0 var(--lip);transition:transform 60ms ease-out,box-shadow 60ms ease-out}
+.btn.primary,.btn.en-b,.overlay .btn.primary{--lip:var(--btn-lip,var(--en-ink))}
+.btn.jp-b,.overlay.jpmode .btn.primary{--lip:var(--btn-lip,var(--jp-ink))}
+.opt.correct{--lip:var(--ok)}
+.opt.wrong{--lip:var(--bad)}
+.btn:not(.ghost):not(:disabled):active,.opt:not(:disabled):active,.rep:active,.gbtn:active,.kcell:not(.empty):active{transform:translateY(3px);box-shadow:0 1px 0 var(--lip)}
+.btn:disabled,.opt:disabled{box-shadow:0 2px 0 var(--lip)}
+.opt.correct:disabled,.opt.wrong:disabled{box-shadow:0 4px 0 var(--lip)}
+.opts,.kopts{padding-bottom:4px}
+
+/* 答對：結果條從底部彈上來，標題前一個會彈的勾勾；答錯：柔和滑入，不彈跳 */
+.fb.ok{animation:fxBounceUp .34s cubic-bezier(.2,1.35,.4,1)}
+.fb.no{animation:up .25s ease-out}
+.fb.ok h3::before{content:'✓';content:'✓' / '';display:inline-block;margin-right:6px;animation:fxPop .4s .08s cubic-bezier(.3,1.6,.5,1) backwards}
+.qfb.ok{animation:fxBounceUp .3s cubic-bezier(.2,1.35,.4,1)}
+
+/* 連對膠囊與發光進度條 */
+.fx-combo{flex:none;display:inline-flex;align-items:center;gap:2px;padding:2px 9px;border-radius:999px;background:var(--warn-soft);color:var(--ink);font-size:13px;font-weight:800;white-space:nowrap;line-height:1.5}
+.fx-combo-out{position:absolute;right:16px;pointer-events:none}
+.ov-head{position:relative}
+.prog.fx-hot i{background:linear-gradient(90deg,var(--ok),var(--warn));box-shadow:0 0 8px var(--warn)}
+.overlay.jpmode .prog.fx-hot i{background:linear-gradient(90deg,var(--jp),var(--warn))}
+.prog.mini{height:6px;margin-top:5px;flex:none}
+
+/* 完成畫面 */
+.fx-star{font-size:40px;line-height:1}
+.confetti{position:fixed;inset:0;pointer-events:none;z-index:70;overflow:hidden}
+.confetti i{position:absolute;top:-12px;width:9px;height:14px;border-radius:2px;animation:fxFall linear forwards}
+
+/* 今天 5 分鐘完成卡 */
+.fx-t5{position:fixed;inset:0;z-index:65;display:grid;place-items:center;padding:24px;background:color-mix(in srgb,var(--bg) 82%,transparent);animation:fade .2s}
+.fx-t5-card{width:min(360px,100%);background:var(--surface);color:var(--ink);border-radius:24px;padding:22px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:14px}
+.fx-t5-title{font-size:24px;font-weight:800;text-align:center}
+.fx-t5 ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px;font-weight:700;font-size:17px}
+.fx-t5 li{display:flex;align-items:center;gap:10px}
+.fx-t5-ck{flex:none;width:30px;height:30px;border-radius:50%;display:inline-grid;place-items:center;background:var(--ok-soft);color:var(--ok);font-weight:800}
+
+/* 全螢幕練習畫面打開時從下方滑上；切分頁時新內容淡入＋上移 8px */
+.overlay:not([hidden]){animation:fxSlideUp .22s cubic-bezier(.2,.8,.3,1)}
+.view-in{animation:fxViewIn .18s ease-out,fxFadeIn .12s ease-out}
+
+@keyframes fxBounceUp{0%{transform:translateY(28px);opacity:0}70%{transform:translateY(-4px);opacity:1}100%{transform:none}}
+@keyframes fxPop{0%{transform:scale(0)}70%{transform:scale(1.3)}100%{transform:scale(1)}}
+@keyframes fxFall{to{transform:translate3d(var(--dx),105vh,0) rotate(var(--r));opacity:.9}}
+@keyframes fxSlideUp{from{transform:translateY(24px);opacity:.4}to{transform:none;opacity:1}}
+@keyframes fxViewIn{from{transform:translateY(8px)}to{transform:none}}
+@keyframes fxFadeIn{from{opacity:0}}
+
+/* 減少動畫：系統設定（head.html 已有全域規則）或「我的 → 動畫：減少」 */
+.fx-reduce *,.fx-reduce *::before,.fx-reduce *::after{animation:none!important;transition:none!important}
+@media (prefers-reduced-motion: reduce){.confetti{display:none}}

@@ -156,7 +156,7 @@ function touchStreak() { const k = dayKey(); if (S.streak.last === k) return; S.
 function streakNow() { return (S.streak.last === dayKey() || S.streak.last === dayKey(Date.now() - DAY)) ? S.streak.n : 0; }
 function level() { return Math.floor(Math.sqrt(S.xp / 40)) + 1; }
 function lvProgress() { const l = level(), a = 40 * (l - 1) ** 2, b = 40 * l ** 2; return (S.xp - a) / (b - a); }
-function addXp(n) { const b = level(); S.xp += n; L().xp += n; if (SES) SES.stats.xp += n; if (level() > b) setTimeout(() => toast('升級了！Lv ' + level() + '，積木塔又高一層'), 400); }
+function addXp(n) { const b = level(); S.xp += n; L().xp += n; if (SES) SES.stats.xp += n; if (level() > b) setTimeout(() => { toast('升級了！Lv ' + level() + '，積木塔又高一層'); fx.levelUp(); }, 400); }
 function newToday() { if (S.newDay.d !== dayKey()) S.newDay = {d:dayKey(), n:0}; return S.newDay.n; }
 function againToday() { if (S.again.d !== dayKey()) S.again = {d:dayKey(), ids:[]}; return S.again.ids; }
 function addAgain(id) { const a = againToday(); if (!a.includes(id)) a.unshift(id); if (a.length > 20) a.length = 20; }
@@ -207,6 +207,7 @@ function speak(text, lang, rate, onend) {
     const v = lang.startsWith('ja') ? pickJaVoice() : (VOICES.find(v => v.lang && v.lang.replace('_', '-').startsWith(lang)) || VOICES.find(v => v.lang && v.lang.startsWith(lang.slice(0, 2))));
     if (v) u.voice = v;
     if (onend) { u.onend = onend; u.onerror = onend; }
+    u.onstart = () => fx.duck(); // 語音一開始就把音效靜音（語音優先）
     speechSynthesis.speak(u);
     return u;
   } catch (e) { if (onend) setTimeout(onend, 300); }
@@ -367,7 +368,7 @@ function topbar(title) {
     <div class="streak" title="最近 7 天有學習的天數"><b class="tnum">${weekDays()}</b>本週天數</div></header>`;
 }
 function render() {
-  migrateOldDlg(); applyRead();
+  migrateOldDlg(); applyRead(); fx.apply();
   document.body.classList.toggle('noro', S.settings.read === 'none');
   const v = $('#view');
   const map = {home:vHome, en:vEn, look:vLook, jp:vJp, oral:vOral, me:vMe};
@@ -623,7 +624,7 @@ let SES = null;
 function startSession(kind, cards, title, extra = {}) {
   if (!cards.length) return;
   SES = Object.assign({kind, title, cards, i:0, answered:false, res:null, build:null, graded:new Set(), requeued:new Set(), stats:{n:0, ok:0, nw:0, xp:0}, cov0:coverage()}, extra);
-  const el = $('#ses'); el.hidden = false; el.classList.toggle('jpmode', kind === 'jp');
+  const el = $('#ses'); el.hidden = false; el.classList.toggle('jpmode', kind === 'jp'); fx.start('ses');
   document.body.style.overflow = 'hidden';
   renderSes(); autoSpeakCard();
 }
@@ -703,6 +704,8 @@ function renderSes() {
   const prev = $('#sesBody'), keep = prev && SES._ri === SES.i ? prev.scrollTop : 0;
   el.innerHTML = head + `<div class="ov-body" id="sesBody"><div class="in">${body}</div></div><div class="ov-foot"><div class="in">${foot}</div></div>`;
   SES._ri = SES.i; if (keep) $('#sesBody').scrollTop = keep;
+  fx.after(el, 'ses', SES.i);
+  if (!c && fx.once(SES)) fx.celebrate(el, {perfect:SES.review ? !SES.missed.length : SES.stats.n > 0 && SES.stats.ok === SES.stats.n});
 }
 function sesTeach(c) {
   const it = getEn(c.id);
@@ -782,7 +785,7 @@ function sesDone() {
   const s = SES.stats, isEn = SES.kind === 'en';
   if (SES.review) {
     const tot = SES.graded.size, miss = SES.missed.length, kept = tot - miss;
-    const b = `<div class="done-hero"><div class="pop">${tower()}</div><h2 style="font-size:26px">還記得 ${kept} / ${tot} 個</h2>
+    const b = `<div class="done-hero"><div class="pop">${tower()}</div><h2 style="font-size:26px">還記得 <span data-count="${kept}">${kept}</span> / ${tot} 個</h2>
       <p class="muted">${miss === 0 ? '全部都記得！這些字會隔更久才再出現。' : kept / tot >= 0.8 ? '大部分都記得。忘掉的字已經排進接下來的練習。' : '有些字忘了，很正常。它們會在 10 分鐘後和明天再出現。'}</p></div>
       ${miss ? `<p class="sec-title">這次忘了的字</p><div class="list">${SES.missed.map(id => `<button class="li" data-a="word" data-v="${id}"><div class="grow"><div class="w">${esc(getEn(id).w)}</div><div class="zh">${esc(getEn(id).zh)}・${esc(getEn(id).note)}</div></div>${IC.chev}</button>`).join('')}</div>` : ''}
       <p class="small muted" style="text-align:center">每次複習會優先考：常搞混的、還不熟的、最久沒見到的字。</p>`;
@@ -791,8 +794,8 @@ function sesDone() {
   }
   const cov1 = coverage(), d = Math.round((cov1 - SES.cov0) * 100);
   const b = `<div class="done-hero"><div class="pop">${tower()}</div><h2 style="font-size:26px">完成！</h2>
-    <p class="muted">答對 ${s.ok} / ${s.n} 題${s.nw ? `・新學 ${s.nw} 個` : ''}・經驗值 +${s.xp}</p>
-    ${isEn ? `<p style="font-size:18px">看懂率 <b class="tnum">${Math.round(cov1 * 100)}%</b>${d > 0 ? `<span style="color:var(--ok)">（+${d}%）</span>` : ''}</p>` : ''}
+    <p class="muted">答對 <span data-count="${s.ok}">${s.ok}</span> / ${s.n} 題${s.nw ? `・新學 ${s.nw} 個` : ''}・經驗值 +<span data-count="${s.xp}">${s.xp}</span></p>
+    ${isEn ? `<p style="font-size:18px">看懂率 <b class="tnum"><span data-count="${Math.round(cov1 * 100)}" data-from="${Math.round(SES.cov0 * 100)}">${Math.round(cov1 * 100)}</span>%</b>${d > 0 ? `<span style="color:var(--ok)">（+<span data-count="${d}">${d}</span>%）</span>` : ''}</p>` : ''}
     <p class="small muted">最近 7 天學了 ${weekDays()} 天</p></div>
     ${isEn ? '<p class="small muted" style="text-align:center">答錯的字 10 分鐘後會再出現；答對的字會越隔越久才出現。</p>' : (SES.dlg ? '<p class="small muted" style="text-align:center">漏聽的對話很快會再出現；聽懂的會越隔越久，通過了就解鎖下一級。</p>' : '<p class="small muted" style="text-align:center">錯的句型很快會再出現；熟了的會越隔越久。</p>')}`;
   const f = `${isEn && !SES.more ? '<button class="btn block" data-a="more">再學 3 個新字</button>' : ''}<button class="btn primary block" data-a="sesClose">完成</button>`;
@@ -816,7 +819,7 @@ function answerEn(idx) {
   touchStreak(); addXp(ok ? (firstTime ? 10 : 4) : 1);
   persist();
   renderSes();
-  if (S.settings.autoSpeak) speak(getEn(q.id).w, 'en-US');
+  fx.answer('#ses', ok, S.settings.autoSpeak ? () => speak(getEn(q.id).w, 'en-US') : null);
   requestAnimationFrame(() => { const fb = document.querySelector('#sesBody .fb'); fb && fb.scrollIntoView({behavior:'smooth', block:'nearest'}); });
 }
 function checkBuild(showAnswer) {
@@ -845,7 +848,7 @@ function checkBuild(showAnswer) {
   } else if (ok) addXp(3);
   persist();
   renderSes();
-  if (ok) speakIf(sentText(seq));
+  fx.answer('#ses', ok, ok && S.settings.autoSpeak ? () => speakIf(sentText(seq)) : null);
   requestAnimationFrame(() => { const fb = document.querySelector('#sesBody .fb'); fb && fb.scrollIntoView({behavior:'smooth', block:'nearest'}); });
 }
 function speakIf(t) { if (S.settings.autoSpeak) speak(t, 'ja-JP'); }
@@ -919,13 +922,14 @@ document.addEventListener('click', e => {
   const t = e.target.closest('[data-a]'); if (!t) return;
   const a = t.dataset.a, v = t.dataset.v;
   switch (a) {
-    case 'tab': if(UI.tab==='oral')window.OralModule.unmount();if(v==='oral'){lsStop();try{speechSynthesis.cancel();}catch(x){}}UI.tab = v; try { sessionStorage.setItem('bnk-tab', v); } catch (x) {} render(); window.scrollTo(0, 0); break;
+    case 'tab': if(UI.tab==='oral')window.OralModule.unmount();if(v==='oral'){lsStop();try{speechSynthesis.cancel();}catch(x){}}UI.tab = v; try { sessionStorage.setItem('bnk-tab', v); } catch (x) {} fx.view(() => { render(); window.scrollTo(0, 0); }); break;
     case 'startEn': startEn(enDue().length || newCandidates().length ? 0 : 3); break;
     case 'more': SES.more = true; { const extra = newCandidates(3).filter(id => !S.en[id]).slice(0, 3); if (!extra.length) { toast('字庫裡的字都學過了！'); break; } extra.forEach(id => SES.cards.push({t:'teach', id}, {t:'q', id, isNew:true})); renderSes(); autoSpeakCard(); } break;
     case 'startJp': startJp(); break;
     case 'runRec': { const r = recommend(); RUN_END = null; startRun(r.tid, r.lv); } break;
     case 'runResume': resumeRun(); break;
-    case 'runDrop': S.run = null; persist(); render(); toast('已放棄這段'); break;
+    case 'runDrop': { S.run = null; persist(); const st = t5St(); if (T5_STEPS[st.step] && T5_STEPS[st.step].id === 'dlg' && (st.on || st.step > 0)) { st.log.dlg = 'skip'; st.step++; st.on = false; t5Save(); } render(); toast('已放棄這段'); } break; // QA#5：兩個入口放棄後狀態一致（今天 5 分鐘記成跳過）
+    case 'fxTest': fx.demo(); break;
     case 'runClose': closeRunView(); break;
     case 'taskSheet': showSheet(() => taskSheet(v)); break;
     case 'taskGo': { const [tid, lv] = v.split(':'); startRun(tid, +lv); } break;
@@ -1004,8 +1008,8 @@ document.addEventListener('click', e => {
     case 'teachKnown': { const id = curCard().id; const r = recOf('en', id, true); r.known = true; r.s = 7; r.due = Date.now() + IV[7]; S.boost = S.boost.filter(x => x !== id); SES.cards = SES.cards.filter((c, i) => i <= SES.i || c.id !== id); persist(); toast('好，這個字跳過'); nextCard(); } break;
     case 'opt': answerEn(+v); break;
     case 'next': nextCard(); break;
-    case 'tray': { const st = SES.build; const i = +v; if (!st.placed.includes(i)) { st.placed.push(i); st.diag = null; renderSes(); } } break;
-    case 'placed': { const st = SES.build; st.placed.splice(+v, 1); st.diag = null; renderSes(); } break;
+    case 'tray': { const st = SES.build; const i = +v; if (!st.placed.includes(i)) { st.placed.push(i); st.diag = null; renderSes(); fx.sfx('tap'); } } break;
+    case 'placed': { const st = SES.build; st.placed.splice(+v, 1); st.diag = null; renderSes(); fx.sfx('tap'); } break;
     case 'bClear': SES.build.placed = []; SES.build.diag = null; renderSes(); break;
     case 'bCheck': checkBuild(false); break;
     case 'bShow': checkBuild(true); break;

@@ -74,7 +74,7 @@ function startRun(tid, lv, vid) {
   const v = vid ? VAR[vid] : pickVariant(tid, lv);
   S.run = {tid, lv:v.lv, vid:v.id, node:null, cq:{}, vis:{}, ans:{}, ord:{}, easy:{}, pick:{}, said:{}, zh:{}, rep:0, path:[],
     flags:{text:false, hint:false, help:false, bad:false, crit:false, noAudio:!canSpeak}, board:{known:[], todo:TASK[tid].todo0 || '問清楚怎麼去'}, wrong:[], t0:Date.now()};
-  RUN_END = null;
+  RUN_END = null; fx.start('run');
   openRunView(); enterNode(v.start);
 }
 function curVar() { return S.run && VAR[S.run.vid]; }
@@ -130,7 +130,7 @@ function answerQ(oi) {
   if (mode === 'full' || !canSpeak) grade(rec.t, ok); else grade(rec.l, ok);
   if (ok) rec.weak = false; else { r.wrong.push(key); if (crit) r.flags.crit = true; }
   const lg = L(); lg.jp++; if (ok) lg.jpOk++;
-  touchStreak(); addXp(ok ? 6 : 1); persist(); renderRun();
+  touchStreak(); addXp(ok ? 6 : 1); persist(); renderRun(); fx.answer('#run', ok);
   requestAnimationFrame(() => { const fb = document.querySelector('#runBody .qfb'); fb && fb.scrollIntoView({behavior:'smooth', block:'nearest'}); });
 }
 
@@ -195,12 +195,13 @@ function figHtml(f) {
 }
 function renderRun() {
   const el = $('#run'); if (!el) return;
-  if (RUN_END) { el.innerHTML = runEndHtml(); return; }
+  if (RUN_END) { el.innerHTML = runEndHtml(); if (fx.once(RUN_END) && RUN_END.res !== 'fail') fx.celebrate(el, {perfect:RUN_END.res === 'ok' && !RUN_END.run.wrong.length}); return; }
   const r = S.run; if (!r) { el.hidden = true; return; }
   const t = TASK[r.tid], v = curVar(), n = curNode();
   const head = `<div class="ov-head"><button class="icon-btn" data-a="runClose" aria-label="先離開，之後接續">${IC.x}</button>
-    <div style="flex:1;min-width:0"><div style="font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(t.name)}</div><div class="small muted">第 ${r.lv} 級・${esc(t.axis[r.lv])}${v.tr ? '・換說法' : ''}</div></div>
-    <span class="small muted tnum">第 ${r.path.length} 步</span></div>`;
+    <div style="flex:1;min-width:0"><div style="font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(t.name)}</div><div class="small muted">第 ${r.lv} 級・${esc(t.axis[r.lv])}${v.tr ? '・換說法' : ''}</div>
+    <div class="prog mini" aria-hidden="true"><i style="width:${runPct(r)}%"></i></div></div>
+    <span class="small muted" style="white-space:nowrap">對話進行中</span></div>`;
   let body = '', foot = '';
   if (n.t === 'say') [body, foot] = sayHtml(n);
   else if (n.t === 'hear') [body, foot] = hearHtml(n);
@@ -208,7 +209,18 @@ function renderRun() {
   const prev = $('#runBody'), keep = prev && prev.dataset.node === r.node ? prev.scrollTop : 0;
   el.innerHTML = head + `<div class="ov-body" id="runBody" data-node="${esc(r.node)}"><div class="in">${boardHtml(r)}${body}</div></div><div class="ov-foot"><div class="in">${foot}</div></div>`;
   if (keep) $('#runBody').scrollTop = keep;
+  fx.after(el, 'run', r.node);
 }
+/* QA#4：對話內不再顯示沒有總數的「第 N 步」，改成小進度條。
+   百分比＝已走節點數 ÷（已走＋從目前節點到結局的最短剩餘節點數，BFS）。分支路徑長度不同，所以可能偶爾往回一點，但不會出現互相矛盾的數字。 */
+function runRemain(v, from) {
+  const seen = new Set([from]); let q = [[from, 0]];
+  while (q.length) { const [id, d] = q.shift(), n = v.nodes[id]; if (!n) continue; if (n.t === 'end') return d;
+    const nx = n.t === 'act' ? n.o.map(o => o.next).filter(Boolean) : [n.next].filter(Boolean);
+    nx.forEach(x => { if (!seen.has(x)) { seen.add(x); q.push([x, d + 1]); } }); }
+  return 0;
+}
+function runPct(r) { const v = VAR[r.vid]; if (!v) return 0; const done = r.path.length, left = runRemain(v, r.node); return Math.round(done / (done + left) * 100); }
 function sayHtml(n) {
   const r = S.run, sk = SKEL[n.skel], shown = r.said[n.id];
   const b = `<p class="small muted">${esc(TASK[r.tid].place)}</p><p style="font-size:16px">${esc(curVar().setup || TASK[r.tid].setup)}</p>
@@ -340,7 +352,7 @@ function runAction(a, v) {
       if (o.g === 'bad') r.flags.bad = true;
       const lg = L(); lg.jp++; if (o.g === 'ok') lg.jpOk++;
       touchStreak(); addXp(o.g === 'ok' ? 6 : 1); persist(); renderRun();
-      if (o.c && S.settings.autoSpeak) speak(lineText(o.c), 'ja-JP', 0.9);
+      fx.answer('#run', o.g === 'ok' ? true : o.g === 'part' ? null : false, o.c && S.settings.autoSpeak ? () => speak(lineText(o.c), 'ja-JP', 0.9) : null);
       requestAnimationFrame(() => { const fb = document.querySelector('#runBody .fb'); fb && fb.scrollIntoView({behavior:'smooth', block:'nearest'}); });
       return true;
     }

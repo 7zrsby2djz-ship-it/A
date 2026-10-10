@@ -43,7 +43,7 @@ function answerCk(i) {
   SES.stats.n++; if (ok) SES.stats.ok++;
   const lg = L(); lg.jp++; if (ok) lg.jpOk++;
   touchStreak(); addXp(ok ? 4 : 1); persist(); renderSes();
-  speak(spokenJp(k.jp), 'ja-JP', 0.9);
+  fx.answer('#ses', ok, () => speak(spokenJp(k.jp), 'ja-JP', 0.9));
 }
 function ckListHtml() {
   const ids = Object.keys(S.ck).filter(id => CK[id] && !['ask', 'polite', 'topic'].includes(CK[id].cat));
@@ -94,7 +94,7 @@ function answerWq(i) {
   if (!SES.graded.has(c.jp)) { SES.graded.add(c.jp); grade(w, ok); }
   SES.stats.n++; if (ok) SES.stats.ok++;
   touchStreak(); addXp(ok ? 4 : 1); persist(); renderSes();
-  speak(w.jp.replace(/^〜/, ''), 'ja-JP', 0.85);
+  fx.answer('#ses', ok, () => speak(w.jp.replace(/^〜/, ''), 'ja-JP', 0.85));
 }
 
 /* ================= 日文頁與首頁的推薦 ================= */
@@ -105,7 +105,7 @@ function lvBadges(tid) {
 }
 function jpNextHtml(onHero) {
   if (S.run && VAR[S.run.vid]) return `<p class="small muted">接續上次</p><p style="font-size:19px;font-weight:800">${esc(TASK[S.run.tid].name)}・第 ${S.run.lv} 級</p>
-    <p class="small ${onHero ? '' : 'muted'}">前情：${esc(recapText(S.run))}</p>
+    <p class="small ${onHero ? '' : 'muted'}">前情：${esc(recapText(S.run))}</p>${t5DlgNote()}
     <div class="row"><button class="btn onhero" style="flex:1" data-a="runResume">繼續</button><button class="btn ghost" style="color:#fff;border-color:rgba(255,255,255,.5)" data-a="runDrop">放棄這段</button></div>`;
   const due = ckDue().length;
   if (due >= 4) return `<p class="small muted">推薦下一步</p><p style="font-size:19px;font-weight:800">句塊複習 ${due} 個</p><p class="small muted">約 2 分鐘。方向、否定、號碼、時間優先。</p>

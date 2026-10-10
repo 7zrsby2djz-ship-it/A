@@ -39,10 +39,12 @@ function t5After(stepId, finished) {
   if (st.step >= T5_STEPS.length) { t5Finish(); return; }
   t5Save(); render();
   if ($('#sheet')) { st.on = false; t5Save(); return; }   // 使用者正在看說明，不要硬切畫面
-  toast(`第 ${st.step + 1} 步：${T5_STEPS[st.step].name}`);
+  toast(`第 ${st.step + 1} 關：${T5_STEPS[st.step].name}`);
   setTimeout(() => { if (t5St().on) t5Go(); }, 450);
 }
-function t5Finish() { const st = t5St(); st.on = false; st.step = T5_STEPS.length; st.doneAt = Date.now(); t5Save(); render(); toast('今天 5 分鐘完成'); }
+function t5Finish() { const st = t5St(); st.on = false; st.step = T5_STEPS.length; st.doneAt = Date.now(); t5Save(); render(); fx.t5Done(T5_STEPS, st.log); }
+// QA#4/#5：今天 5 分鐘的層級叫「關」；對話內不再用「步」。接續卡上提示這段屬於今天 5 分鐘的第幾關。
+function t5DlgNote() { const st = t5St(), i = T5_STEPS.findIndex(x => x.id === 'dlg'); return S.run && st.step === i && (st.on || st.step > 0) ? `<p class="small">這段是今天 5 分鐘的第 ${i + 1} 關</p>` : ''; }
 function t5CardHtml() {
   const st = t5St(), done = st.step >= T5_STEPS.length, started = st.step > 0 || Object.keys(st.log).length;
   const rn = t5ReviewN(), rec = S.run && VAR[S.run.vid] ? {tid:S.run.tid, lv:S.run.lv, resume:true} : recommend();
@@ -53,11 +55,11 @@ function t5CardHtml() {
     const mark = lg === 'done' ? '✓' : lg === 'skip' ? '–' : String(i + 1);
     return `<li class="row" style="gap:10px;align-items:flex-start;${cur ? 'font-weight:800' : lg ? 'opacity:.75' : ''}"><span class="tnum" aria-hidden="true" style="flex:none;width:1.6em;height:1.6em;border-radius:50%;display:inline-grid;place-items:center;background:rgba(255,255,255,${cur ? '.95' : '.22'});color:${cur ? 'var(--jp-hero)' : '#fff'};font-weight:800">${mark}</span>
       <span style="flex:1;min-width:0">${s.name}<span class="small muted" style="display:block;font-weight:400">${lg === 'done' ? '完成' : lg === 'skip' ? '跳過' : detail[s.id]}</span></span></li>`; }).join('');
-  const label = done ? '再來一輪' : started ? `繼續・第 ${st.step + 1}/${T5_STEPS.length} 步` : '開始今天 5 分鐘';
+  const label = done ? '再來一輪' : started ? `繼續・第 ${st.step + 1}/${T5_STEPS.length} 關（${T5_STEPS[st.step].name}）` : '開始今天 5 分鐘';
   return `<section class="card hero-jp stack" aria-label="今天 5 分鐘">
     <div><p class="small muted">${done ? '今天的份做完了' : '只要按這一個'}</p><p style="font-size:24px;font-weight:800">今天 5 分鐘</p></div>
     <ol class="stack" style="gap:8px;list-style:none;margin:0;padding:0">${rows}</ol>
     <button class="btn onhero block" style="min-height:64px;font-size:20px;font-weight:800" data-a="t5Go" data-v="${done ? 'again' : ''}">${label}</button>
-    <p class="small muted">中途離開會停在這一步，下次按這裡接續。其他練習都在下面「全部」。</p></section>`;
+    <p class="small muted">中途離開會停在這一關，下次按這裡接續。其他練習都在下面「全部」。</p></section>`;
 }
 document.addEventListener('toggle', e => { if (e.target && e.target.id === 'homeAll') UI.allOpen = e.target.open; }, true);

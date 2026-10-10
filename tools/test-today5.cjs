@@ -39,9 +39,9 @@ function spy(){Object.defineProperty(window,'speechSynthesis',{configurable:true
   await page.locator('#run [data-a=runClose]').first().click();
   st=await t5();assert.equal(st.step,1);assert.equal(st.on,false);
   assert(await page.evaluate(()=>!!S.run));
-  assert.match(await btn.innerText(),/繼續・第 2\/3 步/);
+  assert.match(await btn.innerText(),/繼續・第 2\/3 關（一段對話）/);
   // 重新整理後仍在第 2 步
-  await page.reload();assert.match(await page.locator('#view [data-a=t5Go]').innerText(),/第 2\/3 步/);
+  await page.reload();assert.match(await page.locator('#view [data-a=t5Go]').innerText(),/第 2\/3 關/);
   await page.locator('#view [data-a=t5Go]').click();
   assert.equal(await page.locator('#run').isVisible(),true);
   // 模擬對話走到結局（真實流程由 run.js finalizeRun 設定 RUN_END、清掉 S.run）

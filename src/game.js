@@ -15,15 +15,16 @@ const gmTopic = (shop, id) => shop.topics.find(t => t.id === id);
 const gmLine = c => (Array.isArray(c) ? c : [c]);
 
 /* ---------- 聲音 ---------- */
-let GAC = null;
+/* 全 App 只用 fx 的一個 AudioContext（音效關閉時不建立）；語音／鎖屏聽力播放時不出聲，也跟著「我的 → 音效」開關 */
 function sfx(k) {
   try {
-    GAC = GAC || new (window.AudioContext || window.webkitAudioContext)();
+    if (fx.busy()) return; const ac = fx.ctx(); if (!ac) return;
+    fx.master.gain.cancelScheduledValues(ac.currentTime); fx.master.gain.setValueAtTime(1, ac.currentTime);
     const notes = {ok:[784, 1175], bad:[262, 196], coin:[988, 1568], door:[659, 880], star:[1047, 1319]}[k] || [600, 800];
-    notes.forEach((f, i) => { const o = GAC.createOscillator(), g = GAC.createGain(), t = GAC.currentTime + i * .09;
+    notes.forEach((f, i) => { const o = ac.createOscillator(), g = ac.createGain(), t = ac.currentTime + i * .09;
       o.type = k === 'bad' ? 'triangle' : 'sine'; o.frequency.setValueAtTime(f, t);
       g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.09, t + .01); g.gain.exponentialRampToValueAtTime(.0001, t + .22);
-      o.connect(g).connect(GAC.destination); o.start(t); o.stop(t + .24); });
+      o.connect(g).connect(fx.master); o.start(t); o.stop(t + .24); });
   } catch (e) {}
 }
 /* 依序念：先念你說的，再念客人說的 */
@@ -217,6 +218,7 @@ function gmRender() {
   else if (G.view === 'end') h = gmEndHtml();
   else h = gmPlayHtml();
   el.innerHTML = h + gmPopHtml();
+  if (G.view === 'end' && fx.once(G.day)) fx.celebrate(el, {perfect:G.day.star >= G_PER_DAY * 3});
 }
 function gmShopsHtml() {
   const g = gmSt();

@@ -73,7 +73,7 @@ function knSay(text, rate, cb) {
     speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(text);
     u.lang = 'ja-JP'; u.rate = rate; const v = knJaVoice(); if (v) try { u.voice = v; } catch (e) {}
-    u.onend = () => fin(true); u.onerror = e => fin(false, (e && e.error) || 'error');
+    u.onend = () => fin(true); u.onerror = e => fin(false, (e && e.error) || 'error'); u.onstart = () => fx.duck();
     speechSynthesis.speak(u);
     setTimeout(() => fin(false, 'timeout'), 6000 + Array.from(text).length * 500);
   } catch (e) { fin(false, 'error'); }
@@ -153,6 +153,7 @@ function knPlanFor(key) {
 function knStartRound() {
   const st = knSt(), mode = st.prefs.script, targets = knPickTargets(mode);
   if (!targets.length) { toast('沒有可以練的假名'); return; }
+  fx.start('kn');
   const qs = [];
   targets.forEach((key, i) => {
     const intro = ['new', 'seen'].includes(knStatus(key)) ? {type:'learn', key} : {type:'view', key};
@@ -191,7 +192,8 @@ function knAnswer(choice) {
     if (it.word) retry.word = it.word;
     a.items.splice(Math.min(a.i + 3, a.items.length), 0, retry); }
   persist(); knRender();
-  const k = KN[it.key.split(':')[1]]; if (k.speechText && k.kind === 'basic') knSayKana(k.id, false);
+  const k = KN[it.key.split(':')[1]];
+  fx.answer('#kn', ok, k.speechText && k.kind === 'basic' ? () => knSayKana(k.id, false) : null);
 }
 function knSelfRate(good) {
   const a = knSt().active, it = knCur(); if (!a || !it || a.ans[a.i]) return;
@@ -240,6 +242,8 @@ function knRender() {
   const el = $('#kn'); if (!el || el.hidden) return;
   const v = KG.view;
   el.innerHTML = v === 'card' ? knCardView() : v === 'round' ? knRoundView() : v === 'done' ? knDoneView() : v === 'words' ? knWordsView() : knHomeView();
+  if (v === 'round' && knSt().active) fx.after(el, 'kn', knSt().active.i);
+  if (v === 'done' && fx.once(KG.summary)) fx.celebrate(el, {perfect:KG.summary.ans.every(x => !x.r || x.r.ok !== false)});
 }
 function knHead(title, sub, back) {
   return `<div class="ov-head"><button class="icon-btn" data-k="${back || 'close'}" aria-label="${back ? '返回' : '關閉五十音，回日文頁'}">${back ? '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M15 6l-6 6 6 6"/></svg>' : IC.x}</button>
@@ -269,8 +273,8 @@ function knHomeView() {
   return knHead('五十音', '假名 → 聲音 → 熟悉的單字 → 意思') + `<div class="ov-body" id="knBody"><div class="in">
     ${knModeSeg()}
     <section class="card stack" style="gap:10px">
-      ${a ? `<p class="small muted">上一輪還沒做完：${knChars(a).length} 個字，做到第 ${a.i}/${a.items.length} 小步</p><button class="btn jp-b block" data-k="resume">繼續這一輪</button><button class="btn ghost sm" data-k="drop">放棄，重新選五個字</button>`
-        : `<button class="btn jp-b block" data-k="start">練五個字（約 15 小步・3 分鐘）</button>`}
+      ${a ? `<p class="small muted">上一輪還沒做完：${knChars(a).length} 個字，做到第 ${knCharPos(a)} 個字</p><button class="btn jp-b block" data-k="resume">繼續這一輪</button><button class="btn ghost sm" data-k="drop">放棄，重新選五個字</button>`
+        : `<button class="btn jp-b block" data-k="start">練五個字（約 3 分鐘）</button>`}
       <div class="kprog small"><span>平假名 已練 <b class="tnum">${h.done}</b>/${h.total}${h.rev ? `・需複習 ${h.rev}` : ''}</span><span>片假名 已練 <b class="tnum">${k.done}</b>/${k.total}${k.rev ? `・需複習 ${k.rev}` : ''}</span></div>
     </section>
     <div class="ktable" role="grid" aria-label="假名表">${rows.join('')}</div>
@@ -327,13 +331,13 @@ function knOptsHtml(it, r) {
     const dis = r || (it.type === 'hear' && !KG.play.ok && !KG.play.fallback);
     return `<button class="opt kopt ${cls}" data-k="ans" data-v="${o}" ${dis ? 'disabled' : ''} lang="ja">${esc(knGlyph(o))}${knSt().prefs.romaji || r ? `<span class="sub">${esc(knRomajiOf(o))}</span>` : ''}</button>`; }).join('')}</div>`;
 }
-// 一輪是「5 個字」，每個字約 3 小步；進度同時顯示第幾個字和第幾步，避免「練五個」卻看到 1/15
+// 一輪是「5 個字」，每個字約 3 小步；文字只顯示「字 x/5」，細的進度交給進度條（QA#4：不再出現第三種「步」）
 function knChars(a) { const out = []; (a.items || []).forEach(x => { if (!out.includes(x.key)) out.push(x.key); }); return out; }
 function knCharPos(a) { const seen = []; for (let j = 0; j <= a.i && j < a.items.length; j++) if (!seen.includes(a.items[j].key)) seen.push(a.items[j].key); return Math.max(1, seen.indexOf(a.items[Math.min(a.i, a.items.length - 1)].key) + 1); }
 function knRoundView() {
   const st = knSt(), a = st.active; if (!a) { KG.view = 'home'; return knHomeView(); }
   const it = a.items[a.i], r = a.ans[a.i], [s, id] = it.key.split(':'), k = KN[id];
-  const head = `<div class="ov-head"><button class="icon-btn" data-k="leave" aria-label="先離開，之後接續">${IC.x}</button><div class="prog" aria-hidden="true"><i style="width:${a.i / a.items.length * 100}%"></i></div><span class="small muted tnum" data-kprog>字 ${knCharPos(a)}/${knChars(a).length}・第 ${a.i + 1}/${a.items.length} 步</span></div>`;
+  const head = `<div class="ov-head"><button class="icon-btn" data-k="leave" aria-label="先離開，之後接續">${IC.x}</button><div class="prog" aria-hidden="true"><i style="width:${a.i / a.items.length * 100}%"></i></div><span class="small muted tnum" data-kprog>字 ${knCharPos(a)}/${knChars(a).length}</span></div>`;
   let b = '', f = '';
   if (it.type === 'learn') {
     b = `<p class="small muted">新的字：先看、先聽，不用急著記。</p>${knCardHtml(it.key, {peek:KG.peek, inRound:true})}`;

@@ -1,4 +1,4 @@
-// QA 第 1、2 項回歸：答錯時不出現綠色「確認了」；「練五個字」的進度同時顯示第幾個字與第幾步；無漢字代表詞不重複印兩次。
+// QA 第 1、2 項回歸：答錯時不出現綠色「確認了」；「練五個字」的進度顯示第幾個字（步數交給進度條）；無漢字代表詞不重複印兩次。
 // Usage: node tools/test-qa-r3.extra.cjs（需要 playwright）
 const fs=require('node:fs'),path=require('node:path'),http=require('node:http'),assert=require('node:assert/strict');
 const {chromium}=require('playwright');
@@ -49,12 +49,12 @@ function spy(){Object.defineProperty(window,'speechSynthesis',{configurable:true
   assert.match(await page.locator('#view').innerText(),/練五個字/);
   await page.locator('#view [data-a=knOpen][data-v=go]').click();
   const prog=await page.locator('[data-kprog]').innerText();
-  const m=prog.match(/字 (\d)\/(\d)・第 (\d+)\/(\d+) 步/);assert(m,'進度文字：'+prog);
-  assert.equal(m[1],'1');assert(+m[2]<=5);assert.equal(m[3],'1');
+  const m=prog.match(/^字 (\d)\/(\d)$/);assert(m,'進度文字：'+prog);
+  assert.equal(m[1],'1');assert(+m[2]<=5);assert.doesNotMatch(prog,/步/,'QA#4：五十音不再用「第 n/N 步」，改由進度條表示');
   // ---- QA #10：無漢字詞（ありがとう）只印一次 ----
   const dup=await page.evaluate(()=>[...document.querySelectorAll('#kn .kword')].filter(w=>{const kw=w.querySelector('.kw'),kr=w.querySelectorAll('.kr');return kw&&kr.length&&kr[kr.length-1]!==kw&&kw.textContent.trim()===kr[kr.length-1].textContent.trim();}).length);
   assert.equal(dup,0,'同一個詞不重複印兩次');
   assert.deepEqual(errors,[]);
   await browser.close();server.close();
-  console.log('PASS: 答錯不出綠色「確認了」（改黃色「他其實是說」）、答對仍顯示「確認了」；練五個字顯示「字 x/5・第 n/N 步」；無漢字代表詞不重複。');
+  console.log('PASS: 答錯不出綠色「確認了」（改黃色「他其實是說」）、答對仍顯示「確認了」；練五個字顯示「字 x/5」（步數交給進度條）；無漢字代表詞不重複。');
 })().catch(e=>{console.error(e);process.exit(1);});
