@@ -38,7 +38,7 @@ const B = {
 /* Particle logic: 助詞 = the glue that tells you each block's job */
 const PT_RULE = {
   ni:'に＝箭頭，指向「目的地」或「待在哪」：去到哪、住在哪。',
-  de:'で＝「用什麼／因為什麼」：方式、理由（観光で、カードで）。',
+  de:'で＝角色要看前後詞：カードで 是付款工具；観光で来ました 是來訪目的／緣由；店で買います 則是動作場所。',
   wo:'を＝「動作的對象」：要什麼、找什麼、麻煩什麼。',
   wa:'は＝「話題標籤」：說到 X 呢……（X は ありますか／どこですか）。',
   ga:'が＝「好き（喜歡）」「強い（很強）」這類狀態的主角。',
@@ -47,7 +47,7 @@ const PT_RULE = {
 };
 const PT_EXAMPLES = [
   {t:'只換一塊助詞，意思就變', rows:[['tokyo','ni','kimashita'],['kankou','de','kimashita'],['taiwan','kara','kimashita']]},
-  {t:'で 都是「用什麼」', rows:[['kankou','de','kimashita'],['card','de','onegai']]},
+  {t:'同一個 で：來訪目的與付款工具', rows:[['kankou','de','kimashita'],['card','de','onegai']]},
   {t:'は 開頭的萬用問句：只換最後一塊', rows:[['wifi','wa','arimasuka'],['toire','wa','dokodesuka'],['kore','wa','ikura']]},
   {t:'を 後面接「動作」', rows:[['kore','wo','kudasai'],['checkin','wo','onegai'],['iyahon','wo','sagashite']]},
 ];
@@ -67,7 +67,7 @@ const PAT = [
   {id:'kudasai', name:'〔東西〕をください', zh:'請給我{0}', parts:[{slot:'thing',opt:['kore','mizu','menu','receipt','fukuro','kippu']},'wo','kudasai'], scene:'konbini',
     note:'を 指「要的東西」。ください＝請給我。'},
   {id:'way', name:'〔付款方式〕でお願いします', zh:'用{0}付款', parts:[{slot:'way',opt:['card','genkin','suica']},'de','onegai'], scene:'konbini',
-    note:'で＝用什麼方式。和「観光で来ました」的 で 是同一條規則。'},
+    note:'這裡的 で 標記付款工具。「観光で来ました」的 で 則標記來訪目的／緣由，要依前後詞判斷。'},
   {id:'sagasu', name:'〔描述〕〔東西〕を探しています', zh:'我在找{0}{1}', parts:[{slot:'qual',opt:['yusen','wireless','teion']},{slot:'thing',opt:['iyahon']},'wo','sagashite'], scene:'ear',
     note:'描述放在東西「前面」：有線の＋イヤホン。探しています＝正在找。'},
   {id:'dekiru', name:'〔服務〕はできますか', zh:'可以{0}嗎？', parts:[{slot:'thing',opt:['shichou','menzei','checkin']},'wa','dekimasuka'], scene:'ear',

@@ -6,7 +6,8 @@ const JP_COURSE = (() => {
   const phrases = {}, lessons = [], units = [];
   function U(id, name, goal) { units.push({id, name, goal}); }
   function P(id, jp, ro, zh, note, parts, wrong, register = '一般口語') {
-    phrases[id] = {id, jp, ro, zh, note, parts, choices:[zh, ...wrong], register}; return id;
+    const production=/隨意|俚語/.test(register)?'適合熟人聊天；對陌生店員先用禮貌說法。':'依本課情境使用；對陌生人以禮貌語尾為起點。';
+    phrases[id] = {id, jp, ro, zh, note, parts, choices:[zh, ...wrong], register, production}; return id;
   }
   function L(id, unit, title, setup, a, b, focus = 1) {
     lessons.push({id, unit, title, setup, phraseIds:[a,b], dialogue:[{who:'A',id:a},{who:'B',id:b}], focus});
@@ -138,6 +139,16 @@ const JP_COURSE = (() => {
     ['リバ','りば','riba','男同志性角色用語：兩種角色皆可','成人','角色偏好可能依人和情境而不同，不是人格分類。'],
     ['エロい','えろい','eroi','色情的／帶性意味的','成人','也可能用來評價性感或挑逗感，並非正式稱讚用語。'],
   ].map((x,i)=>({id:'g'+(i+1),word:x[0],kana:x[1],ro:x[2],zh:x[3],category:x[4],note:x[5]}));
+  lessons.find(l=>l.id==='l12').contexts=[
+    {setup:'店員問是否需要袋子，你有自己的購物袋。',jp:'「{袋|ふくろ}はいりますか。」「{大丈夫|だいじょうぶ}です。」',q:'這裡的回答通常表示什麼？',choices:['需要袋子','一定要先付錢','婉拒袋子'],answer:2,why:'是在回應提供物品；這裡通常是「不用」。要避免歧義可以直接說「袋はいりません」。'},
+    {setup:'你輕輕撞到桌角，朋友問你還好嗎。',jp:'「{大丈夫|だいじょうぶ}？」「{大丈夫|だいじょうぶ}です。」',q:'這裡的回答表示什麼？',choices:['我沒事','袋子不用','不要幫我加熱'],answer:0,why:'這是在回答身體狀態，不是拒絕物品。'},
+    {setup:'你只聽到一句，前面的問題沒有聽見。',jp:'はい、{大丈夫|だいじょうぶ}です。',q:'光靠「はい」能決定肯定或拒絕嗎？',choices:['一定是要','資訊不足，需確認前一句','一定是不要'],answer:1,why:'はい 不是固定翻轉意思的開關。要看問的是狀態、安排還是是否需要東西。'}
+  ];
+  lessons.find(l=>l.id==='l22').contexts=[
+    {setup:'剛看完表演，朋友接著說「真的太精彩了」。',jp:'やばい。すごくよかった。',q:'やばい 在這裡是哪一種意思？',choices:['正面驚嘆：太厲害了','一定是危險','資訊不足'],answer:0,why:'後一句「すごくよかった」提供正面評價的線索。'},
+    {setup:'車快開了，你發現護照忘在旅館。',jp:'やばい、パスポート{忘|わす}れた。',q:'やばい 在這裡是哪一種意思？',choices:['稱讚護照很好看','正面驚嘆','不妙：出了問題'],answer:2,why:'忘了護照是負面事件；這裡表示「糟了、不妙」。'},
+    {setup:'一段錄音只有這一句，沒有前後文。',jp:'やばいね。',q:'現在可以判定正面或負面嗎？',choices:['一定是稱讚','資訊不足，要聽前後文','一定是生氣'],answer:1,why:'單一句やばい不能固定翻成「很棒」或「糟糕」。語氣、對象與前後事件都會提供線索。'}
+  ];
   return {version:1, title:'聽懂一句', units, lessons, phrases, glossary};
 })();
 if (typeof module !== 'undefined') module.exports = JP_COURSE;
