@@ -40,7 +40,7 @@ function MASCOT(mood, size, cls) {
     '<ellipse cx="31" cy="58" rx="5.5" ry="3.4" fill="#F4C7CC"/><ellipse cx="69" cy="58" rx="5.5" ry="3.4" fill="#F4C7CC"/>' + eyes + mouth + '</svg>';
 }
 function confetti() {
-  if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if (S.set.motion === 'reduce' || (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches)) return;
   const box = document.createElement('div'); box.className = 'confetti';
   const cols = ['#3B5A82', '#7FA3CF', '#F4C7CC', '#F6D98B', '#CFE6D3', '#D8C7A3'];
   for (let i = 0; i < 46; i++) {
@@ -88,7 +88,36 @@ function ensureDay() {
   S.day = { d: d, newIds: newIds, rev: rev, ui: ui, talk: recommendVar(), done: {} };
   save(); return S.day;
 }
-function doneTask(tag) { if (S.day && S.day.d === today()) { S.day.done[tag] = 1; save(); } }
+function doneTask(tag) {
+  if (S.day && S.day.d === today()) {
+    S.day.done[tag] = 1;
+    if (S.day.skip) delete S.day.skip[tag];
+    save();
+  }
+}
+function skipTask(tag) {
+  const day = ensureDay();
+  if (!day.done[tag]) { day.skip = day.skip || {}; day.skip[tag] = 1; save(); }
+}
+/* 同一份地圖元件用於今日路線、生活對話與單字單元。進度只讀真實存檔。 */
+function learningMap(items, label) {
+  return '<ol class="learning-map" aria-label="' + esc(label) + '">' + items.map((x, i) => {
+    const state = x.state || 'upcoming', current = state === 'current';
+    const attrs = Object.keys(x.data || {}).map(k => ' data-' + k + '="' + esc(x.data[k]) + '"').join('');
+    return '<li class="map-stop ' + state + '" style="--offset:' + [0, 12, 24, 12][i % 4] + 'px">' +
+      (i < items.length - 1 ? '<svg class="map-connector" viewBox="0 0 100 60" preserveAspectRatio="none" aria-hidden="true"><path d="M ' + (32 + [0, 12, 24, 12][i % 4]) + ' 0 C ' + (32 + [0, 12, 24, 12][i % 4]) + ' 30, ' + (32 + [0, 12, 24, 12][(i + 1) % 4]) + ' 30, ' + (32 + [0, 12, 24, 12][(i + 1) % 4]) + ' 60"/></svg>' : '') +
+      '<button class="map-node"' + attrs + (current ? ' aria-current="step"' : '') + '>' +
+      '<span class="map-disc" aria-hidden="true">' + (state === 'done' ? ICON.check : state === 'skipped' ? '↷' : x.ico || MYNUM(i + 1)) + '</span>' +
+      '<span class="map-copy"><span class="map-title">' + B(x.name) + '</span>' +
+      (x.sub ? '<span class="map-sub">' + B(x.sub) + '</span>' : '') +
+      '<span class="map-badge">' + B(x.badge || (state === 'done' ? 'ပြီးပြီ' : state === 'skipped' ? 'ကျော်ထားတယ် · ပြန်လုပ်လို့ရတယ်' : current ? 'ဒီကနေ ဆက်မယ်' : 'နောက်အဆင့် · စမ်းလို့ရတယ်')) + '</span></span>' +
+      '<span class="map-arrow" aria-hidden="true">›</span></button></li>';
+  }).join('') + '</ol>';
+}
+function journeyProgress(n, total, label) {
+  const pct = total ? Math.round(n / total * 100) : 0;
+  return '<div class="journey-progress" role="progressbar" aria-label="' + esc(label) + '" aria-valuemin="0" aria-valuemax="' + total + '" aria-valuenow="' + n + '"><i style="width:' + pct + '%"></i></div>';
+}
 /* 今天的步驟（沒有內容的步驟自動略過） */
 function daySteps() {
   const day = ensureDay(), tv = findVar(day.talk);
@@ -100,38 +129,41 @@ function daySteps() {
     { t: 'listen', ico: ICON.ear, name: 'နားထောင် မေးခွန်း ၅ ခု', d: 'တရုတ်လို နားထောင်ပြီး မေးခွန်းဖြေ။ ထပ်နားထောင်လို့ရတယ်။', on: true }
   ].filter(x => x.on);
 }
-function nextStep() { const day = ensureDay(); return daySteps().find(x => !day.done[x.t]); }
+function nextStep() { const day = ensureDay(); return daySteps().find(x => !day.done[x.t] && !(day.skip && day.skip[x.t])); }
 
 VIEWS.today = function () {
-  const day = ensureDay(), steps = daySteps();
-  const doneN = steps.filter(x => day.done[x.t]).length, nx = nextStep();
-  const hr = new Date(now() + 8 * 3600e3).getUTCHours();
-  const hi = hr < 11 ? 'မင်္ဂလာနံနက်ခင်းပါ' : hr < 18 ? 'မင်္ဂလာနေ့လယ်ခင်းပါ' : 'မင်္ဂလာညနေခင်းပါ';
-  const say = !nx ? 'ဒီနေ့ အရမ်းတော်တယ်！' : doneN ? 'ဆက်လုပ်ကြမယ်။ နည်းနည်းပဲ ကျန်တော့တယ်။' : hi + '။ ဒီနေ့လည်း အတူတူ လေ့လာကြမယ်။';
-  let h = '<div class="hello-row">' + MASCOT(!nx ? 'cheer' : 'smile', 70, 'bob') + '<div class="bubble grow">' + esc(say) + '</div></div>';
+  const day = ensureDay(), steps = daySteps(), nx = nextStep();
+  const doneN = steps.filter(x => day.done[x.t]).length;
+  const skipN = steps.filter(x => !day.done[x.t] && day.skip && day.skip[x.t]).length;
+  const allDone = doneN === steps.length;
+  const say = allDone ? 'ဒီနေ့ အရမ်းတော်တယ်！' : 'တစ်ဆင့်ချင်း လေ့လာကြမယ်။';
+  let h = '<div class="journey-header"><div class="grow"><span class="map-current-label">' + B('ဒီနေ့ လေ့လာရေးလမ်းကြောင်း') + '</span><h1>' + B(say) + '</h1></div>' + MASCOT(allDone ? 'cheer' : 'smile', 64) + '</div>';
+  h += '<div class="journey-summary">' + B('ပြီးပြီ ' + MYNUM(doneN) + ' / ' + MYNUM(steps.length)) +
+    (skipN ? '<span>' + B('ကျော်ထား ' + MYNUM(skipN)) + '</span>' : '<span>' + B('၁၅ မိနစ်လောက်') + '</span>') + '</div>' + journeyProgress(doneN, steps.length, 'ဒီနေ့ ပြီးမြောက်မှု');
   if (S.run && !S.run.end) {
-    h += '<button class="bigcard" style="margin-top:14px" data-a="tresume"><span class="ico">' + ICON.chat + '</span><span class="grow"><span class="t">စကားပြော ဆက်လုပ်မယ်</span><span class="d">' + esc(findVar(S.run.vid) ? findVar(S.run.vid).sc.my : '') + '</span></span></button>';
+    const f = findVar(S.run.vid);
+    if (f) h += '<button class="resume-card" data-a="tresume"><span class="ico">' + ICON.play + '</span><span class="grow">' + B('စကားပြော ဆက်လုပ်မယ်') + '<span class="map-sub">' + B(f.sc.my) + '</span></span><span aria-hidden="true">›</span></button>';
   }
-  const ring = '<span class="ring">' + steps.map(x => '<i class="' + (day.done[x.t] ? 'on' : '') + '"></i>').join('') + '</span>';
-  if (nx) {
-    h += '<button class="hero" data-a="flowstart"><span class="big">' + (doneN ? 'ဆက်လုပ်မယ်' : 'စမယ်') + '</span><span class="sub">' + esc(doneN ? 'ပြီးပြီ ' + MYNUM(doneN) + ' / ' + MYNUM(steps.length) + '・နောက်တစ်ခု：' + nx.name : 'ဒီနေ့ ၁၅ မိနစ်လောက်・အဆင့် ' + MYNUM(steps.length) + ' ခု') + '</span>' + ring + '</button>';
-  } else {
-    h += '<div class="hero done"><span class="big">ဒီနေ့ ပြီးပါပြီ ✓</span><span class="sub">အရမ်းတော်တယ်။ မနက်ဖြန် ပြန်တွေ့မယ်။</span>' + ring + '</div>' +
-      '<button class="btn block" style="margin-top:12px" data-a="extra">' + B('နောက်ထပ် စကားပြော လေ့ကျင့်မယ်') + '</button>';
-  }
-  h += '<div class="list steps">';
-  steps.forEach((x, i) => {
-    const dn = day.done[x.t];
-    h += '<button class="step' + (dn ? ' done' : '') + (nx && nx.t === x.t ? ' now' : '') + '" data-a="task" data-t="' + x.t + '"><span class="ck">' + (dn ? '✓' : MYNUM(i + 1)) + '</span><span class="grow">' + B(x.name) + '</span></button>';
-  });
-  h += '</div>';
+  if (nx) h += '<button class="btn pri block journey-cta" data-a="flowstart">' + ICON.play + B(doneN || skipN ? 'ဆက်လုပ်မယ်' : 'စမယ်') + '</button>';
+  else h += '<div class="journey-finished">' + B(allDone ? 'ဒီနေ့ ပြီးပါပြီ ✓' : 'ဒီနေ့ လမ်းကြောင်း အဆုံးရောက်ပြီ') + '</div>';
+  h += learningMap(steps.map((x, i) => ({
+    name: x.name, ico: x.ico, sub: 'အဆင့် ' + MYNUM(i + 1) + ' · ' + x.d,
+    state: day.done[x.t] ? 'done' : day.skip && day.skip[x.t] ? 'skipped' : nx && nx.t === x.t ? 'current' : 'upcoming',
+    data: { a: 'flowtask', t: x.t }
+  })), 'ဒီနေ့ အဆင့်များ');
+  if (!nx && skipN) h += '<button class="btn block" data-a="retrySkipped">' + B('ကျော်ထားတဲ့ အဆင့်တွေ ပြန်လုပ်မယ်') + '</button>';
+  h += '<button class="journey-link" data-a="tab" data-t="talk"><span>' + ICON.chat + B('စကားပြော ယူနစ်များ') + '</span><span aria-hidden="true">›</span></button>';
   return h;
 };
+
 function runTask(t) {
   const day = ensureDay();
   if (t === 'new') startStudy(day.newIds, { then: 'quiz', tag: 'new', title: 'စကားလုံးအသစ်' });
   else if (t === 'rev') startStudy(day.rev, { recall: true, tag: 'rev', title: 'ပြန်လေ့ကျင့်' });
-  else if (t === 'talk') startTalk(day.talk, 'talk');
+  else if (t === 'talk') {
+    if (S.run && !S.run.end && S.run.vid === day.talk) { S.run.tag = 'talk'; NAV.sheet = { v: 'talk' }; save(); render(); talkAuto(); }
+    else startTalk(day.talk, 'talk');
+  }
   else if (t === 'ui') startStudy(day.ui, { then: 'screens', tag: null, title: 'ဖုန်းထဲက စကားလုံး' });
   else if (t === 'listen') startPractice({ skill: 'listening', mode: 'guided', count: 5, level: 'all', type: 'all', tag: 'listen' });
 }
@@ -144,8 +176,12 @@ SHEETS.step = function (s) {
     '<button class="linkbtn" data-a="stepskip">' + esc('ဒါကို ကျော်မယ်') + '</button>';
 };
 SHEETS.alldone = function () {
-  return '<div class="shead"><button class="ib" data-a="close" aria-label="close">' + ICON.x + '</button><span class="grow"></span></div><div class="intro fade">' + MASCOT('cheer', 130, 'bob') + '<h1>ဒီနေ့ ပြီးပါပြီ</h1><p>အရမ်းတော်တယ်။ နေ့တိုင်း နည်းနည်းစီ လုပ်ရင် တိုးတက်မယ်။</p></div><button class="btn pri block" style="margin-top:22px" data-a="close">' + B('ပင်မစာမျက်နှာ') + '</button>';
+  const day = ensureDay(), steps = daySteps(), done = steps.filter(x => day.done[x.t]).length;
+  const all = done === steps.length;
+  return '<div class="shead"><button class="ib" data-a="close" aria-label="close">' + ICON.x + '</button><span class="grow"></span></div><div class="intro fade">' + MASCOT(all ? 'cheer' : 'happy', 110) + '<h1>' + B(all ? 'ဒီနေ့ ပြီးပါပြီ' : 'ဒီနေ့ လမ်းကြောင်း အဆုံးရောက်ပြီ') + '</h1><p>' + B('ပြီးပြီ ' + MYNUM(done) + ' / ' + MYNUM(steps.length)) + '</p><p>' + B(all ? 'နေ့တိုင်း နည်းနည်းစီ လုပ်ရင် တိုးတက်မယ်။' : 'ကျော်ထားတာတွေ နောက်မှ ပြန်လုပ်လို့ရတယ်။') + '</p></div>' +
+    (all ? '' : '<button class="btn block" data-a="retrySkipped">' + B('ကျော်ထားတာတွေ ပြန်လုပ်မယ်') + '</button>') + '<button class="btn pri block" style="margin-top:18px" data-a="close">' + B('ပင်မစာမျက်နှာ') + '</button>';
 };
+
 function flowNext() {
   stopAll();
   if (S.run && S.run.end) { S.run = null; save(); }
@@ -164,7 +200,8 @@ VIEWS.me = function () {
   h += '<div class="list">';
   h += sg('size', 'စာလုံးအရွယ်', [['s', 'အသေး'], ['m', 'အလတ်'], ['l', 'အကြီး']]);
   h += sw('my', 'မြန်မာ ဘာသာပြန် ပြမယ်') + sw('zy', 'ဇူယင်（ㄅㄆㄇ）ပြမယ်') + sw('auto', 'အသံ အလိုအလျောက် ဖွင့်မယ်');
-  h += sg('rate', 'စကားပြော အမြန်နှုန်း', [['0.8', 'နှေး'], ['1', 'ပုံမှန်'], ['1.15', 'မြန်']]);
+  h += sg('rate', 'စကားပြော အမြန်နှုန်း', [['0.8', 'နှေး'], ['1', 'သဘာဝ'], ['1.15', 'မြန်']]);
+  h += sw('sfx', 'ခလုတ်နှင့် အဖြေ အသံ') + sg('motion', 'လှုပ်ရှားမှု', [['auto', 'ပုံမှန်'], ['reduce', 'လျှော့မယ်']]);
   h += sg('theme', 'အရောင်', [['auto', 'အလိုအလျောက်'], ['light', 'အဖြူ'], ['dark', 'အမည်း']]);
   const vs = TTS.voices;
   h += '<div class="set" style="flex-direction:column;align-items:stretch;gap:8px"><span class="setlbl">တရုတ် အသံ</span><span class="row"><select class="sel grow" style="max-width:none" id="voiceSel"><option value="">' + esc('အလိုအလျောက်（ထိုင်ဝမ်）') + '</option>' + vs.map(v => '<option value="' + esc(v.voiceURI) + '"' + (v.voiceURI === set.voice ? ' selected' : '') + '>' + esc(v.name + ' ' + v.lang) + '</option>').join('') + '</select><button class="ib" data-a="say" data-t="你好，我們開始練習吧。">' + ICON.sound + '</button></span></div>';
@@ -198,6 +235,7 @@ function applySettings() {
   r.setAttribute('data-size', S.set.size);
   document.body.classList.toggle('hide-my', !S.set.my);
   document.body.classList.toggle('hide-zy', !S.set.zy);
+  r.classList.toggle('motion-reduce', S.set.motion === 'reduce');
 }
 let lastKey = '';
 function render() {
@@ -217,8 +255,8 @@ function render() {
   NAV.dir = null;
   $('#app').innerHTML = '<main class="' + (sh ? 'sheet' : 'page') + ' ' + anim + '">' + h + '</main>';
   if (sh && !sh._cele) {
-    const win = sh.v === 'alldone' || sh.v === 'done' || (sh.v === 'qres' && sh.res.every(r => r.ok)) || (sh.v === 'prres' && sh.src.ans.length && sh.src.ans.filter(a => a.ok).length / sh.src.ans.length >= .8) || (sh.v === 'talk' && S.run && S.run.end);
-    if (win) { sh._cele = true; setTimeout(confetti, 120); }
+    const win = (sh.v === 'alldone' && daySteps().every(x => ensureDay().done[x.t])) || sh.v === 'done' || (sh.v === 'qres' && sh.res.every(r => r.ok)) || (sh.v === 'prres' && sh.src.ans.length && sh.src.ans.filter(a => a.ok).length / sh.src.ans.length >= .8) || (sh.v === 'talk' && S.run && S.run.end);
+    if (win) { sh._cele = true; sfx('done'); setTimeout(confetti, 120); }
   }
   $('#nav').innerHTML = '<div class="nav-in">' + TABS.map(t => '<button class="' + (NAV.tab === t[0] ? 'on' : '') + '" data-a="tab" data-t="' + t[0] + '">' + t[2] + '<span class="lbl" lang="my">' + esc(t[1]) + '</span></button>').join('') + '</div>';
   const key = key0;
@@ -236,7 +274,9 @@ const ACTS = {
   flowstart: () => { NAV.flow = true; const nx = nextStep(); if (nx) { NAV.sheet = { v: 'step', t: nx.t }; render(); } },
   flownext: () => { const s = NAV.sheet; if (s) { clearTimeout(s.timer); clearInterval(s.tick); } flowNext(); },
   stepgo: () => runTask(NAV.sheet.t),
-  stepskip: () => { doneTask(NAV.sheet.t); flowNext(); },
+  stepskip: () => { skipTask(NAV.sheet.t); flowNext(); },
+  flowtask: el => { stopAll(); NAV.flow = true; NAV.sheet = { v: 'step', t: el.dataset.t }; render(); },
+  retrySkipped: () => { stopAll(); const day = ensureDay(); day.skip = {}; save(); NAV.sheet = null; NAV.flow = false; NAV.stack = []; NAV.tab = 'today'; render(); },
   extra: () => { const tv = recommendVar(); startTalk(tv); },
   wtab: el => { NAV.wtab = el.dataset.t; render(); },
   nf: el => { NAV.nf = el.dataset.f; render(); },

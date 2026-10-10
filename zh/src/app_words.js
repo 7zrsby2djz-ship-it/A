@@ -35,17 +35,19 @@ VIEWS.words = function () {
 };
 
 VIEWS.book = function (p) {
-  const b = book(p.id);
+  const b = book(p.id), attempted = b.units.filter(u => S.units[u.key] != null).length;
+  const current = b.units.find(u => S.units[u.key] == null);
   let h = pageHead('', bookName(b));
-  h += '<div class="list">';
-  b.units.forEach((u, i) => {
-    const best = S.units[u.key];
-    const pr = wordProgress(u.ids);
-    const preview = u.ids.slice(0, 3).map(id => WORDS[id].zh).join('・');
-    h += '<button class="li" data-a="go" data-v="unit" data-id="' + b.id + '" data-u="' + i + '"><span class="grow">' + B(unitName(b, u)) + '<span class="small muted" style="display:block">' + esc(preview) + '</span></span>' +
-      '<span class="small">' + (best != null ? '<span class="pill' + (best === u.ids.length ? ' ok' : '') + '">' + best + '/' + u.ids.length + '</span>' : '<span class="muted">' + pr.seen + '/' + pr.n + '</span>') + '</span><span class="arr">›</span></button>';
-  });
-  return h + '</div>';
+  h += '<div class="journey-summary">' + B('စမ်းသပ်ပြီး ' + MYNUM(attempted) + ' / ' + MYNUM(b.units.length)) + '</div>' + journeyProgress(attempted, b.units.length, bookName(b));
+  h += learningMap(b.units.map((u, i) => {
+    const best = S.units[u.key], seen = wordProgress(u.ids);
+    return { name: unitName(b, u), ico: ICON.book,
+      sub: MYNUM(u.ids.length) + ' လုံး · ' + u.ids.slice(0, 3).map(id => WORDS[id].zh).join('・'),
+      state: best != null ? 'done' : current && current.key === u.key ? 'current' : 'upcoming',
+      badge: best != null ? 'စမ်းသပ်ပြီး · မှန် ' + MYNUM(best) + ' / ' + MYNUM(u.ids.length) : seen.seen ? 'လေ့လာပြီး ' + MYNUM(seen.seen) + ' / ' + MYNUM(seen.n) : 'စကားလုံး → စမ်းသပ်',
+      data: { a: 'go', v: 'unit', id: b.id, u: i } };
+  }), bookName(b) + ' အဆင့်များ');
+  return h;
 };
 
 VIEWS.unit = function (p) {
@@ -69,7 +71,12 @@ function startStudy(ids, opt) {
   NAV.sheet = Object.assign({ v: 'study', ids: ids.slice(), i: 0, recall: false, show: false, title: 'လေ့လာမယ်', then: null, tag: null, unit: null }, opt || {});
   render(); autoPlayCard();
 }
-function autoPlayCard() { const s = NAV.sheet; if (s && s.v === 'study' && S.set.auto) setTimeout(() => playWord(WORDS[s.ids[s.i]]), 150); }
+function autoPlayCard() {
+  const s = NAV.sheet, i = s && s.i, seq = TTS.seq;
+  if (s && s.v === 'study' && S.set.auto) setTimeout(() => {
+    if (NAV.sheet === s && s.i === i && TTS.seq === seq) playWord(WORDS[s.ids[i]]);
+  }, 150);
+}
 SHEETS.study = function (s) {
   const id = s.ids[s.i], w = WORDS[id];
   const show = !s.recall || s.show;

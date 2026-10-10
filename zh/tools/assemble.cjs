@@ -10,6 +10,7 @@ const js = [
   'const MING=' + JSON.stringify(ming) + ';',
   R('src/readings.gen.js'),
   R('src/itemdiff.gen.js'),
+  R('../src/sfx.generated.js'), // 與按鈕與積木共用 Kenney CC0 音效，內嵌後可獨立使用
   ...['talk_core', 'talk_sbux', 'talk_boba', 'talk_cvs', 'talk_bfast', 'talk_mrt', 'talk_school', 'data_ui', 'exam_core', 'exam_listen', 'exam_read', 'app_core', 'app_words', 'app_talk', 'app_practice', 'app_main'].map(f => R('src/' + f + '.js'))
 ].join('\n');
 new Function(js); // 語法檢查

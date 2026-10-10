@@ -2,7 +2,7 @@
 const KEY = 'mingbai-zh-v1';
 const HAN = /[㐀-鿿]/;
 function DEF() {
-  return { v: 1, set: { my: true, zy: true, size: 'm', theme: 'auto', voice: '', rate: 1, auto: true },
+  return { v: 1, set: { my: true, zy: true, size: 'm', theme: 'auto', voice: '', rate: 1, auto: true, sfx: true, motion: 'auto' },
     track: null, w: {}, talk: {}, run: null, day: null, units: {}, scr: {}, seen: [], sessions: [], pstat: {}, prSet: { skill: 'listening', mode: 'guided', level: 'B1-', count: 10, sec: 12, type: 'all', fam: true }, log: {}, cat: {}, pskill: {}, ptype: {} };
 }
 function load() {
@@ -64,32 +64,56 @@ function MY(text, cls) { // 可「點一下看緬文」的緬文段落
 const ZY = zy;
 
 /* ---- 語音：手機內建中文語音（優先 zh-TW）；單字用真人錄音 ---- */
-const TTS = { ok: 'speechSynthesis' in window, voices: [], seq: 0, watch: null, speaking: false };
+const TTS = { ok: 'speechSynthesis' in window, voices: [], seq: 0, watch: null, pause: null, speaking: false };
 function loadVoices() { if (!TTS.ok) return; TTS.voices = speechSynthesis.getVoices().filter(v => /^(zh|cmn)/i.test(v.lang)); }
 if (TTS.ok) { loadVoices(); speechSynthesis.addEventListener && speechSynthesis.addEventListener('voiceschanged', loadVoices); }
 function pickVoice() {
   const z = TTS.voices;
-  return z.find(v => v.voiceURI === S.set.voice) || z.find(v => /zh[-_]TW/i.test(v.lang)) || z.find(v => /Hant|Taiwan/i.test(v.lang + v.name)) || z[0] || null;
+  return z.find(v => v.voiceURI === S.set.voice) || z.find(v => /^(?:zh|cmn)[-_](?:Hant[-_])?TW\b/i.test(v.lang)) || z.find(v => /Taiwan|臺灣|台灣/i.test(v.name)) || z.find(v => /^(?:zh|cmn)[-_](?:Hans[-_])?CN\b/i.test(v.lang)) || z.find(v => /^cmn(?:[-_]|$)/i.test(v.lang)) || z[0] || null;
 }
 function stopAll() {
   TTS.seq++; if (TTS.watch) clearTimeout(TTS.watch);
+  if (TTS.pause) clearTimeout(TTS.pause);
+  TTS.watch = TTS.pause = null;
   if (TTS.ok) try { speechSynthesis.cancel(); } catch (e) { }
   TTS.speaking = false;
+  stopSfx();
   if (AUD.el) { try { AUD.el.pause(); } catch (e) { } }
 }
-function speak(text, rate, onEnd, pitch) { stopAll(); speakRaw(text, rate, onEnd, pitch, TTS.seq); }
-function speakRaw(text, rate, onEnd, pitch, seq) {
+// 日常對話稍慢、按意群留呼吸；設定的速度仍是倍率，慢速重播再乘 .7/.8。
+// 考試 speakSeq 保留原本語速與整句，答題計時仍從真正播放結束開始。
+function speechParts(text) {
+  return (spoken(text).match(/[^，。！？；：\n!?;]+[，。！？；：\n!?;]*/g) || []).map(t => ({
+    text: t.trim(), pause: /[。！？\n!?]/.test(t.slice(-2)) ? 300 : /[；;]/.test(t.slice(-2)) ? 220 : 140
+  })).filter(p => p.text);
+}
+function speak(text, rate, onEnd, pitch) {
+  stopAll();
+  const seq = TTS.seq, parts = speechParts(text); let i = 0;
+  if (!TTS.ok || !parts.length) { onEnd && onEnd(false); return; }
+  const next = () => {
+    TTS.pause = null;
+    if (seq !== TTS.seq) return;
+    const part = parts[i++];
+    speakRaw(part.text, rate, ok => {
+      if (!ok || i >= parts.length) { onEnd && onEnd(ok); return; }
+      TTS.pause = setTimeout(next, part.pause / (rate || 1));
+    }, pitch, seq, 'conversation');
+  };
+  next();
+}
+function speakRaw(text, rate, onEnd, pitch, seq, profile) {
   text = spoken(text);
   if (!TTS.ok || !text) { onEnd && onEnd(false); return; }
   const u = new SpeechSynthesisUtterance(text);
   const v = pickVoice(); if (v) u.voice = v;
-  u.lang = v ? v.lang : 'zh-TW'; u.rate = (rate || 1) * (S.set.rate || 1); u.pitch = pitch || 1;
+  u.lang = v ? v.lang : 'zh-TW'; u.rate = Math.max(.45, Math.min(1.6, (rate || 1) * (S.set.rate || 1) * (profile === 'conversation' ? .88 : 1))); u.pitch = pitch || 1;
   let settled = false;
-  const done = ok => { if (settled || seq !== TTS.seq) return; settled = true; clearTimeout(TTS.watch); TTS.speaking = false; onEnd && onEnd(ok); };
-  u.onstart = () => { if (seq !== TTS.seq) return; TTS.speaking = true; clearTimeout(TTS.watch); TTS.watch = setTimeout(() => { done(true); }, Math.max(15000, text.length * 700 / (u.rate || 1) + 6000)); };
+  const done = (ok, cancelSpeech) => { if (settled || seq !== TTS.seq) return; settled = true; clearTimeout(TTS.watch); TTS.watch = null; TTS.speaking = false; if (cancelSpeech) try { speechSynthesis.cancel(); } catch (e) {} onEnd && onEnd(ok); };
+  u.onstart = () => { if (seq !== TTS.seq) return; stopSfx(); TTS.speaking = true; clearTimeout(TTS.watch); TTS.watch = setTimeout(() => done(false, true), Math.max(15000, text.length * 700 / (u.rate || 1) + 6000)); };
   u.onend = () => done(true);
   u.onerror = () => done(false);
-  TTS.watch = setTimeout(() => { if (!TTS.speaking) { done(false); try { speechSynthesis.cancel(); } catch (e) { } } }, 8000);
+  TTS.watch = setTimeout(() => { if (!TTS.speaking) done(false, true); }, 8000);
   try { speechSynthesis.resume(); speechSynthesis.speak(u); } catch (e) { done(false); }
 }
 /* 對話：男聲音調低、女聲音調高，一句一句播；中途換頁會停 */
@@ -98,10 +122,11 @@ function speakSeq(lines, rate, onEnd) {
   stopAll();
   const seq = TTS.seq; let i = 0, allOk = true;
   const next = () => {
+    TTS.pause = null;
     if (seq !== TTS.seq) return;
     if (i >= lines.length) { onEnd && onEnd(allOk); return; }
     const ln = lines[i++];
-    speakRaw(ln[1], rate, ok => { if (!ok) allOk = false; if (!ok && i === 1) { onEnd && onEnd(false); return; } setTimeout(next, 380); }, PITCH[ln[0]] || 1, seq);
+    speakRaw(ln[1], rate, ok => { if (!ok) allOk = false; if (!ok && i === 1) { onEnd && onEnd(false); return; } TTS.pause = setTimeout(next, 380); }, PITCH[ln[0]] || 1, seq, 'exam');
   };
   next();
 }
@@ -119,8 +144,23 @@ function playWord(w, onEnd) {
     const p = a.play(); if (p && p.catch) p.catch(() => { if (!fired) { fired = true; speak(w.zh, 1, onEnd); } });
   } else speak(w.zh, 1, onEnd);
 }
+/* 沿用按鈕與積木的 Kenney CC0 音效資料，由 assemble.cjs 內嵌。
+   不碰授權單字錄音；語音、意群停頓與真人錄音播放時保持安靜。 */
 const SFX = {};
-function sfx(name) { try { const a = SFX[name] || (SFX[name] = new Audio('audio/' + name + '.mp3')); a.currentTime = 0; a.volume = .6; a.play().catch(() => { }); } catch (e) { } }
+const SFX_NAMES = { pass: ['confirmation_001', .32], fail: ['error_008', .22], click: ['select_001', .18], done: ['confirmation_004', .32] };
+function stopSfx() {
+  Object.keys(SFX).forEach(k => { try { SFX[k].pause(); } catch (e) {} });
+}
+function sfx(name) {
+  if (S.set.sfx === false || TTS.speaking || TTS.pause || (TTS.ok && speechSynthesis.speaking) || (AUD.el && !AUD.el.paused)) return;
+  const def = SFX_NAMES[name]; if (!def) return;
+  try {
+    const src = typeof SFX_DATA !== 'undefined' && SFX_DATA[def[0]];
+    if (!src) return;
+    const a = SFX[name] || (SFX[name] = new Audio(src)); a.currentTime = 0; a.volume = def[1];
+    a.play().catch(() => {});
+  } catch (e) {}
+}
 const MISSING_AUDIO = new Set();
 
 /* ---- 資料 ---- */

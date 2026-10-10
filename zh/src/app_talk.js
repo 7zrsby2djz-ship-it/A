@@ -17,35 +17,40 @@ function recommendVar() {
 }
 
 VIEWS.talk = function () {
-  let h = '<p class="muted ui" style="margin:4px 2px 14px">' + esc('စာအုပ်ထဲမပါပေမယ့် နေ့တိုင်းကြားရတဲ့ စကား။ တစ်ဖက်လူကို အရင်နားထောင်ပြီး ဘယ်လိုပြန်ပြောမလဲ ရွေး။') + '</p>';
+  const total = TALK.reduce((n, sc) => n + sc.vars.length, 0);
+  const done = TALK.reduce((n, sc) => n + sceneDone(sc), 0);
+  const currentScene = TALK.find(sc => sceneDone(sc) < sc.vars.length) || TALK[0];
+  let h = '<div class="journey-header"><div class="grow"><span class="map-current-label">' + B('နေ့စဉ် စကားပြော') + '</span><h1>' + B('တစ်ယူနစ်ချင်း ရှေ့ဆက်မယ်') + '</h1></div>' + MASCOT('smile', 64) + '</div>';
+  h += '<div class="journey-summary">' + B('ပြီးပြီ ' + MYNUM(done) + ' / ' + MYNUM(total)) + '<span>' + B('ယူနစ် ' + MYNUM(TALK.length) + ' ခု') + '</span></div>' + journeyProgress(done, total, 'စကားပြော ပြီးမြောက်မှု');
   if (S.run && !S.run.end) {
     const f = findVar(S.run.vid);
-    if (f) h += '<button class="bigcard pri" style="margin-bottom:12px" data-a="tresume"><span class="ico">' + ICON.play + '</span><span class="grow"><span class="t">ဆက်လုပ်မယ်</span><span class="d">' + esc(f.sc.my) + '</span></span></button>';
+    if (f) h += '<button class="resume-card" data-a="tresume"><span class="ico">' + ICON.play + '</span><span class="grow">' + B('စကားပြော ဆက်လုပ်မယ်') + '<span class="map-sub">' + B(f.sc.my) + '</span></span><span aria-hidden="true">›</span></button>';
   }
-  TALK.forEach(sc => {
-    const n = sceneDone(sc);
-    h += '<button class="bigcard" data-a="go" data-v="scene" data-id="' + sc.id + '"><span class="ico">' + (ICON[SC_ICON[sc.id]] || ICON.chat) + '</span><span class="grow"><span class="t">' + esc(sc.my) + '</span><span class="d">' + esc(sc.name) + '</span>' +
-      '<span class="dots" style="margin-top:6px">' + sc.vars.map(v => { const r = varRank(v.id); return '<i class="' + (r === 'text' ? 't' : r ? 'l' : '') + '"></i>'; }).join('') + '</span></span><span class="arr">›</span></button>';
+  h += '<div class="unit-list">';
+  TALK.forEach((sc, i) => {
+    const n = sceneDone(sc), full = n === sc.vars.length, current = sc.id === currentScene.id && !full;
+    h += '<button class="unit-card' + (full ? ' done' : current ? ' current' : '') + '" data-a="go" data-v="scene" data-id="' + sc.id + '">' +
+      '<span class="unit-number" aria-hidden="true">' + (full ? ICON.check : MYNUM(i + 1)) + '</span><span class="grow"><span class="map-current-label">' + B('ယူနစ် ' + MYNUM(i + 1)) + '</span><span class="map-title">' + B(sc.my) + '</span>' +
+      '<span class="map-sub">' + B('ပြီးပြီ ' + MYNUM(n) + ' / ' + MYNUM(sc.vars.length)) + '</span><span class="unit-progress"><i style="width:' + Math.round(n / sc.vars.length * 100) + '%"></i></span>' +
+      (current ? '<span class="map-badge">' + B('ဒီယူနစ်ကနေ စမယ်') + '</span>' : '') + '</span><span class="map-arrow" aria-hidden="true">›</span></button>';
   });
-  return h;
+  return h + '</div><p class="map-footnote">' + B('ယူနစ်တိုင်း စမ်းလို့ရတယ်။ စာကြည့်ပြီး ပြီးမြောက်တာလည်း မှတ်ထားပေးမယ်။') + '</p>';
 };
 
 VIEWS.scene = function (p) {
-  const sc = TALK.find(x => x.id === p.id), nv = nextVar(sc);
+  const sc = TALK.find(x => x.id === p.id), nv = nextVar(sc), completed = sceneDone(sc);
+  const vars = sc.vars.slice().sort((a, b) => a.lv - b.lv || Number(!!a.tr) - Number(!!b.tr));
   let h = pageHead('', sc.my);
-  h += '<div class="card paper"><div class="ui">' + esc('ရည်မှန်းချက်：' + sc.goalMy) + '</div><div class="small muted" style="margin-top:4px">' + zy(sc.place) + '</div></div>';
-  h += '<button class="btn pri block" style="margin-top:14px;min-height:66px;font-size:1.15rem" data-a="tstart" data-id="' + nv.id + '">' + B('စမယ်（အဆင့် ' + MYNUM(nv.lv) + (nv.tr ? '・ပြောပုံပြောင်း' : '') + '）') + '</button>';
-  h += '<button class="btn block" style="margin-top:10px" data-a="scwords" data-id="' + sc.id + '">' + B('ဒီနေရာမှာ သုံးတဲ့ စကားလုံး ' + MYNUM(sc.words.length) + ' လုံး အရင်လေ့လာမယ်') + '</button>';
-  h += '<details class="more"><summary>' + esc('အဆင့်အားလုံး ›') + '</summary>';
-  [1, 2, 3].forEach(lv => {
-    h += '<div class="card" style="margin-top:10px"><div class="ui" style="font-weight:600">' + esc('အဆင့် ' + MYNUM(lv)) + '</div><div class="small muted ui">' + esc(sc.axis[lv][1]) + '</div><div class="btns two" style="margin-top:10px">';
-    sc.vars.filter(v => v.lv === lv).forEach(v => {
-      const r = varRank(v.id);
-      h += '<button class="btn sm' + (r ? '' : ' pri') + '" data-a="tstart" data-id="' + v.id + '">' + B((v.tr ? 'ပြောပုံပြောင်း' : 'ပုံမှန်') + (r ? ' ✓' : '')) + '</button>';
-    });
-    h += '</div></div>';
-  });
-  h += '</details>';
+  h += '<div class="map-unit-header"><span class="map-current-label">' + B('ယူနစ် ' + MYNUM(TALK.indexOf(sc) + 1)) + '</span><p>' + B(sc.goalMy) + '</p><div class="journey-summary">' + B('ပြီးပြီ ' + MYNUM(completed) + ' / ' + MYNUM(vars.length)) + '</div>' + journeyProgress(completed, vars.length, sc.my) + '</div>';
+  h += learningMap(vars.map(v => {
+    const r = varRank(v.id);
+    const labels = { text: 'စာကြည့်ပြီး ပြီးမြောက်', repair: 'အကူအညီတောင်းပြီး ပြီးမြောက်', listen: 'နားထောင်ရုံနဲ့ ပြီးမြောက်' };
+    return { name: 'အဆင့် ' + MYNUM(v.lv) + ' · ' + (v.tr ? 'ပြောပုံပြောင်း' : 'ပုံမှန်'),
+      sub: sc.axis[v.lv][1], ico: v.tr ? ICON.repeat : ICON.chat,
+      state: r ? 'done' : v.id === nv.id ? 'current' : 'upcoming',
+      badge: r ? labels[r] + ' · ပြန်လေ့ကျင့်' : null, data: { a: 'tstart', id: v.id } };
+  }), sc.my + ' အဆင့်များ');
+  h += '<button class="btn block" data-a="scwords" data-id="' + sc.id + '">' + ICON.book + B('ဒီနေရာမှာ သုံးတဲ့ စကားလုံး ' + MYNUM(sc.words.length) + ' လုံး') + '</button>';
   return h;
 };
 
@@ -66,10 +71,16 @@ function enterNode() {
   if (n.t === 'hear' && n.q) S.run.ns.qord = n.q.map(q => shuffle(q.o.map((_, i) => i)));
   if (n.t === 'end') finishTalk();
 }
-function talkAuto() { const n = S.run && curNode(); if (n && n.t === 'hear' && S.set.auto) setTimeout(() => hearPlay(1), 250); }
+function talkAuto() {
+  const run = S.run, ns = run && run.ns, n = run && curNode(), seq = TTS.seq;
+  if (n && n.t === 'hear' && S.set.auto) setTimeout(() => {
+    if (S.run === run && run.ns === ns && NAV.sheet && NAV.sheet.v === 'talk' && TTS.seq === seq) hearPlay(1);
+  }, 250);
+}
 function hearText(n) { return S.run.ns.easy && n.easy ? n.easy : n.zh; }
 function hearPlay(rate) {
-  const n = curNode(); const b = $('.bub.cur'); if (b) b.classList.add('playing');
+  if (!S.run || !NAV.sheet || NAV.sheet.v !== 'talk') return;
+  const n = curNode(); if (n.t !== 'hear') return; const b = $('.bub.cur'); if (b) b.classList.add('playing');
   speak(hearText(n), rate, () => { const b2 = $('.bub.cur'); if (b2) b2.classList.remove('playing'); });
 }
 function talkGo(go) {
@@ -195,9 +206,12 @@ function talkAct(a, k) {
   else if (a === 'tmode') { r.mode = r.mode === 'full' ? 'listen' : 'full'; if (r.mode === 'full') { ns.show = true; r.text = true; } }
   else if (a === 'trep') {
     r.help++;
-    if (k === 'easy') { ns.easy = true; speak(REPAIR.easy[0], 1.05, () => setTimeout(() => hearPlay(.9), 250)); }
+    const replay = rate => { const seq = TTS.seq; setTimeout(() => {
+      if (S.run === r && r.ns === ns && NAV.sheet && NAV.sheet.v === 'talk' && TTS.seq === seq) hearPlay(rate);
+    }, 320); };
+    if (k === 'easy') { ns.easy = true; speak(REPAIR.easy[0], 1, ok => { if (ok) replay(.9); }); }
     else if (n.bc) { hearPlay(k === 'slow' ? .7 : 1); }
-    else speak(REPAIR[k][0], 1.05, () => setTimeout(() => hearPlay(k === 'slow' ? .7 : 1), 250));
+    else speak(REPAIR[k][0], 1, ok => { if (ok) replay(k === 'slow' ? .7 : 1); });
   }
   else if (a === 'tq') {
     const q = n.q[ns.qi]; ns.sel = +k;

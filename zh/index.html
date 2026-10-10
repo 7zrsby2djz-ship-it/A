@@ -2,6 +2,8 @@
 <html lang="zh-Hant-TW">
 <head>
 <meta charset="utf-8">
+<meta name="color-scheme" content="light dark">
+<meta name="description" content="明白：緬文介面的中文學習路線、生活對話、單字與 TOCFL 練習。">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>明白 · နားလည်ပြီ</title>
 <meta name="theme-color" content="#F3F1EB" media="(prefers-color-scheme: light)">
@@ -429,6 +431,138 @@ h2{font-size:1.15rem}
 .confetti i{position:absolute;top:-12px;width:9px;height:14px;border-radius:2px;animation:fall linear forwards}
 @keyframes fall{to{transform:translate3d(var(--dx),105vh,0) rotate(var(--r));opacity:.9}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* ===== v4：學習路徑 — 紙上的小旅程，清楚知道下一步 ===== */
+/* 沿用按鈕與積木的厚底按鈕、柔和線條與飯糰角色；地圖以閱讀為先。 */
+:root{--map-rail:color-mix(in srgb,var(--line2) 78%,var(--paper));--map-node-size:64px}
+button,a,summary{touch-action:manipulation}
+button:focus-visible,a:focus-visible,summary:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--blue2);outline-offset:4px}
+button:disabled{cursor:default}
+.ui,.ui-sub,.bigcard .t,.bigcard .d,.map-copy{overflow-wrap:anywhere}
+.gear{box-shadow:0 3px 0 var(--line);transition:transform .1s,box-shadow .1s}
+.gear:active{transform:translateY(3px);box-shadow:none}
+.nav button{color:var(--ink2)}
+.nav button.on{color:var(--blue);font-weight:600}
+.nav button.on::before{height:3px;border-radius:0 0 4px 4px}
+.hello-row{gap:12px;margin:6px 0 18px;align-items:center}
+.hello-row .mascot{flex:none;animation:none}
+.hello-row .bubble{font-size:1rem;line-height:1.9;padding:12px 16px;box-shadow:none;background:var(--paper)}
+.journey-header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin:24px 2px 14px}
+.journey-header h1,.journey-header h2{font-family:var(--my);font-size:1.22rem;font-weight:600;line-height:1.85;letter-spacing:0}
+.journey-header small{display:block;color:var(--ink2);font-size:.86rem;line-height:1.8;margin-top:3px}
+.journey-header .mascot{margin:0;flex:none}
+.journey-summary{position:relative;display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:4px 12px;padding:0 2px;background:transparent;margin:0;color:var(--ink2);font-size:.92rem;line-height:1.9}
+.journey-summary .row{align-items:center;gap:12px}
+.journey-summary .ui{font-size:1rem;font-weight:600}
+.journey-summary .ui-sub{font-size:.86rem;line-height:1.8;margin-top:4px}
+.journey-summary .pill{padding:5px 10px;font-size:.79rem;flex:none;line-height:1.5}
+.journey-progress{height:9px;border-radius:999px;overflow:hidden;background:var(--line);margin:10px 0 22px;box-shadow:inset 0 1px 1px rgba(0,0,0,.04)}
+.journey-progress i{display:block;height:100%;background:var(--blue);border-radius:999px;transition:width .35s ease;min-width:0}
+.journey-summary.complete .journey-progress i{background:var(--ok)}
+.map-unit-header{display:block;margin:17px 2px 5px;font-family:var(--my);font-size:.91rem;line-height:1.9;color:var(--ink2)}
+.map-unit-header p{margin:8px 0 15px}
+.map-unit-header .journey-progress{margin-bottom:16px}
+.journey-cta{flex-direction:row;gap:10px;min-height:60px;margin:0 0 17px;padding:14px 18px;line-height:1.9}
+.journey-cta svg{flex:none}
+.journey-finished{padding:13px 16px;margin:0 0 14px;background:var(--ok-soft);color:var(--ok);border:1px solid var(--ok);border-radius:16px;font-size:1rem;line-height:1.9}
+.resume-card{display:flex;align-items:center;gap:12px;width:100%;padding:14px 16px;margin:0 0 18px;text-align:left;background:var(--blue-soft);border:1px solid var(--blue2);border-radius:18px;color:var(--blue-ink);font-size:.96rem;line-height:1.9}
+.resume-card .ico{display:flex;align-items:center;justify-content:center;width:42px;height:42px;flex:none;border-radius:13px;background:var(--paper)}
+.journey-link{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;padding:19px 4px;margin-top:20px;border-top:1px solid var(--line);font-size:.95rem;line-height:1.9;text-align:left;color:var(--blue-ink)}
+.journey-link>span:first-child{display:flex;align-items:center;gap:10px;min-width:0}
+.journey-link svg{flex:none}
+.map-arrow{color:var(--ink2);font-family:var(--zh);font-size:1.35rem;flex:none;line-height:1;margin-left:auto;align-self:center}
+.map-footnote{font-size:.83rem;color:var(--ink2);line-height:1.9;margin:16px 3px 0}
+.learning-map{list-style:none;padding:8px 0 0;margin:0;position:relative}
+.map-stop{position:relative;min-height:122px;padding:10px 0 31px;--offset:0px;isolation:isolate}
+.map-stop:last-child{padding-bottom:6px;min-height:96px}
+.map-stop::before{content:"";position:absolute;left:calc(var(--map-node-size) / 2 + var(--offset));top:70px;bottom:-11px;width:3px;background:var(--map-rail);border-radius:999px;z-index:-1}
+.map-stop:last-child::before{display:none}
+.map-stop.done::before{background:var(--ok)}
+.map-stop:has(.map-connector)::before{display:none}
+.map-connector{position:absolute;left:0;top:70px;width:100px;height:calc(100% - 53px);z-index:-1;overflow:visible;pointer-events:none}
+.map-connector path{fill:none;stroke:var(--map-rail);stroke-width:3;vector-effect:non-scaling-stroke;stroke-linecap:round}
+.map-stop.done .map-connector path{stroke:var(--ok)}
+.map-node{display:flex;align-items:flex-start;gap:16px;text-align:left;width:calc(100% - var(--offset));margin-left:var(--offset);padding:0 8px 0 0;border-radius:22px;position:relative;min-height:72px;line-height:1.75;transition:background .2s ease}
+.map-disc{display:flex;align-items:center;justify-content:center;width:var(--map-node-size);height:var(--map-node-size);margin-top:6px;flex:none;border-radius:50%;border:2px solid var(--line2);background:var(--card);color:var(--ink2);box-shadow:0 5px 0 var(--line2);font-family:var(--my);font-size:1.15rem;font-weight:600;transition:transform .12s ease,box-shadow .12s ease,border-color .2s}
+.map-disc svg{width:29px;height:29px;fill:none;stroke:currentColor;stroke-width:1.8}
+.map-copy{flex:1;min-width:0;display:block;padding:7px 0}
+.map-title{display:block;font-family:var(--my);font-size:1.07rem;font-weight:600;line-height:1.85;color:var(--ink)}
+.map-sub{display:block;font-family:var(--my);font-size:.85rem;line-height:1.85;color:var(--ink2);margin-top:3px}
+.map-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:999px;background:var(--paper);border:1px solid var(--line);color:var(--ink2);font-family:var(--my);font-size:.77rem;line-height:1.7;max-width:100%;margin-top:6px}
+.map-badge svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;flex:none}
+.map-stop.done .map-disc{background:var(--ok-soft);border-color:var(--ok);color:var(--ok);box-shadow:0 5px 0 color-mix(in srgb,var(--ok) 65%,var(--line2))}
+.map-stop.done .map-badge{background:var(--ok-soft);border-color:transparent;color:var(--ok)}
+.map-stop.current .map-disc{background:var(--blue);border-color:var(--blue);color:var(--paper);box-shadow:0 5px 0 var(--blue-deep),0 0 0 7px var(--blue-soft)}
+.map-stop.current .map-title{color:var(--blue-ink)}
+.map-stop.current .map-badge,.map-current-label{background:var(--blue-soft);color:var(--blue-ink);border-color:transparent;font-weight:600}
+.map-current-label{display:inline-block;font-family:var(--my);font-size:.8rem;padding:3px 10px;border-radius:999px;line-height:1.8;margin-bottom:6px}
+.map-stop.upcoming .map-disc{background:var(--paper);border-style:dashed;box-shadow:0 4px 0 var(--line)}
+.map-stop.skipped .map-disc{background:var(--kraft-soft);border-color:var(--kraft);box-shadow:0 4px 0 var(--kraft);color:var(--ink2)}
+.map-stop.skipped .map-badge{background:var(--kraft-soft);border-color:transparent;color:var(--ink2)}
+.map-stop.available .map-disc{background:var(--paper);border-style:dashed;box-shadow:0 4px 0 var(--line)}
+.map-stop.skip .map-disc{background:var(--kraft-soft);border-color:var(--kraft);color:var(--ink2)}
+.map-node:active:not(:disabled) .map-disc{transform:translateY(5px);box-shadow:none}
+.map-node:disabled .map-disc{box-shadow:0 3px 0 var(--line);border-style:dashed}
+.map-node:disabled{opacity:1}
+.map-node:disabled .map-title,.map-node:disabled .map-sub{color:var(--ink2)}
+@media(hover:hover){.map-node:hover:not(:disabled){background:var(--paper)}.map-node:hover:not(:disabled) .map-disc{border-color:var(--blue2)}}
+/* 地圖頁的主按鈕保留厚底，取消無限浮動，讓單元與進度成為焦點。 */
+.journey-header~.hero,.journey-summary~.hero,.learning-map~.hero{animation:none;padding:20px;border-radius:22px;margin-top:18px;box-shadow:0 5px 0 var(--blue-deep)}
+.journey-header~.hero .big,.journey-summary~.hero .big,.learning-map~.hero .big{font-size:1.45rem}
+.journey-header~.hero .sub,.journey-summary~.hero .sub,.learning-map~.hero .sub{font-size:.91rem;line-height:1.9;margin-top:3px}
+.journey-summary~.hero.done,.learning-map~.hero.done{box-shadow:0 4px 0 var(--ok)}
+/* 練習區也保持一致的紙感，不壓縮緬文的上下筆畫。 */
+.bub .who{font-size:.79rem;color:var(--ink2);letter-spacing:.02em;margin-bottom:6px}
+.bub{padding:15px 16px;border-radius:20px}
+.bub .my{line-height:1.95}
+.bub.playing{box-shadow:0 0 0 3px var(--blue-soft);border-color:var(--blue2)}
+.board{padding:12px 2px 13px}
+.board .got span{padding:3px 9px;border-radius:9px;font-size:.78rem}
+.scene .mk{border-radius:16px;background:var(--blue-soft);border-color:transparent}
+.intro .ico{box-shadow:0 5px 0 var(--line);border:1px solid var(--line)}
+.more{margin-top:22px;border-top:1px solid var(--line);padding-top:4px}
+.more summary{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:.91rem;line-height:1.8;min-height:56px;padding:14px 4px}
+.more summary::after{content:"+";font-family:var(--zh);font-size:1.25rem;color:var(--ink2);flex:none}
+.more[open]>summary::after{content:"−"}
+.unit-list{display:grid;gap:13px;margin:12px 0 22px}
+.unit-card{display:flex;align-items:center;gap:15px;text-align:left;width:100%;padding:18px 16px;background:var(--card);border:1px solid var(--line);border-radius:22px;box-shadow:0 4px 0 var(--line);line-height:1.8;transition:transform .12s ease,box-shadow .12s ease,border-color .2s}
+.unit-card:active:not(:disabled){transform:translateY(4px);box-shadow:none}
+.unit-card .unit-number{display:flex;align-items:center;justify-content:center;flex:none;width:48px;height:48px;border-radius:16px;background:var(--blue-soft);color:var(--blue-ink);font-family:var(--my);font-size:1.04rem;font-weight:600}
+.unit-card .grow{min-width:0}
+.unit-card .map-title,.unit-card .t{display:block;font-family:var(--my);font-size:1.04rem;line-height:1.85;font-weight:600;overflow-wrap:anywhere}
+.unit-card .map-sub,.unit-card .d{display:block;font-family:var(--my);font-size:.83rem;color:var(--ink2);line-height:1.85;margin-top:3px;overflow-wrap:anywhere}
+.unit-card.current{border-color:var(--blue2);background:var(--paper)}
+.unit-card.done .unit-number{background:var(--ok-soft);color:var(--ok)}
+.unit-card .arr{flex:none;color:var(--ink2);font-family:var(--zh);font-size:1.2rem}
+.unit-progress{display:block;height:5px;margin-top:10px;background:var(--line);border-radius:999px;overflow:hidden}
+.unit-progress i{display:block;height:100%;background:var(--blue);border-radius:inherit;transition:width .3s ease}
+.unit-card.done .unit-progress i{background:var(--ok)}
+@media(max-width:360px){
+  #app{padding-left:13px;padding-right:13px}
+  :root{--map-node-size:58px}
+  .map-stop{--offset:0px!important}
+  .map-connector{display:none}
+  .map-stop:has(.map-connector)::before{display:block}
+  .map-stop:last-child:has(.map-connector)::before{display:none}
+  .map-node{gap:12px}
+  .map-title{font-size:1.01rem}
+  .map-sub{font-size:.82rem}
+  .map-stop::before{top:66px}
+  .map-connector{top:66px;height:calc(100% - 56px)}
+  .journey-summary{font-size:.86rem}
+  .journey-summary .row{flex-wrap:wrap;gap:6px}
+  .journey-header h1,.journey-header h2{font-size:1.12rem}
+  .bigcard{gap:12px;padding:18px 14px}
+  .bigcard .ico{width:50px;height:50px}
+  .nav .lbl{font-size:.77rem}
+}
+/* 注音保留至少 10 px，教學本文預留字距與上方空間，避免音標互相疊住。 */
+.zt{font-size:max(.36em,10px);letter-spacing:-.1em}
+.big .zt{font-size:max(.26em,10px)}
+body:not(.hide-zy) .bub,body:not(.hide-zy) .qbox .q,body:not(.hide-zy) .opt,body:not(.hide-zy) .ex .zh{line-height:2.2}
+body:not(.hide-zy) :is(.bub,.passage,.ex,.qbox,.opt,.wordcard .big) .zc{min-width:max(1em,32px);margin:0 .1em;text-align:center}
+.motion-reduce *,.motion-reduce *::before,.motion-reduce *::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 </style>
 </head>
 <body>
@@ -442,6 +576,10 @@ const READ={"咖啡店・點飲料":"ㄎㄚ ㄈㄟ ㄉㄧㄢˋ ㄉㄧㄢˇ ㄧ�
 const CHREAD={"咖":"ㄎㄚ","啡":"ㄈㄟ","店":"ㄉㄧㄢˋ","點":"ㄉㄧㄢˇ","飲":"ㄧㄣˇ","料":"ㄌㄧㄠˋ","星":"ㄒㄧㄥ","巴":"ㄅㄚ","克":"ㄎㄜˋ","一":"ㄧ","般":"ㄅㄢ","連":"ㄌㄧㄢˊ","鎖":"ㄙㄨㄛˇ","的":"ㄉㄜ˙","櫃":"ㄍㄨㄟˋ","台":"ㄊㄞˊ","到":"ㄉㄠˋ","想":"ㄒㄧㄤˇ","喝":"ㄏㄜ","價":"ㄐㄧㄚˋ","錢":"ㄑㄧㄢˊ","優":"ㄧㄡ","惠":"ㄏㄨㄟˋ","都":"ㄉㄡ","是":"ㄕˋ","模":"ㄇㄛˊ","擬":"ㄋㄧˇ","各":"ㄍㄜˋ","說":"ㄕㄨㄛ","法":"ㄈㄚˇ","會":"ㄏㄨㄟˋ","有":"ㄧㄡˇ","不":"ㄅㄨˋ","同":"ㄊㄨㄥˊ","您":"ㄋㄧㄣˊ","好":"ㄏㄠˇ","請":"ㄑㄧㄥˇ","問":"ㄨㄣˋ","要":"ㄧㄠˋ","什":"ㄕㄣˊ","麼":"ㄇㄜ˙","你":"ㄋㄧˇ","員":"ㄩㄢˊ","在":"ㄗㄞˋ","袋":"ㄉㄞˋ","子":"ㄗ˙","幾":"ㄐㄧˇ","個":"ㄍㄜˋ","人":"ㄖㄣˊ","杯":"ㄅㄟ","拿":"ㄋㄚˊ","鐵":"ㄊㄧㄝˇ","我":"ㄨㄛˇ","謝":"ㄒㄧㄝˋ","冰":"ㄅㄧㄥ","還":"ㄏㄞˊ","熱":"ㄖㄜˋ","選":"ㄒㄩㄢˇ","或":"ㄏㄨㄛˋ","大":"ㄉㄚˋ","中":"ㄓㄨㄥ","內":"ㄋㄟˋ","用":"ㄩㄥˋ","外":"ㄨㄞˋ","帶":"ㄉㄞˋ","今":"ㄐㄧㄣ","天":"ㄊㄧㄢ","很":"ㄏㄣˇ","冷":"ㄌㄥˇ","怎":"ㄗㄣˇ","回":"ㄏㄨㄟˊ","直":"ㄓˊ","接":"ㄐㄧㄝ","那":"ㄋㄚˋ","二":"ㄦˋ","只":"ㄓˇ","知":"ㄓ","道":"ㄉㄠˋ","再":"ㄗㄞˋ","次":"ㄘˋ","這":"ㄓㄜˋ","樣":"ㄧㄤˋ","尺":"ㄔˇ","寸":"ㄘㄨㄣˋ","特":"ㄊㄜˋ","意":"ㄧˋ","思":"ㄙ˙","小":"ㄒㄧㄠˇ","溫":"ㄨㄣ","度":"ㄉㄨˋ","普":"ㄆㄨˇ","通":"ㄊㄨㄥ","太":"ㄊㄞˋ","多":"ㄉㄨㄛ","最":"ㄗㄨㄟˋ","常":"ㄔㄤˊ","哪":"ㄋㄚˇ","出":"ㄔㄨ","比":"ㄅㄧˇ","較":"ㄐㄧㄠˋ","貴":"ㄍㄨㄟˋ","也":"ㄧㄝˇ","裡":"ㄌㄧˇ","嗎":"ㄇㄚ˙","走":"ㄗㄡˇ","自":"ㄗˋ","己":"ㄐㄧˇ","去":"ㄑㄩˋ","學":"ㄒㄩㄝˊ","校":"ㄒㄧㄠˋ","對":"ㄉㄨㄟˋ","又":"ㄧㄡˋ","題":"ㄊㄧˊ","能":"ㄋㄥˊ","答":"ㄉㄚˊ","給":"ㄍㄟˇ","歡":"ㄏㄨㄢ","迎":"ㄧㄥˊ","光":"ㄍㄨㄤ","臨":"ㄌㄧㄣˊ","氣":"ㄑㄧˋ","付":"ㄈㄨˋ","少":"ㄕㄠˇ","美":"ㄇㄟˇ","式":"ㄕˋ","方":"ㄈㄤ","可":"ㄎㄜˇ","以":"ㄧˇ","邊":"ㄅㄧㄢ","坐":"ㄗㄨㄛˋ","先":"ㄒㄧㄢ","聽":"ㄊㄧㄥ","得":"ㄉㄜˊ","懂":"ㄉㄨㄥˇ","但":"ㄉㄢˋ","清":"ㄑㄧㄥ","楚":"ㄔㄨˇ","換":"ㄏㄨㄢˋ","家":"ㄐㄧㄚ","誰":"ㄕㄨㄟˊ","完":"ㄨㄢˊ","沒":"ㄇㄟˊ","加":"ㄐㄧㄚ","糖":"ㄊㄤˊ","重":"ㄓㄨㄥˋ","複":"ㄈㄨˋ","餐":"ㄘㄢ","就":"ㄐㄧㄡˋ","需":"ㄒㄩ","然":"ㄖㄢˊ","購":"ㄍㄡˋ","蛋":"ㄉㄢˋ","糕":"ㄍㄠ","現":"ㄒㄧㄢˋ","第":"ㄉㄧˋ","件":"ㄐㄧㄢˋ","折":"ㄓㄜˊ","十":"ㄕˊ","元":"ㄩㄢˊ","買":"ㄇㄞˇ","把":"ㄅㄚˇ","退":"ㄊㄨㄟˋ","了":"ㄌㄜ˙","禮":"ㄌㄧˇ","貌":"ㄇㄠˋ","發":"ㄈㄚ","票":"ㄆㄧㄠˋ","存":"ㄘㄨㄣˊ","載":"ㄗㄞˋ","具":"ㄐㄩˋ","掃":"ㄙㄠˇ","手":"ㄕㄡˇ","機":"ㄐㄧ","條":"ㄊㄧㄠˊ","碼":"ㄇㄚˇ","紙":"ㄓˇ","卡":"ㄎㄚˇ","看":"ㄎㄢˋ","印":"ㄧㄣˋ","本":"ㄅㄣˇ","共":"ㄍㄨㄥˋ","百":"ㄅㄞˇ","四":"ㄙˋ","五":"ㄨˇ","金":"ㄐㄧㄣ","悠":"ㄧㄡ","遊":"ㄧㄡˊ","款":"ㄎㄨㄢˇ","工":"ㄍㄨㄥ","右":"ㄧㄡˋ","稍":"ㄕㄠ","等":"ㄉㄥˇ","叫":"ㄐㄧㄠˋ","左":"ㄗㄨㄛˇ","面":"ㄇㄧㄢˋ","名":"ㄇㄧㄥˊ","字":"ㄗˋ","環":"ㄏㄨㄢˊ","保":"ㄅㄠˇ","喔":"ㄛ","統":"ㄊㄨㄥˇ","編":"ㄅㄧㄢ","打":"ㄉㄚˇ","寫":"ㄒㄧㄝˇ","公":"ㄍㄨㄥ","司":"ㄙ","號":"ㄏㄠˋ","便":"ㄅㄧㄢˋ","宜":"ㄧˊ","報":"ㄅㄠˋ","帳":"ㄓㄤˋ","刷":"ㄕㄨㄚ","信":"ㄒㄧㄣˋ","融":"ㄖㄨㄥˊ","嗨":"ㄏㄞ","燕":"ㄧㄢˋ","麥":"ㄇㄞˋ","奶":"ㄋㄞˇ","牛":"ㄋㄧㄡˊ","成":"ㄔㄥˊ","塊":"ㄎㄨㄞˋ","願":"ㄩㄢˋ","啊":"ㄚ˙","口":"ㄎㄡˇ","語":"ㄩˇ","剛":"ㄍㄤ","耶":"ㄧㄝ","豆":"ㄉㄡˋ","鮮":"ㄒㄧㄢ","生":"ㄕㄥ","事":"ㄕˋ","賣":"ㄇㄞˋ","變":"ㄅㄧㄢˋ","開":"ㄎㄞ","擇":"ㄗㄜˊ","改":"ㄍㄞˇ","決":"ㄐㄩㄝˊ","定":"ㄉㄧㄥˋ","兩":"ㄌㄧㄤˇ","他":"ㄊㄚ","按":"ㄢˋ","上":"ㄕㄤˋ","嗶":"ㄅㄧˋ","器":"ㄑㄧˋ","描":"ㄇㄧㄠˊ","聲":"ㄕㄥ","音":"ㄧㄣ","笑":"ㄒㄧㄠˋ","下":"ㄒㄧㄚˋ","話":"ㄏㄨㄚˋ","快":"ㄎㄨㄞˋ","囉":"ㄌㄨㄛ˙","客":"ㄎㄜˋ","做":"ㄗㄨㄛˋ","來":"ㄌㄞˊ","辦":"ㄅㄢˋ","避":"ㄅㄧˋ","免":"ㄇㄧㄢˇ","錯":"ㄘㄨㄛˋ","別":"ㄅㄧㄝˊ","繼":"ㄐㄧˋ","續":"ㄒㄩˋ","後":"ㄏㄡˋ","馬":"ㄇㄚˇ","新":"ㄒㄧㄣ","短":"ㄉㄨㄢˇ","時":"ㄕˊ","間":"ㄐㄧㄢ","應":"ㄧㄥ","關":"ㄍㄨㄢ","係":"ㄒㄧˋ","緊":"ㄐㄧㄣˇ","候":"ㄏㄡˋ","像":"ㄒㄧㄤˋ","搖":"ㄧㄠˊ","甜":"ㄊㄧㄢˊ","街":"ㄐㄧㄝ","窗":"ㄔㄨㄤ","格":"ㄍㄜˊ","待":"ㄉㄞˋ","珍":"ㄓㄣ","珠":"ㄓㄨ","茶":"ㄔㄚˊ","呢":"ㄋㄜ˙","和":"ㄏㄜˊ","半":"ㄅㄢˋ","灣":"ㄨㄢ","正":"ㄓㄥˋ","全":"ㄑㄩㄢˊ","照":"ㄓㄠˋ","吸":"ㄒㄧ","管":"ㄍㄨㄢˇ","拒":"ㄐㄩˋ","絕":"ㄐㄩㄝˊ","綠":"ㄌㄩˋ","跟":"ㄍㄣ","果":"ㄍㄨㄛˇ","無":"ㄨˊ","標":"ㄅㄧㄠ","準":"ㄓㄨㄣˇ","另":"ㄌㄧㄥˋ","紅":"ㄏㄨㄥˊ","起":"ㄑㄧˇ","微":"ㄨㄟˊ","三":"ㄙㄢ","更":"ㄍㄥˋ","朋":"ㄆㄥˊ","友":"ㄧㄡˇ","量":"ㄌㄧㄤˋ","裝":"ㄓㄨㄤ","分":"ㄈㄣ","放":"ㄈㄤˋ","倒":"ㄉㄠˋ","順":"ㄕㄨㄣˋ","序":"ㄒㄩˋ","牌":"ㄆㄞˊ","八":"ㄅㄚ","幫":"ㄅㄤ","位":"ㄨㄟˋ","輪":"ㄌㄨㄣˊ","齁":"ㄏㄡ","煮":"ㄓㄨˇ","鐘":"ㄓㄨㄥ","椰":"ㄧㄝ","為":"ㄨㄟˋ","休":"ㄒㄧㄡ","息":"ㄒㄧˊ","概":"ㄍㄞˋ","久":"ㄐㄧㄡˇ","趕":"ㄍㄢˇ","被":"ㄅㄟˋ","六":"ㄌㄧㄡˋ","見":"ㄐㄧㄢˋ","午":"ㄨˇ","忙":"ㄇㄤˊ","利":"ㄌㄧˋ","商":"ㄕㄤ","結":"ㄐㄧㄝˊ","東":"ㄉㄨㄥ","西":"ㄒㄧ˙","取":"ㄑㄩˇ","貨":"ㄏㄨㄛˋ","流":"ㄌㄧㄡˊ","程":"ㄔㄥˊ","當":"ㄉㄤ","筷":"ㄎㄨㄞˋ","吃":"ㄔ","麻":"ㄇㄚˊ","煩":"ㄈㄢˊ","湯":"ㄊㄤ","匙":"ㄕ˙","九":"ㄐㄧㄡˇ","句":"ㄐㄩˋ","心":"ㄒㄧㄣ","燙":"ㄊㄤˋ","壞":"ㄏㄨㄞˋ","飯":"ㄈㄢˋ","糰":"ㄊㄨㄢˊ","波":"ㄅㄛ","提":"ㄊㄧˊ","收":"ㄕㄡ","據":"ㄐㄩˋ","動":"ㄉㄨㄥˋ","住":"ㄓㄨˋ","讓":"ㄖㄤˋ","瓶":"ㄆㄧㄥˊ","送":"ㄙㄨㄥˋ","夠":"ㄍㄡˋ","泡":"ㄆㄠˋ","麵":"ㄇㄧㄢˋ","水":"ㄕㄨㄟˇ","碗":"ㄨㄢˇ","末":"ㄇㄛˋ","數":"ㄕㄨˋ","前":"ㄑㄧㄢˊ","密":"ㄇㄧˋ","七":"ㄑㄧ","念":"ㄋㄧㄢˋ","文":"ㄨㄣˊ","確":"ㄑㄩㄝˋ","認":"ㄖㄣˋ","包":"ㄅㄠ","裹":"ㄍㄨㄛˇ","拆":"ㄔㄞ","已":"ㄧˇ","經":"ㄐㄧㄥ","過":"ㄍㄨㄛˋ","箱":"ㄒㄧㄤ","網":"ㄨㄤˇ","路":"ㄌㄨˋ","早":"ㄗㄠˇ","巷":"ㄒㄧㄤˋ","每":"ㄇㄟˇ","菜":"ㄘㄞˋ","單":"ㄉㄢ","帥":"ㄕㄨㄞˋ","哥":"ㄍㄜ","老":"ㄌㄠˇ","闆":"ㄅㄢˇ","娘":"ㄋㄧㄤˊ","男":"ㄋㄢˊ","她":"ㄊㄚ","覺":"ㄐㄩㄝˊ","識":"ㄕˋ","份":"ㄈㄣˋ","餅":"ㄅㄧㄥˇ","整":"ㄓㄥˇ","長":"ㄓㄤˇ","著":"ㄓㄨˋ","站":"ㄓㄢˋ","廚":"ㄔㄨˊ","房":"ㄈㄤˊ","桌":"ㄓㄨㄛ","配":"ㄆㄟˋ","安":"ㄢ","火":"ㄏㄨㄛˇ","腿":"ㄊㄨㄟˇ","吐":"ㄊㄨˇ","切":"ㄑㄧㄝˋ","喜":"ㄒㄧˇ","漿":"ㄐㄧㄤ","蘿":"ㄌㄨㄛˊ","蔔":"ㄅㄛˊ","醬":"ㄐㄧㄤˋ","油":"ㄧㄡˊ","膏":"ㄍㄠ","辣":"ㄌㄚˋ","咧":"ㄌㄧㄝ˙","種":"ㄓㄨㄥˇ","板":"ㄅㄢˇ","找":"ㄓㄠˇ","歹":"ㄉㄞˇ","勢":"ㄕˋ","黑":"ㄏㄟ","胡":"ㄏㄨˊ","椒":"ㄐㄧㄠ","蘑":"ㄇㄛˊ","菇":"ㄍㄨ","週":"ㄓㄡ","捷":"ㄐㄧㄝˊ","運":"ㄩㄣˋ","車":"ㄔㄜ","廣":"ㄍㄨㄤˇ","播":"ㄅㄛ","線":"ㄒㄧㄢˋ","市":"ㄕˋ","區":"ㄑㄩ","地":"ㄉㄧˋ","停":"ㄊㄧㄥˊ","駛":"ㄕˇ","情":"ㄑㄧㄥˊ","況":"ㄎㄨㄤˋ","櫻":"ㄧㄥ","花":"ㄏㄨㄚ","政":"ㄓㄥˋ","府":"ㄈㄨˇ","終":"ㄓㄨㄥ","列":"ㄌㄧㄝˋ","即":"ㄐㄧˊ","將":"ㄐㄧㄤ","進":"ㄐㄧㄣˋ","勿":"ㄨˋ","超":"ㄔㄠ","越":"ㄩㄝˋ","黃":"ㄏㄨㄤˊ","講":"ㄐㄧㄤˇ","電":"ㄉㄧㄢˋ","高":"ㄍㄠ","臺":"ㄊㄞˊ","備":"ㄅㄟˋ","門":"ㄇㄣˊ","班":"ㄅㄢ","部":"ㄅㄨˋ","旅":"ㄌㄩˇ","搭":"ㄉㄚ","乘":"ㄔㄥˊ","廂":"ㄒㄧㄤ","逢":"ㄈㄥˊ","甲":"ㄐㄧㄚˇ","夜":"ㄧㄝˋ","鈴":"ㄌㄧㄥˊ","告":"ㄍㄠˋ","訴":"ㄙㄨˋ","記":"ㄐㄧˋ","南":"ㄋㄢˊ","屯":"ㄊㄨㄣˊ","森":"ㄙㄣ","林":"ㄌㄧㄣˊ","園":"ㄩㄢˊ","圖":"ㄊㄨˊ","月":"ㄩㄝˋ","往":"ㄨㄤˇ","它":"ㄊㄚ","注":"ㄓㄨˋ","因":"ㄧㄣ","誌":"ㄓˋ","異":"ㄧˋ","北":"ㄅㄟˇ","總":"ㄗㄨㄥˇ","向":"ㄒㄧㄤˋ","延":"ㄧㄢˊ","約":"ㄩㄝ","耐":"ㄋㄞˋ","晚":"ㄨㄢˇ","雨":"ㄩˇ","病":"ㄅㄧㄥˋ","頭":"ㄊㄡˊ","遠":"ㄩㄢˇ","務":"ㄨˋ","吧":"ㄅㄚ˙","從":"ㄘㄨㄥˊ","沿":"ㄧㄢˊ","慌":"ㄏㄨㄤ","滑":"ㄏㄨㄚˊ","室":"ㄕˋ","註":"ㄓㄨˋ","冊":"ㄘㄜˋ","組":"ㄗㄨˇ","國":"ㄍㄨㄛˊ","際":"ㄐㄧˋ","處":"ㄔㄨˋ","交":"ㄐㄧㄠ","稱":"ㄔㄥ","資":"ㄗ","期":"ㄑㄧˊ","限":"ㄒㄧㄢˋ","職":"ㄓˊ","系":"ㄒㄧˋ","年":"ㄋㄧㄢˊ","級":"ㄐㄧˊ","理":"ㄌㄧˇ","申":"ㄕㄣ","證":"ㄓㄥˋ","張":"ㄓㄤ","表":"ㄅㄧㄠˇ","填":"ㄊㄧㄢˊ","附":"ㄈㄨˋ","吋":"ㄘㄨㄣˋ","片":"ㄆㄧㄢˋ","護":"ㄏㄨˋ","所":"ㄙㄨㄛˇ","指":"ㄓˇ","空":"ㄎㄨㄥˋ","白":"ㄅㄞˊ","隨":"ㄙㄨㄟˊ","讀":"ㄉㄨˊ","例":"ㄌㄧˋ","如":"ㄖㄨˊ","訊":"ㄒㄩㄣˋ","抽":"ㄔㄡ","明":"ㄇㄧㄥˊ","英":"ㄧㄥ","言":"ㄧㄢˊ","日":"ㄖˋ","址":"ㄓˇ","居":"ㄐㄩ","留":"ㄌㄧㄡˊ","影":"ㄧㄥˇ","反":"ㄈㄢˇ","舊":"ㄐㄧㄡˋ","補":"ㄅㄨˇ","近":"ㄐㄧㄣˋ","作":"ㄗㄨㄛˋ","掉":"ㄉㄧㄠˋ","樓":"ㄌㄡˊ","雜":"ㄗㄚˊ","費":"ㄈㄟˋ","拜":"ㄅㄞˋ","繳":"ㄐㄧㄠˇ","身":"ㄕㄣ","們":"ㄇㄣ˙","行":"ㄒㄧㄥˊ","轉":"ㄓㄨㄢˇ","書":"ㄕㄨ","館":"ㄍㄨㄢˇ","教":"ㄐㄧㄠˋ","慢":"ㄇㄢˋ","承":"ㄔㄥˊ","假":"ㄐㄧㄚˋ","寄":"ㄐㄧˋ","搬":"ㄅㄢ","師":"ㄕ","許":"ㄒㄩˇ","扣":"ㄎㄡˋ","才":"ㄘㄞˊ","布":"ㄅㄨˋ","丁":"ㄉㄧㄥ","集":"ㄐㄧˊ","真":"ㄓㄣ","女":"ㄋㄩˇ","駁":"ㄅㄛˊ","暫":"ㄓㄢˋ","簽":"ㄑㄧㄢ","截":"ㄐㄧㄝˊ","止":"ㄓˇ","簡":"ㄐㄧㄢˇ","平":"ㄆㄧㄥˊ","根":"ㄍㄣ","技":"ㄐㄧˋ","巧":"ㄑㄧㄠˇ","案":"ㄢˋ","襯":"ㄔㄣˋ","衫":"ㄕㄢ","原":"ㄩㄢˊ","傘":"ㄙㄢˇ","晴":"ㄑㄧㄥˊ","借":"ㄐㄧㄝˋ","感":"ㄍㄢˇ","冒":"ㄇㄠˋ","痛":"ㄊㄨㄥˋ","醫":"ㄧ","藥":"ㄧㄠˋ","睡":"ㄕㄨㄟˋ","該":"ㄍㄞ","緬":"ㄇㄧㄢˇ","甸":"ㄉㄧㄢ","爬":"ㄆㄚˊ","山":"ㄕㄢ","象":"ㄒㄧㄤˋ","颱":"ㄊㄞˊ","風":"ㄈㄥ","雞":"ㄐㄧ","段":"ㄉㄨㄢˋ","院":"ㄩㄢˋ","郵":"ㄧㄡˊ","局":"ㄐㄩˊ","差":"ㄔㄚˋ","剩":"ㄕㄥˋ","些":"ㄒㄧㄝ","腦":"ㄋㄠˇ","修":"ㄒㄧㄡ","始":"ㄕˇ","項":"ㄒㄧㄤˋ","聚":"ㄐㄩˋ","惜":"ㄒㄧˊ","參":"ㄘㄢ","姐":"ㄐㄧㄝˇ","航":"ㄏㄤˊ","海":"ㄏㄞˇ","妹":"ㄇㄟˋ","忘":"ㄨㄤˋ","跑":"ㄆㄠˇ","趟":"ㄊㄤˋ","否":"ㄈㄡˇ","廳":"ㄊㄧㄥ","味":"ㄨㄟˋ","服":"ㄈㄨˊ","致":"ㄓˋ","缺":"ㄑㄩㄝ","考":"ㄎㄠˇ","試":"ㄕˋ","課":"ㄎㄜˋ","累":"ㄌㄟˋ","昨":"ㄗㄨㄛˊ","隔":"ㄍㄜˊ","壁":"ㄅㄧˋ","吵":"ㄔㄠˇ","床":"ㄔㄨㄤˊ","算":"ㄙㄨㄢˋ","場":"ㄔㄤˇ","響":"ㄒㄧㄤˇ","支":"ㄓ","拍":"ㄆㄞ","適":"ㄕˋ","合":"ㄏㄜˊ","千":"ㄑㄧㄢ","功":"ㄍㄨㄥ","省":"ㄕㄥˇ","螢":"ㄧㄥˊ","幕":"ㄇㄨˋ","獎":"ㄐㄧㄤˇ","績":"ㄐㄧ","之":"ㄓ","志":"ㄓˋ","醒":"ㄒㄧㄥˇ","負":"ㄈㄨˋ","責":"ㄗㄜˊ","難":"ㄋㄢˊ","陷":"ㄒㄧㄢˋ","阱":"ㄐㄧㄥˇ","鞋":"ㄒㄧㄝˊ","盒":"ㄏㄜˊ","夏":"ㄒㄧㄚˋ","鄉":"ㄒㄧㄤ","舒":"ㄕㄨ","至":"ㄓˋ","涼":"ㄌㄧㄤˊ","受":"ㄕㄡˋ","非":"ㄈㄟ","怕":"ㄆㄚˋ","擔":"ㄉㄢ","誠":"ㄔㄥˊ","實":"ㄕˊ","建":"ㄐㄧㄢˋ","議":"ㄧˋ","物":"ㄨˋ","活":"ㄏㄨㄛˊ","露":"ㄌㄨˋ","營":"ㄧㄥˊ","離":"ㄌㄧˊ","套":"ㄊㄠˋ","租":"ㄗㄨ","親":"ㄑㄧㄣ","移":"ㄧˊ","民":"ㄇㄧㄣˊ","署":"ㄕㄨˇ","助":"ㄓㄨˋ","必":"ㄅㄧˋ","須":"ㄒㄩ","計":"ㄐㄧˋ","畫":"ㄏㄨㄚˋ","而":"ㄦˊ","躺":"ㄊㄤˇ","體":"ㄊㄧˇ","預":"ㄩˋ","倍":"ㄅㄟˋ","椅":"ㄧˇ","幸":"ㄒㄧㄥˋ","制":"ㄓˋ","頁":"ㄧㄝˋ","雄":"ㄒㄩㄥˊ","飛":"ㄈㄟ","慮":"ㄌㄩˋ","研":"ㄧㄢˊ","究":"ㄐㄧㄡ","目":"ㄇㄨˋ","步":"ㄅㄨˋ","秘":"ㄇㄧˋ","訣":"ㄐㄩㄝˊ","聊":"ㄌㄧㄠˊ","習":"ㄒㄧˊ","視":"ㄕˋ","查":"ㄔㄚˊ","由":"ㄧㄡˊ","縣":"ㄒㄧㄢˋ","宣":"ㄒㄩㄢ","王":"ㄨㄤˊ","零":"ㄌㄧㄥˊ","業":"ㄧㄝˋ","愛":"ㄞˋ","顧":"ㄍㄨˋ","律":"ㄌㄩˋ","消":"ㄒㄧㄠ","滿":"ㄇㄢˇ","食":"ㄕˊ","範":"ㄈㄢˋ","圍":"ㄨㄟˊ","飽":"ㄅㄠˇ","綁":"ㄅㄤˇ","解":"ㄐㄧㄝˇ","違":"ㄨㄟˊ","宿":"ㄙㄨˋ","舍":"ㄕㄜˋ","洗":"ㄒㄧˇ","衣":"ㄧ","使":"ㄕˇ","腸":"ㄔㄤˊ","胃":"ㄨㄟˋ","型":"ㄒㄧㄥˊ","拉":"ㄌㄚ","肚":"ㄉㄨˋ","燒":"ㄕㄠ","其":"ㄑㄧˊ","釋":"ㄕˋ","驗":"ㄧㄢˋ","享":"ㄒㄧㄤˇ","態":"ㄊㄞˋ","嘗":"ㄔㄤˊ","相":"ㄒㄧㄤ","示":"ㄕˋ","團":"ㄊㄨㄢˊ","低":"ㄉㄧ","降":"ㄐㄧㄤˋ","眾":"ㄓㄨㄥˋ","暖":"ㄋㄨㄢˇ","導":"ㄉㄠˇ","戚":"ㄑㄧ","排":"ㄆㄞˊ","薪":"ㄒㄧㄣ","調":"ㄉㄧㄠˋ","任":"ㄖㄣˋ","何":"ㄏㄜˊ","科":"ㄎㄜ","博":"ㄅㄛˊ","覽":"ㄌㄢˇ","球":"ㄑㄧㄡˊ","歷":"ㄌㄧˋ","史":"ㄕˇ","植":"ㄓˊ","閃":"ㄕㄢˇ","燈":"ㄉㄥ","束":"ㄕㄨˋ","觀":"ㄍㄨㄢ","入":"ㄖㄨˋ","詞":"ㄘˊ","且":"ㄑㄧㄝˇ","穿":"ㄔㄨㄢ","肉":"ㄖㄡˋ","隊":"ㄉㄨㄟˋ","玩":"ㄨㄢˊ","騎":"ㄑㄧˊ","雖":"ㄙㄨㄟ","既":"ㄐㄧˋ","除":"ㄔㄨˊ","誤":"ㄨˋ","於":"ㄩˊ","泰":"ㄊㄞˋ","者":"ㄓㄜˇ","曾":"ㄘㄥˊ","卻":"ㄑㄩㄝˋ","展":"ㄓㄢˇ","則":"ㄗㄜˊ","乙":"ㄧˇ","怪":"ㄍㄨㄞˋ","竟":"ㄐㄧㄥˋ","奇":"ㄑㄧˊ","供":"ㄍㄨㄥ","及":"ㄐㄧˊ","此":"ㄘˇ","福":"ㄈㄨˊ","基":"ㄐㄧ","論":"ㄌㄨㄣˋ","討":"ㄊㄠˇ","深":"ㄕㄣ","努":"ㄋㄨˇ","力":"ㄌㄧˋ","華":"ㄏㄨㄚˊ","測":"ㄘㄜˋ","甚":"ㄕㄣˋ","賽":"ㄙㄞˋ","舉":"ㄐㄩˇ","疑":"ㄧˊ","積":"ㄐㄧ","極":"ㄐㄧˊ","欣":"ㄒㄧㄣ","賞":"ㄕㄤˇ","狀":"ㄓㄨㄤˋ","角":"ㄐㄧㄠˇ","充":"ㄔㄨㄥ","詳":"ㄒㄧㄤˊ","細":"ㄒㄧˋ","仔":"ㄗㄞˇ","形":"ㄒㄧㄥˊ","容":"ㄖㄨㄥˊ","品":"ㄆㄧㄣˇ","質":"ㄓˊ","阿":"ㄚ","練":"ㄌㄧㄢˋ","乎":"ㄏㄨ","鑰":"ㄧㄠˋ","乾":"ㄑㄧㄢˊ","淨":"ㄐㄧㄥˋ","垃":"ㄌㄜˋ","圾":"ㄙㄜˋ","類":"ㄌㄟˋ","塑":"ㄙㄨˋ","膠":"ㄐㄧㄠ","專":"ㄓㄨㄢ","抱":"ㄅㄠˋ","歉":"ㄑㄧㄢˋ","檢":"ㄐㄧㄢˇ","盡":"ㄐㄧㄣˇ","餘":"ㄩˊ","賺":"ㄓㄨㄢˋ","衡":"ㄏㄥˊ","靜":"ㄐㄧㄥˋ","宅":"ㄓㄞˊ","逾":"ㄩˊ","梯":"ㄊㄧ","養":"ㄧㄤˇ","造":"ㄗㄠˋ","敬":"ㄐㄧㄥˋ","諒":"ㄌㄧㄤˋ","委":"ㄨㄟˇ","雅":"ㄧㄚˇ","含":"ㄏㄢˊ","押":"ㄧㄚ","性":"ㄒㄧㄥˋ","寵":"ㄔㄨㄥˇ","聯":"ㄌㄧㄢˊ","絡":"ㄌㄨㄛˋ","陳":"ㄔㄣˊ","傳":"ㄔㄨㄢˊ","屋":"ㄨ","貓":"ㄇㄠ","括":"ㄎㄨㄛˋ","仁":"ㄖㄣˊ","依":"ㄧ","若":"ㄖㄨㄛˋ","與":"ㄩˇ","主":"ㄓㄨˇ","姓":"ㄒㄧㄥˋ","吳":"ㄨˊ","咳":"ㄎㄜˊ","毫":"ㄏㄠˊ","升":"ㄕㄥ","陰":"ㄧㄣ","陽":"ㄧㄤˊ","射":"ㄕㄜˋ","曬":"ㄕㄞˋ","凍":"ㄉㄨㄥˋ","庫":"ㄎㄨˋ","戶":"ㄏㄨˋ","旁":"ㄆㄤˊ","徵":"ㄓㄥ","兼":"ㄐㄧㄢ","邀":"ㄧㄠ","攜":"ㄒㄧㄝˊ","履":"ㄌㄩˇ","攝":"ㄕㄜˋ","社":"ㄕㄜˋ","招":"ㄓㄠ","德":"ㄉㄜˊ","投":"ㄊㄡˊ","群":"ㄑㄩㄣˊ","健":"ㄐㄧㄢˋ","散":"ㄙㄢˋ","噪":"ㄗㄠˋ","求":"ㄑㄧㄡˊ","攤":"ㄊㄢ","販":"ㄈㄢˋ","並":"ㄅㄧㄥˋ","章":"ㄓㄤ","旨":"ㄓˇ","善":"ㄕㄢˋ","禁":"ㄐㄧㄣˋ","猜":"ㄘㄞ","寒":"ㄏㄢˊ","暑":"ㄕㄨˇ","私":"ㄙ","規":"ㄍㄨㄟ","罰":"ㄈㄚˊ","鼓":"ㄍㄨˇ","勵":"ㄌㄧˋ","介":"ㄐㄧㄝˋ","紹":"ㄕㄠˋ","節":"ㄐㄧㄝˊ","推":"ㄊㄨㄟ","彙":"ㄏㄨㄟˋ","獨":"ㄉㄨˊ","落":"ㄌㄨㄛˋ","閱":"ㄩㄝˋ","媽":"ㄇㄚ","爸":"ㄅㄚˋ","弟":"ㄉㄧˋ","遲":"ㄔˊ","城":"ㄔㄥˊ","筆":"ㄅㄧˇ","固":"ㄍㄨˋ","增":"ㄗㄥ","錄":"ㄌㄨˋ","設":"ㄕㄜˋ","掌":"ㄓㄤˇ","握":"ㄨㄛˋ","聞":"ㄨㄣˊ","翻":"ㄈㄢ","譯":"ㄧˋ","談":"ㄊㄢˊ","逛":"ㄍㄨㄤˋ","顏":"ㄧㄢˊ","色":"ㄙㄜˋ","漂":"ㄆㄧㄠˋ","亮":"ㄌㄧㄤˋ","雙":"ㄕㄨㄤ","逐":"ㄓㄨˊ","持":"ㄔˊ","觸":"ㄔㄨˋ","偶":"ㄡˇ","爾":"ㄦˇ","效":"ㄒㄧㄠˋ","率":"ㄌㄩˋ","浪":"ㄌㄤˋ","憶":"ㄧˋ","熟":"ㄕㄨˊ","悉":"ㄒㄧ","境":"ㄐㄧㄥˋ","漸":"ㄐㄧㄢˋ","追":"ㄓㄨㄟ","維":"ㄨㄟˊ","互":"ㄏㄨˋ","娛":"ㄩˊ","樂":"ㄌㄜˋ","替":"ㄊㄧˋ","代":"ㄉㄞˋ","減":"ㄐㄧㄢˇ","康":"ㄎㄤ","穩":"ㄨㄣˇ","達":"ㄉㄚˊ","篇":"ㄆㄧㄢ","鄰":"ㄌㄧㄣˊ","呼":"ㄏㄨ","唱":"ㄔㄤˋ","歌":"ㄍㄜ","曲":"ㄑㄩˇ","棄":"ㄑㄧˋ","背":"ㄅㄟˋ","初":"ㄔㄨ","詢":"ㄒㄩㄣˊ","訂":"ㄉㄧㄥˋ","速":"ㄙㄨˋ","央":"ㄧㄤ","輛":"ㄌㄧㄤˋ","擅":"ㄕㄢˋ","陪":"ㄆㄟˊ","勇":"ㄩㄥˇ","敢":"ㄍㄢˇ","治":"ㄓˋ","野":"ㄧㄝˇ","仍":"ㄖㄥˊ","秒":"ㄇㄧㄠˇ","估":"ㄍㄨ","突":"ㄊㄨˊ","遇":"ㄩˋ","晨":"ㄔㄣˊ","置":"ㄓˋ","輕":"ㄑㄧㄥ","眠":"ㄇㄧㄢˊ","立":"ㄌㄧˋ","刻":"ㄎㄜˋ","抄":"ㄔㄠ","刪":"ㄕㄢ","希":"ㄒㄧ","望":"ㄨㄤˋ","永":"ㄩㄥˇ","鬧":"ㄋㄠˋ","登":"ㄉㄥ","暗":"ㄢˋ","輸":"ㄕㄨ","輯":"ㄐㄧˊ","執":"ㄓˊ","返":"ㄈㄢˇ","首":"ㄕㄡˇ","驟":"ㄓㄡˋ","儲":"ㄔㄨˊ","救":"ㄐㄧㄡˋ","搜":"ㄙㄡ","尋":"ㄒㄩㄣˊ","失":"ㄕ","敗":"ㄅㄞˋ","版":"ㄅㄢˇ","閉":"ㄅㄧˋ","啟":"ㄑㄧˇ","略":"ㄌㄩㄝˋ","製":"ㄓˋ","貼":"ㄊㄧㄝ","檔":"ㄉㄤˇ","藏":"ㄘㄤˊ","紀":"ㄐㄧˋ","允":"ㄩㄣˇ","某":"ㄇㄡˇ","權":"ㄑㄩㄢˊ","鈕":"ㄋㄧㄡˇ","碌":"ㄌㄨˋ","審":"ㄕㄣˇ","核":"ㄏㄜˊ","欄":"ㄌㄢˊ","籍":"ㄐㄧˊ","恢":"ㄏㄨㄟ","復":"ㄈㄨˋ","值":"ㄓˊ","券":"ㄑㄩㄢˋ","售":"ㄕㄡˋ","恭":"ㄍㄨㄥ","未":"ㄨㄟˋ","遺":"ㄧˊ","憾":"ㄏㄢˋ","獲":"ㄏㄨㄛˋ","符":"ㄈㄨˊ","草":"ㄘㄠˇ","稿":"ㄍㄠˇ","跳":"ㄊㄧㄠˋ","操":"ㄘㄠ","姊":"ㄗˇ","妳":"ㄋㄧˇ","畢":"ㄅㄧˋ","廠":"ㄔㄤˇ","興":"ㄒㄧㄥˋ","祝":"ㄓㄨˋ","辭":"ㄘˊ","聘":"ㄆㄧㄣˋ","判":"ㄆㄢˋ","銷":"ㄒㄧㄠ","銀":"ㄧㄣˊ","匯":"ㄏㄨㄟˋ","領":"ㄌㄧㄥˇ","故":"ㄍㄨˋ","障":"ㄓㄤˋ","傅":"ㄈㄨˋ","危":"ㄨㄟˊ","險":"ㄒㄧㄢˇ","嚴":"ㄧㄢˊ","產":"ㄔㄢˇ","塞":"ㄙㄞ","勤":"ㄑㄧㄣˊ","曠":"ㄎㄨㄤˋ","僱":"ㄍㄨˋ","罩":"ㄓㄠˋ","戴":"ㄉㄞˋ","帽":"ㄇㄠˋ","倉":"ㄘㄤ","盤":"ㄆㄢˊ","良":"ㄌㄧㄤˊ","遵":"ㄗㄨㄣ","守":"ㄕㄡˇ","籤":"ㄑㄧㄢ","丟":"ㄉㄧㄡ","衛":"ㄨㄟˋ","廁":"ㄘㄜˋ","薦":"ㄐㄧㄢˋ","擦":"ㄘㄚ","烊":"ㄧㄤˋ","剪":"ㄐㄧㄢˇ","髮":"ㄈㄚˇ","染":"ㄖㄢˇ","棕":"ㄗㄨㄥ","吹":"ㄔㄨㄟ","蠟":"ㄌㄚˋ","薄":"ㄅㄠˊ","厚":"ㄏㄡˋ","瀏":"ㄌㄧㄡˊ","精":"ㄐㄧㄥ","香":"ㄒㄧㄤ","摩":"ㄇㄛˊ","癢":"ㄧㄤˇ","鏡":"ㄐㄧㄥˋ","紋":"ㄨㄣˊ","壓":"ㄧㄚ","亂":"ㄌㄨㄢˋ","豬":"ㄓㄨ","廈":"ㄕㄚˋ","这":"ㄓㄜˋ","李":"ㄌㄧˇ","托":"ㄊㄨㄛ","源":"ㄩㄢˊ","脫":"ㄊㄨㄛ","曼":"ㄇㄢˋ","谷":"ㄍㄨˇ","稅":"ㄕㄨㄟˋ","仲":"ㄓㄨㄥˋ","逃":"ㄊㄠˊ","企":"ㄑㄧˋ","趣":"ㄑㄩˋ","械":"ㄒㄧㄝˋ","土":"ㄊㄨˇ","木":"ㄇㄨˋ","財":"ㄘㄞˊ","貿":"ㄇㄠˋ","授":"ㄕㄡˋ","碩":"ㄕㄨㄛˋ","士":"ㄕˋ","攻":"ㄍㄨㄥ","潔":"ㄐㄧㄝˊ","焊":"ㄏㄢˋ","辛":"ㄒㄧㄣ","苦":"ㄎㄨˇ","勞":"ㄌㄠˊ","農":"ㄋㄨㄥˊ","夫":"ㄈㄨ","警":"ㄐㄧㄥˇ","察":"ㄔㄚˊ","震":"ㄓㄣˋ","潮":"ㄔㄠˊ","濕":"ㄕ","掛":"ㄍㄨㄚˋ","急":"ㄐㄧˊ","診":"ㄓㄣˇ","傷":"ㄕㄤ","針":"ㄓㄣ","喉":"ㄏㄡˊ","嚨":"ㄌㄨㄥˊ","敏":"ㄇㄧㄣˇ","嗽":"ㄙㄡˋ","鼻":"ㄅㄧˊ","皮":"ㄆㄧˊ","膚":"ㄈㄨ","抓":"ㄓㄨㄚ","暈":"ㄩㄣ","牙":"ㄧㄚˊ","齒":"ㄔˇ","眼":"ㄧㄢˇ","睛":"ㄐㄧㄥ","痘":"ㄉㄡˋ","耳":"ㄦˇ","婦":"ㄈㄨˋ","懷":"ㄏㄨㄞˊ","孕":"ㄩㄣˋ","血":"ㄒㄩㄝˋ","骨":"ㄍㄨˇ","腰":"ㄧㄠ","灸":"ㄐㄧㄡˇ","藤":"ㄊㄥˊ","踢":"ㄊㄧ","足":"ㄗㄨˊ","籃":"ㄌㄢˊ","羽":"ㄩˇ","毛":"ㄇㄠˊ","穎":"ㄧㄥˇ","游":"ㄧㄡˊ","泳":"ㄩㄥˇ","棒":"ㄅㄤˋ","臭":"ㄔㄡˋ","腐":"ㄈㄨˇ","滷":"ㄌㄨˇ","籠":"ㄌㄨㄥˊ","鼎":"ㄉㄧㄥˇ","豐":"ㄈㄥ","鍋":"ㄍㄨㄛ","冬":"ㄉㄨㄥ","曆":"ㄌㄧˋ","聖":"ㄕㄥˋ","誕":"ㄉㄢˋ","秋":"ㄑㄧㄡ","烤":"ㄎㄠˇ","父":"ㄈㄨˋ","端":"ㄉㄨㄢ","粽":"ㄗㄨㄥˋ","母":"ㄇㄨˇ","跨":"ㄎㄨㄚˋ","墓":"ㄇㄨˋ","蓋":"ㄍㄞˋ","爺":"ㄧㄝˊ","歲":"ㄙㄨㄟˋ","庭":"ㄊㄧㄥˊ","婚":"ㄏㄨㄣ","添":"ㄊㄧㄢ","喂":"ㄨㄟˋ","景":"ㄐㄧㄥˇ","座":"ㄗㄨㄛˋ","封":"ㄈㄥ","兒":"ㄦˊ","田":"ㄊㄧㄢˊ","春":"ㄔㄨㄣ","樹":"ㄕㄨˋ","葉":"ㄧㄝˋ","雪":"ㄒㄩㄝˇ","河":"ㄏㄜˊ","鳥":"ㄋㄧㄠˇ","隻":"ㄓ","狗":"ㄍㄡˇ","湖":"ㄏㄨˊ","羊":"ㄧㄤˊ","世":"ㄕˋ","界":"ㄐㄧㄝˋ","麗":"ㄌㄧˋ","棟":"ㄉㄨㄥˋ","沙":"ㄕㄚ","澡":"ㄗㄠˇ","餓":"ㄜˋ","臉":"ㄌㄧㄢˇ","渴":"ㄎㄜˇ","哭":"ㄎㄨ","孩":"ㄏㄞˊ","聰":"ㄘㄨㄥ","慣":"ㄍㄨㄢˋ","強":"ㄑㄧㄤˊ","劃":"ㄏㄨㄚˋ","典":"ㄉㄧㄢˇ","漢":"ㄏㄢˋ","堡":"ㄅㄠˇ","蘋":"ㄆㄧㄥˊ","瓜":"ㄍㄨㄚ","淇":"ㄑㄧˊ","淋":"ㄌㄧㄣˊ","叉":"ㄔㄚ","刀":"ㄉㄠ","里":"ㄌㄧˇ","腳":"ㄐㄧㄠˇ","踏":"ㄊㄚˋ","柔":"ㄖㄡˊ","婆":"ㄆㄛˊ","伯":"ㄅㄛˊ","叔":"ㄕㄨ","姑":"ㄍㄨ","兄":"ㄒㄩㄥ","姨":"ㄧˊ","孫":"ㄙㄨㄣ","疼":"ㄊㄥˊ","牆":"ㄑㄧㄤˊ","季":"ㄐㄧˋ","害":"ㄏㄞˋ","羞":"ㄒㄧㄡ","笨":"ㄅㄣˋ","輩":"ㄅㄟˋ","蕉":"ㄐㄧㄠ","唸":"ㄋㄧㄢˋ","架":"ㄐㄧㄚˋ","瞭":"ㄌㄧㄠˇ","遍":"ㄅㄧㄢˋ","臥":"ㄨㄛˋ","浴":"ㄩˋ","層":"ㄘㄥˊ","溼":"ㄕ","圓":"ㄩㄢˊ","汙":"ㄨ","朵":"ㄉㄨㄛˇ","蚊":"ㄨㄣˊ","底":"ㄉㄧˇ","菸":"ㄧㄢ","淺":"ㄑㄧㄢˇ","枕":"ㄓㄣˇ","軟":"ㄖㄨㄢˇ","拖":"ㄊㄨㄛ","巾":"ㄐㄧㄣ","肥":"ㄈㄟˊ","皂":"ㄗㄠˋ","汗":"ㄏㄢˋ","夢":"ㄇㄥˋ","池":"ㄔˊ","戲":"ㄒㄧˋ","舞":"ㄨˇ","派":"ㄆㄞˋ","術":"ㄕㄨˋ","彈":"ㄉㄢˋ","吉":"ㄐㄧˊ","育":"ㄩˋ","鼠":"ㄕㄨˇ","鬆":"ㄙㄨㄥ","夕":"ㄒㄧ","俗":"ㄙㄨˊ","化":"ㄏㄨㄚˋ","弄":"ㄋㄨㄥˋ","偷":"ㄊㄡ","脖":"ㄅㄛˊ","痠":"ㄙㄨㄢ","命":"ㄇㄧㄥˋ","神":"ㄕㄣˊ","頻":"ㄆㄧㄣˊ","緒":"ㄒㄩˋ","閒":"ㄒㄧㄢˊ","伸":"ㄕㄣ","謂":"ㄨㄟˋ","階":"ㄐㄧㄝ","溝":"ㄍㄡ","瑣":"ㄙㄨㄛˇ","芒":"ㄇㄤˊ","斷":"ㄉㄨㄢˋ","述":"ㄕㄨˋ","挑":"ㄊㄧㄠ","蔬":"ㄕㄨ","漲":"ㄓㄤˇ","覆":"ㄈㄨˋ","易":"ㄧˋ","控":"ㄎㄨㄥˋ","額":"ㄜˊ","鍊":"ㄌㄧㄢˋ","透":"ㄊㄡˋ","匆":"ㄘㄨㄥ","周":"ㄓㄡ","靠":"ㄎㄠˋ","尊":"ㄗㄨㄣ","坦":"ㄊㄢˇ","墊":"ㄉㄧㄢˋ","混":"ㄏㄨㄣˋ","採":"ㄘㄞˇ","顯":"ㄒㄧㄢˇ","扇":"ㄕㄢˋ","朗":"ㄌㄤˇ","礎":"ㄔㄨˇ","偏":"ㄆㄧㄢ","猶":"ㄧㄡˊ","豫":"ㄩˋ"};
 
 const ITEMDIFF={"ld12": 0.15, "ld21": 0.15, "ld27": 0.3, "ld28": 0.3, "ld33": 0.15, "ld34": 0.45, "lm01": 0.15, "lm03": 0.45, "lm04": 0.3, "lm08": 0.15, "rp02": 0.15, "rp03": 0.3, "rp04": 0.3, "rp06": 0.3, "rt02": 0.45, "rt04": 0.3, "rt05": 0.15, "rt06": 0.45, "rt07": 0.15, "rt08": 0.45, "rt09": 0.3, "rt11": 0.45, "rt12": 0.45, "rt13": 0.45, "q-b1-03": 0.15, "q-b1-04": 0.15, "q-b1-05": 0.3, "q-b1-07": 0.15, "q-b2-01": 0.45, "q-b2-02": 0.3, "q-b2-03": 0.3, "q-b2-04": 0.15, "q-b2-05": 0.3, "q-b2-06": 0.45, "q-b2-07": 0.45, "q-b2-08": 0.45, "q-b2-09": 0.15, "q-b2-10": 0.45, "q-b2-11": 0.45, "q-b2-12": 0.45, "q-b1-18": 0.15, "q-b1-20": 0.15, "q-b1-21": 0.15, "q-b1-24": 0.15, "q-b1-25": 0.3, "q-b1-28": 0.3, "q-b1-29": 0.15, "q-b1-31": 0.45, "q-b1-33": 0.15, "q-b1-42": 0.15, "q-b1-43": 0.45, "q-b1-44": 0.15, "q-b1-53": 0.15, "q-b1-59": 0.3, "q-b1-context-01": 0.15, "q-b1-context-11": 0.15, "q-b1-context-12": 0.3, "q-b1-context-13": 0.15, "q-b1-context-14": 0.15, "q-b1-context-15": 0.3, "q-b1-context-18": 0.3, "q-b1-context-25": 0.15, "q-b1-context-26": 0.15, "q-b1-context-28": 0.3, "q-b1-context-31": 0.3, "q-b1-context-32": 0.45, "q-b1-context-33": 0.3, "q-b1-context-34": 0.15};
+
+// Generated by tools/build-sfx.cjs from assets/sfx/*.mp3 — do not edit.
+// Sounds: Kenney "Interface Sounds" (CC0) — assets/sfx/LICENSE-Kenney-CC0.txt
+var SFX_DATA = {"confirmation_001":"data:audio/mpeg;base64,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","confirmation_004":"data:audio/mpeg;base64,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","error_008":"data:audio/mpeg;base64,SUQzBAAAAAAAIlRTU0UAAAAOAAADTGF2ZjYxLjcuMTAzAAAAAAAAAAAAAAD/+0DAAAAAAAAAAAAAAAAAAAAAAABJbmZvAAAADwAAAAcAAAT/AENDQ0NDQ0NDQ0NDQ0NDY2NjY2NjY2NjY2NjY2OCgoKCgoKCgoKCgoKCgqGhoaGhoaGhoaGhoaGhocHBwcHBwcHBwcHBwcHB4ODg4ODg4ODg4ODg4OD//////////////////wAAAABMYXZjNjEuMTkAAAAAAAAAAAAAAAAkBUAAAAAAAAAE/8dcgWIAAAAAAP/7MMQAAAccP2BUkwABHY+sczDQAAZXAEw2Tt0ogFAoDYrFYrFaNGjRhBAgQIECBBAmTJpg+D4OAgCAIHAfB8H/3cv0gg7AYP93/BAEHIoBET/kMAgAIYQAEujihGGwRRvqbTP/Sad2i/7MvHKZpOG+XCRMi955ySMS6SPs2ZF4vGJd/8upA0JfwkDRX/XCoK/8RBUFVTjnBJC/FP/7MsQDAAhkhWAZloABCJErwzCwABWo5CSCSDRoC76X7wSKU/4ToRKKsL2O8aDqLcujxIY9DJJavKis+bGinWv8vnTjHk6vCBMCH/1kDIQJ/80tSEgbxmGjTJn7htJxrtrKfsLma33FxoBEQc9HEyMCSWfvN4YO5InFP+yve41QNY//uKZrpAUS/qCQGK9HkmBVn/rVKC+mYWcM+i//+zLEBAAIDHlWGYWAAR6fKUMxAABf+nwxAyJdr/ZxFKdpPrkgDwOvyYT3EUbh1f7Cefz0Eod3/m7738JIneBIICEFSvghnViL706j08hDRFBeOwaqZ4/4RhWPW/9aCsC+AViP1r9IMth8/+MmaEPIn/4nQgjDmDmf/lQ3OGhByf//3L5fNy4z///k4XGoIF8//8HzSTPsHlkaaJRD//syxAQACHzNUBmWgAEMEeuDHoAAwQaFQs8f8t84/7/wqQJ14J0SJh+FuE9ExNP8kRwjCmT/+SJJD2Nki9/+SRianDEumv//WYg0oGv+0GQ0oEIAvCKpXWUYTQbtsMbmmi/fg3HoAt6DyAbgqE/6ClWDWQ5M/6e3sORwtlf/3FJTlWTneNA8AgIs/v3Fh6xoz/2vHgkkkkgIO9c79v/7MMQEgAikkVq5hAAA+xhrQxqgAAlwGN/6pkAzo/7+RRnLWfAHABh0H34RgBAFA6X/w8BeLntJIr/5noQwsLSv/6C57mIdluh5cPhUFfwQAYLp4JU3AmYQD7gqAWzxAx18FYLHtF4UoX/3xECKHBF/+Lx8LA8I//3Ljw8lJ//8eERpOeQ/4JiIEw2c/9RMCRYqlpQWkW5Np7OlzP/7MsQGAAkYq1AZhAABAZSsFx5wAOH6N1mk/9mLg6JvAmYCoOn/cXGGqUN/zB1mSaIRQ//zHuFJJpmn/9z03iNpmiuUMgAmHQnWz5vcPJHv6Ll/tpJIEKKUrW+FGK8hT+PnJbUVEvrgKCNuCwYDSfFoPRUK0/lSBMbDX/x4eHxoxL/80dKD5J/5YJCMMAz/wkfMqhGA1wOcAFJoaXr/+zLEBQPHGC7wHYGAAAAANIAAAASKLyvtDsZjMts6yy+BgIU2VBUNKPA0HdYKuxEHeCrssHaIK8se4l3qPURL1HqIlkxBTUUzLjEwMKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq","maximize_006":"data:audio/mpeg;base64,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","select_001":"data:audio/mpeg;base64,SUQzBAAAAAAAIlRTU0UAAAAOAAADTGF2ZjYxLjcuMTAzAAAAAAAAAAAAAAD/+0DAAAAAAAAAAAAAAAAAAAAAAABJbmZvAAAADwAAAAMAAAKMAISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhMLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwv///////////////////////////////////////////wAAAABMYXZjNjEuMTkAAAAAAAAAAAAAAAAkBEsAAAAAAAACjEsoQbkAAAAAAP/7MMQAAAcsaWm0NIABGxWtgx8QAEAABIAACAoA/u4GBvAMDd/d3z3v8FECMVhcExWTt7//UIQh/SiBAgYBAHwfB/EByJwQOaf/4f/kA/Zt7Z4QLB2iZjyxmD/+ZE14ywRoN0j4IGJ1Lo4j5WUUBazRyMDcssY4iQFkYl1JJNu/QSOjrJxFnJ3pmraaLFA+vmH9UuwSqp1kmd9xAP/7MsQDAAgIkWn8wQABFovrfMSYyAh3cA14lIPB6JR8TjkxPSae6dUirBIoZyhjFO2U7hRJSyXK3kV3ZDf7qCNGDtFUNoFNaCCVhNaG0ooaVm9vEICUTNwEDKOicB4M3TpMBS8teOn7KBiWo9paykryqnNap1uUAgdBUsJanrBpRKATpXEUlO1PKoUHXEJV3I8qdFg1BARGiEUqCrb/+zLEBAOH8JkqJL2SANUADcAQjTG35//4qiptlZrohUcyyPosSmAGNkwlE7t5olDsXTU66sDzQlKqrs9l3t60K56z2u21rvZ4fwaBolVVdclVVVTTTKhK0001VVTJgaqoMt/+hCaYYGt/+FA1UQMRVVVRaaaRKUrTTRVVUsDEqohdTEFNRTMuMTAwVVVVVVVVVVVVVVVVVVVVVVVV"};
 
 /* ===== 生活對話教材格式 =====
    SCENE({id, name, my, place, goal, goalMy, words:[[中文, 緬文, 補充?]], axis:{1:[中,緬],2:..,3:..}})
@@ -1795,7 +1933,7 @@ TX('rt13', 'B1+', '外國學生打工', '外國學生在台灣想打工，必須
 const KEY = 'mingbai-zh-v1';
 const HAN = /[㐀-鿿]/;
 function DEF() {
-  return { v: 1, set: { my: true, zy: true, size: 'm', theme: 'auto', voice: '', rate: 1, auto: true },
+  return { v: 1, set: { my: true, zy: true, size: 'm', theme: 'auto', voice: '', rate: 1, auto: true, sfx: true, motion: 'auto' },
     track: null, w: {}, talk: {}, run: null, day: null, units: {}, scr: {}, seen: [], sessions: [], pstat: {}, prSet: { skill: 'listening', mode: 'guided', level: 'B1-', count: 10, sec: 12, type: 'all', fam: true }, log: {}, cat: {}, pskill: {}, ptype: {} };
 }
 function load() {
@@ -1857,32 +1995,56 @@ function MY(text, cls) { // 可「點一下看緬文」的緬文段落
 const ZY = zy;
 
 /* ---- 語音：手機內建中文語音（優先 zh-TW）；單字用真人錄音 ---- */
-const TTS = { ok: 'speechSynthesis' in window, voices: [], seq: 0, watch: null, speaking: false };
+const TTS = { ok: 'speechSynthesis' in window, voices: [], seq: 0, watch: null, pause: null, speaking: false };
 function loadVoices() { if (!TTS.ok) return; TTS.voices = speechSynthesis.getVoices().filter(v => /^(zh|cmn)/i.test(v.lang)); }
 if (TTS.ok) { loadVoices(); speechSynthesis.addEventListener && speechSynthesis.addEventListener('voiceschanged', loadVoices); }
 function pickVoice() {
   const z = TTS.voices;
-  return z.find(v => v.voiceURI === S.set.voice) || z.find(v => /zh[-_]TW/i.test(v.lang)) || z.find(v => /Hant|Taiwan/i.test(v.lang + v.name)) || z[0] || null;
+  return z.find(v => v.voiceURI === S.set.voice) || z.find(v => /^(?:zh|cmn)[-_](?:Hant[-_])?TW\b/i.test(v.lang)) || z.find(v => /Taiwan|臺灣|台灣/i.test(v.name)) || z.find(v => /^(?:zh|cmn)[-_](?:Hans[-_])?CN\b/i.test(v.lang)) || z.find(v => /^cmn(?:[-_]|$)/i.test(v.lang)) || z[0] || null;
 }
 function stopAll() {
   TTS.seq++; if (TTS.watch) clearTimeout(TTS.watch);
+  if (TTS.pause) clearTimeout(TTS.pause);
+  TTS.watch = TTS.pause = null;
   if (TTS.ok) try { speechSynthesis.cancel(); } catch (e) { }
   TTS.speaking = false;
+  stopSfx();
   if (AUD.el) { try { AUD.el.pause(); } catch (e) { } }
 }
-function speak(text, rate, onEnd, pitch) { stopAll(); speakRaw(text, rate, onEnd, pitch, TTS.seq); }
-function speakRaw(text, rate, onEnd, pitch, seq) {
+// 日常對話稍慢、按意群留呼吸；設定的速度仍是倍率，慢速重播再乘 .7/.8。
+// 考試 speakSeq 保留原本語速與整句，答題計時仍從真正播放結束開始。
+function speechParts(text) {
+  return (spoken(text).match(/[^，。！？；：\n!?;]+[，。！？；：\n!?;]*/g) || []).map(t => ({
+    text: t.trim(), pause: /[。！？\n!?]/.test(t.slice(-2)) ? 300 : /[；;]/.test(t.slice(-2)) ? 220 : 140
+  })).filter(p => p.text);
+}
+function speak(text, rate, onEnd, pitch) {
+  stopAll();
+  const seq = TTS.seq, parts = speechParts(text); let i = 0;
+  if (!TTS.ok || !parts.length) { onEnd && onEnd(false); return; }
+  const next = () => {
+    TTS.pause = null;
+    if (seq !== TTS.seq) return;
+    const part = parts[i++];
+    speakRaw(part.text, rate, ok => {
+      if (!ok || i >= parts.length) { onEnd && onEnd(ok); return; }
+      TTS.pause = setTimeout(next, part.pause / (rate || 1));
+    }, pitch, seq, 'conversation');
+  };
+  next();
+}
+function speakRaw(text, rate, onEnd, pitch, seq, profile) {
   text = spoken(text);
   if (!TTS.ok || !text) { onEnd && onEnd(false); return; }
   const u = new SpeechSynthesisUtterance(text);
   const v = pickVoice(); if (v) u.voice = v;
-  u.lang = v ? v.lang : 'zh-TW'; u.rate = (rate || 1) * (S.set.rate || 1); u.pitch = pitch || 1;
+  u.lang = v ? v.lang : 'zh-TW'; u.rate = Math.max(.45, Math.min(1.6, (rate || 1) * (S.set.rate || 1) * (profile === 'conversation' ? .88 : 1))); u.pitch = pitch || 1;
   let settled = false;
-  const done = ok => { if (settled || seq !== TTS.seq) return; settled = true; clearTimeout(TTS.watch); TTS.speaking = false; onEnd && onEnd(ok); };
-  u.onstart = () => { if (seq !== TTS.seq) return; TTS.speaking = true; clearTimeout(TTS.watch); TTS.watch = setTimeout(() => { done(true); }, Math.max(15000, text.length * 700 / (u.rate || 1) + 6000)); };
+  const done = (ok, cancelSpeech) => { if (settled || seq !== TTS.seq) return; settled = true; clearTimeout(TTS.watch); TTS.watch = null; TTS.speaking = false; if (cancelSpeech) try { speechSynthesis.cancel(); } catch (e) {} onEnd && onEnd(ok); };
+  u.onstart = () => { if (seq !== TTS.seq) return; stopSfx(); TTS.speaking = true; clearTimeout(TTS.watch); TTS.watch = setTimeout(() => done(false, true), Math.max(15000, text.length * 700 / (u.rate || 1) + 6000)); };
   u.onend = () => done(true);
   u.onerror = () => done(false);
-  TTS.watch = setTimeout(() => { if (!TTS.speaking) { done(false); try { speechSynthesis.cancel(); } catch (e) { } } }, 8000);
+  TTS.watch = setTimeout(() => { if (!TTS.speaking) done(false, true); }, 8000);
   try { speechSynthesis.resume(); speechSynthesis.speak(u); } catch (e) { done(false); }
 }
 /* 對話：男聲音調低、女聲音調高，一句一句播；中途換頁會停 */
@@ -1891,10 +2053,11 @@ function speakSeq(lines, rate, onEnd) {
   stopAll();
   const seq = TTS.seq; let i = 0, allOk = true;
   const next = () => {
+    TTS.pause = null;
     if (seq !== TTS.seq) return;
     if (i >= lines.length) { onEnd && onEnd(allOk); return; }
     const ln = lines[i++];
-    speakRaw(ln[1], rate, ok => { if (!ok) allOk = false; if (!ok && i === 1) { onEnd && onEnd(false); return; } setTimeout(next, 380); }, PITCH[ln[0]] || 1, seq);
+    speakRaw(ln[1], rate, ok => { if (!ok) allOk = false; if (!ok && i === 1) { onEnd && onEnd(false); return; } TTS.pause = setTimeout(next, 380); }, PITCH[ln[0]] || 1, seq, 'exam');
   };
   next();
 }
@@ -1912,8 +2075,23 @@ function playWord(w, onEnd) {
     const p = a.play(); if (p && p.catch) p.catch(() => { if (!fired) { fired = true; speak(w.zh, 1, onEnd); } });
   } else speak(w.zh, 1, onEnd);
 }
+/* 沿用按鈕與積木的 Kenney CC0 音效資料，由 assemble.cjs 內嵌。
+   不碰授權單字錄音；語音、意群停頓與真人錄音播放時保持安靜。 */
 const SFX = {};
-function sfx(name) { try { const a = SFX[name] || (SFX[name] = new Audio('audio/' + name + '.mp3')); a.currentTime = 0; a.volume = .6; a.play().catch(() => { }); } catch (e) { } }
+const SFX_NAMES = { pass: ['confirmation_001', .32], fail: ['error_008', .22], click: ['select_001', .18], done: ['confirmation_004', .32] };
+function stopSfx() {
+  Object.keys(SFX).forEach(k => { try { SFX[k].pause(); } catch (e) {} });
+}
+function sfx(name) {
+  if (S.set.sfx === false || TTS.speaking || TTS.pause || (TTS.ok && speechSynthesis.speaking) || (AUD.el && !AUD.el.paused)) return;
+  const def = SFX_NAMES[name]; if (!def) return;
+  try {
+    const src = typeof SFX_DATA !== 'undefined' && SFX_DATA[def[0]];
+    if (!src) return;
+    const a = SFX[name] || (SFX[name] = new Audio(src)); a.currentTime = 0; a.volume = def[1];
+    a.play().catch(() => {});
+  } catch (e) {}
+}
 const MISSING_AUDIO = new Set();
 
 /* ---- 資料 ---- */
@@ -2003,17 +2181,19 @@ VIEWS.words = function () {
 };
 
 VIEWS.book = function (p) {
-  const b = book(p.id);
+  const b = book(p.id), attempted = b.units.filter(u => S.units[u.key] != null).length;
+  const current = b.units.find(u => S.units[u.key] == null);
   let h = pageHead('', bookName(b));
-  h += '<div class="list">';
-  b.units.forEach((u, i) => {
-    const best = S.units[u.key];
-    const pr = wordProgress(u.ids);
-    const preview = u.ids.slice(0, 3).map(id => WORDS[id].zh).join('・');
-    h += '<button class="li" data-a="go" data-v="unit" data-id="' + b.id + '" data-u="' + i + '"><span class="grow">' + B(unitName(b, u)) + '<span class="small muted" style="display:block">' + esc(preview) + '</span></span>' +
-      '<span class="small">' + (best != null ? '<span class="pill' + (best === u.ids.length ? ' ok' : '') + '">' + best + '/' + u.ids.length + '</span>' : '<span class="muted">' + pr.seen + '/' + pr.n + '</span>') + '</span><span class="arr">›</span></button>';
-  });
-  return h + '</div>';
+  h += '<div class="journey-summary">' + B('စမ်းသပ်ပြီး ' + MYNUM(attempted) + ' / ' + MYNUM(b.units.length)) + '</div>' + journeyProgress(attempted, b.units.length, bookName(b));
+  h += learningMap(b.units.map((u, i) => {
+    const best = S.units[u.key], seen = wordProgress(u.ids);
+    return { name: unitName(b, u), ico: ICON.book,
+      sub: MYNUM(u.ids.length) + ' လုံး · ' + u.ids.slice(0, 3).map(id => WORDS[id].zh).join('・'),
+      state: best != null ? 'done' : current && current.key === u.key ? 'current' : 'upcoming',
+      badge: best != null ? 'စမ်းသပ်ပြီး · မှန် ' + MYNUM(best) + ' / ' + MYNUM(u.ids.length) : seen.seen ? 'လေ့လာပြီး ' + MYNUM(seen.seen) + ' / ' + MYNUM(seen.n) : 'စကားလုံး → စမ်းသပ်',
+      data: { a: 'go', v: 'unit', id: b.id, u: i } };
+  }), bookName(b) + ' အဆင့်များ');
+  return h;
 };
 
 VIEWS.unit = function (p) {
@@ -2037,7 +2217,12 @@ function startStudy(ids, opt) {
   NAV.sheet = Object.assign({ v: 'study', ids: ids.slice(), i: 0, recall: false, show: false, title: 'လေ့လာမယ်', then: null, tag: null, unit: null }, opt || {});
   render(); autoPlayCard();
 }
-function autoPlayCard() { const s = NAV.sheet; if (s && s.v === 'study' && S.set.auto) setTimeout(() => playWord(WORDS[s.ids[s.i]]), 150); }
+function autoPlayCard() {
+  const s = NAV.sheet, i = s && s.i, seq = TTS.seq;
+  if (s && s.v === 'study' && S.set.auto) setTimeout(() => {
+    if (NAV.sheet === s && s.i === i && TTS.seq === seq) playWord(WORDS[s.ids[i]]);
+  }, 150);
+}
 SHEETS.study = function (s) {
   const id = s.ids[s.i], w = WORDS[id];
   const show = !s.recall || s.show;
@@ -2230,35 +2415,40 @@ function recommendVar() {
 }
 
 VIEWS.talk = function () {
-  let h = '<p class="muted ui" style="margin:4px 2px 14px">' + esc('စာအုပ်ထဲမပါပေမယ့် နေ့တိုင်းကြားရတဲ့ စကား။ တစ်ဖက်လူကို အရင်နားထောင်ပြီး ဘယ်လိုပြန်ပြောမလဲ ရွေး။') + '</p>';
+  const total = TALK.reduce((n, sc) => n + sc.vars.length, 0);
+  const done = TALK.reduce((n, sc) => n + sceneDone(sc), 0);
+  const currentScene = TALK.find(sc => sceneDone(sc) < sc.vars.length) || TALK[0];
+  let h = '<div class="journey-header"><div class="grow"><span class="map-current-label">' + B('နေ့စဉ် စကားပြော') + '</span><h1>' + B('တစ်ယူနစ်ချင်း ရှေ့ဆက်မယ်') + '</h1></div>' + MASCOT('smile', 64) + '</div>';
+  h += '<div class="journey-summary">' + B('ပြီးပြီ ' + MYNUM(done) + ' / ' + MYNUM(total)) + '<span>' + B('ယူနစ် ' + MYNUM(TALK.length) + ' ခု') + '</span></div>' + journeyProgress(done, total, 'စကားပြော ပြီးမြောက်မှု');
   if (S.run && !S.run.end) {
     const f = findVar(S.run.vid);
-    if (f) h += '<button class="bigcard pri" style="margin-bottom:12px" data-a="tresume"><span class="ico">' + ICON.play + '</span><span class="grow"><span class="t">ဆက်လုပ်မယ်</span><span class="d">' + esc(f.sc.my) + '</span></span></button>';
+    if (f) h += '<button class="resume-card" data-a="tresume"><span class="ico">' + ICON.play + '</span><span class="grow">' + B('စကားပြော ဆက်လုပ်မယ်') + '<span class="map-sub">' + B(f.sc.my) + '</span></span><span aria-hidden="true">›</span></button>';
   }
-  TALK.forEach(sc => {
-    const n = sceneDone(sc);
-    h += '<button class="bigcard" data-a="go" data-v="scene" data-id="' + sc.id + '"><span class="ico">' + (ICON[SC_ICON[sc.id]] || ICON.chat) + '</span><span class="grow"><span class="t">' + esc(sc.my) + '</span><span class="d">' + esc(sc.name) + '</span>' +
-      '<span class="dots" style="margin-top:6px">' + sc.vars.map(v => { const r = varRank(v.id); return '<i class="' + (r === 'text' ? 't' : r ? 'l' : '') + '"></i>'; }).join('') + '</span></span><span class="arr">›</span></button>';
+  h += '<div class="unit-list">';
+  TALK.forEach((sc, i) => {
+    const n = sceneDone(sc), full = n === sc.vars.length, current = sc.id === currentScene.id && !full;
+    h += '<button class="unit-card' + (full ? ' done' : current ? ' current' : '') + '" data-a="go" data-v="scene" data-id="' + sc.id + '">' +
+      '<span class="unit-number" aria-hidden="true">' + (full ? ICON.check : MYNUM(i + 1)) + '</span><span class="grow"><span class="map-current-label">' + B('ယူနစ် ' + MYNUM(i + 1)) + '</span><span class="map-title">' + B(sc.my) + '</span>' +
+      '<span class="map-sub">' + B('ပြီးပြီ ' + MYNUM(n) + ' / ' + MYNUM(sc.vars.length)) + '</span><span class="unit-progress"><i style="width:' + Math.round(n / sc.vars.length * 100) + '%"></i></span>' +
+      (current ? '<span class="map-badge">' + B('ဒီယူနစ်ကနေ စမယ်') + '</span>' : '') + '</span><span class="map-arrow" aria-hidden="true">›</span></button>';
   });
-  return h;
+  return h + '</div><p class="map-footnote">' + B('ယူနစ်တိုင်း စမ်းလို့ရတယ်။ စာကြည့်ပြီး ပြီးမြောက်တာလည်း မှတ်ထားပေးမယ်။') + '</p>';
 };
 
 VIEWS.scene = function (p) {
-  const sc = TALK.find(x => x.id === p.id), nv = nextVar(sc);
+  const sc = TALK.find(x => x.id === p.id), nv = nextVar(sc), completed = sceneDone(sc);
+  const vars = sc.vars.slice().sort((a, b) => a.lv - b.lv || Number(!!a.tr) - Number(!!b.tr));
   let h = pageHead('', sc.my);
-  h += '<div class="card paper"><div class="ui">' + esc('ရည်မှန်းချက်：' + sc.goalMy) + '</div><div class="small muted" style="margin-top:4px">' + zy(sc.place) + '</div></div>';
-  h += '<button class="btn pri block" style="margin-top:14px;min-height:66px;font-size:1.15rem" data-a="tstart" data-id="' + nv.id + '">' + B('စမယ်（အဆင့် ' + MYNUM(nv.lv) + (nv.tr ? '・ပြောပုံပြောင်း' : '') + '）') + '</button>';
-  h += '<button class="btn block" style="margin-top:10px" data-a="scwords" data-id="' + sc.id + '">' + B('ဒီနေရာမှာ သုံးတဲ့ စကားလုံး ' + MYNUM(sc.words.length) + ' လုံး အရင်လေ့လာမယ်') + '</button>';
-  h += '<details class="more"><summary>' + esc('အဆင့်အားလုံး ›') + '</summary>';
-  [1, 2, 3].forEach(lv => {
-    h += '<div class="card" style="margin-top:10px"><div class="ui" style="font-weight:600">' + esc('အဆင့် ' + MYNUM(lv)) + '</div><div class="small muted ui">' + esc(sc.axis[lv][1]) + '</div><div class="btns two" style="margin-top:10px">';
-    sc.vars.filter(v => v.lv === lv).forEach(v => {
-      const r = varRank(v.id);
-      h += '<button class="btn sm' + (r ? '' : ' pri') + '" data-a="tstart" data-id="' + v.id + '">' + B((v.tr ? 'ပြောပုံပြောင်း' : 'ပုံမှန်') + (r ? ' ✓' : '')) + '</button>';
-    });
-    h += '</div></div>';
-  });
-  h += '</details>';
+  h += '<div class="map-unit-header"><span class="map-current-label">' + B('ယူနစ် ' + MYNUM(TALK.indexOf(sc) + 1)) + '</span><p>' + B(sc.goalMy) + '</p><div class="journey-summary">' + B('ပြီးပြီ ' + MYNUM(completed) + ' / ' + MYNUM(vars.length)) + '</div>' + journeyProgress(completed, vars.length, sc.my) + '</div>';
+  h += learningMap(vars.map(v => {
+    const r = varRank(v.id);
+    const labels = { text: 'စာကြည့်ပြီး ပြီးမြောက်', repair: 'အကူအညီတောင်းပြီး ပြီးမြောက်', listen: 'နားထောင်ရုံနဲ့ ပြီးမြောက်' };
+    return { name: 'အဆင့် ' + MYNUM(v.lv) + ' · ' + (v.tr ? 'ပြောပုံပြောင်း' : 'ပုံမှန်'),
+      sub: sc.axis[v.lv][1], ico: v.tr ? ICON.repeat : ICON.chat,
+      state: r ? 'done' : v.id === nv.id ? 'current' : 'upcoming',
+      badge: r ? labels[r] + ' · ပြန်လေ့ကျင့်' : null, data: { a: 'tstart', id: v.id } };
+  }), sc.my + ' အဆင့်များ');
+  h += '<button class="btn block" data-a="scwords" data-id="' + sc.id + '">' + ICON.book + B('ဒီနေရာမှာ သုံးတဲ့ စကားလုံး ' + MYNUM(sc.words.length) + ' လုံး') + '</button>';
   return h;
 };
 
@@ -2279,10 +2469,16 @@ function enterNode() {
   if (n.t === 'hear' && n.q) S.run.ns.qord = n.q.map(q => shuffle(q.o.map((_, i) => i)));
   if (n.t === 'end') finishTalk();
 }
-function talkAuto() { const n = S.run && curNode(); if (n && n.t === 'hear' && S.set.auto) setTimeout(() => hearPlay(1), 250); }
+function talkAuto() {
+  const run = S.run, ns = run && run.ns, n = run && curNode(), seq = TTS.seq;
+  if (n && n.t === 'hear' && S.set.auto) setTimeout(() => {
+    if (S.run === run && run.ns === ns && NAV.sheet && NAV.sheet.v === 'talk' && TTS.seq === seq) hearPlay(1);
+  }, 250);
+}
 function hearText(n) { return S.run.ns.easy && n.easy ? n.easy : n.zh; }
 function hearPlay(rate) {
-  const n = curNode(); const b = $('.bub.cur'); if (b) b.classList.add('playing');
+  if (!S.run || !NAV.sheet || NAV.sheet.v !== 'talk') return;
+  const n = curNode(); if (n.t !== 'hear') return; const b = $('.bub.cur'); if (b) b.classList.add('playing');
   speak(hearText(n), rate, () => { const b2 = $('.bub.cur'); if (b2) b2.classList.remove('playing'); });
 }
 function talkGo(go) {
@@ -2408,9 +2604,12 @@ function talkAct(a, k) {
   else if (a === 'tmode') { r.mode = r.mode === 'full' ? 'listen' : 'full'; if (r.mode === 'full') { ns.show = true; r.text = true; } }
   else if (a === 'trep') {
     r.help++;
-    if (k === 'easy') { ns.easy = true; speak(REPAIR.easy[0], 1.05, () => setTimeout(() => hearPlay(.9), 250)); }
+    const replay = rate => { const seq = TTS.seq; setTimeout(() => {
+      if (S.run === r && r.ns === ns && NAV.sheet && NAV.sheet.v === 'talk' && TTS.seq === seq) hearPlay(rate);
+    }, 320); };
+    if (k === 'easy') { ns.easy = true; speak(REPAIR.easy[0], 1, ok => { if (ok) replay(.9); }); }
     else if (n.bc) { hearPlay(k === 'slow' ? .7 : 1); }
-    else speak(REPAIR[k][0], 1.05, () => setTimeout(() => hearPlay(k === 'slow' ? .7 : 1), 250));
+    else speak(REPAIR[k][0], 1, ok => { if (ok) replay(k === 'slow' ? .7 : 1); });
   }
   else if (a === 'tq') {
     const q = n.q[ns.qi]; ns.sel = +k;
@@ -2872,7 +3071,7 @@ function MASCOT(mood, size, cls) {
     '<ellipse cx="31" cy="58" rx="5.5" ry="3.4" fill="#F4C7CC"/><ellipse cx="69" cy="58" rx="5.5" ry="3.4" fill="#F4C7CC"/>' + eyes + mouth + '</svg>';
 }
 function confetti() {
-  if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if (S.set.motion === 'reduce' || (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches)) return;
   const box = document.createElement('div'); box.className = 'confetti';
   const cols = ['#3B5A82', '#7FA3CF', '#F4C7CC', '#F6D98B', '#CFE6D3', '#D8C7A3'];
   for (let i = 0; i < 46; i++) {
@@ -2920,7 +3119,36 @@ function ensureDay() {
   S.day = { d: d, newIds: newIds, rev: rev, ui: ui, talk: recommendVar(), done: {} };
   save(); return S.day;
 }
-function doneTask(tag) { if (S.day && S.day.d === today()) { S.day.done[tag] = 1; save(); } }
+function doneTask(tag) {
+  if (S.day && S.day.d === today()) {
+    S.day.done[tag] = 1;
+    if (S.day.skip) delete S.day.skip[tag];
+    save();
+  }
+}
+function skipTask(tag) {
+  const day = ensureDay();
+  if (!day.done[tag]) { day.skip = day.skip || {}; day.skip[tag] = 1; save(); }
+}
+/* 同一份地圖元件用於今日路線、生活對話與單字單元。進度只讀真實存檔。 */
+function learningMap(items, label) {
+  return '<ol class="learning-map" aria-label="' + esc(label) + '">' + items.map((x, i) => {
+    const state = x.state || 'upcoming', current = state === 'current';
+    const attrs = Object.keys(x.data || {}).map(k => ' data-' + k + '="' + esc(x.data[k]) + '"').join('');
+    return '<li class="map-stop ' + state + '" style="--offset:' + [0, 12, 24, 12][i % 4] + 'px">' +
+      (i < items.length - 1 ? '<svg class="map-connector" viewBox="0 0 100 60" preserveAspectRatio="none" aria-hidden="true"><path d="M ' + (32 + [0, 12, 24, 12][i % 4]) + ' 0 C ' + (32 + [0, 12, 24, 12][i % 4]) + ' 30, ' + (32 + [0, 12, 24, 12][(i + 1) % 4]) + ' 30, ' + (32 + [0, 12, 24, 12][(i + 1) % 4]) + ' 60"/></svg>' : '') +
+      '<button class="map-node"' + attrs + (current ? ' aria-current="step"' : '') + '>' +
+      '<span class="map-disc" aria-hidden="true">' + (state === 'done' ? ICON.check : state === 'skipped' ? '↷' : x.ico || MYNUM(i + 1)) + '</span>' +
+      '<span class="map-copy"><span class="map-title">' + B(x.name) + '</span>' +
+      (x.sub ? '<span class="map-sub">' + B(x.sub) + '</span>' : '') +
+      '<span class="map-badge">' + B(x.badge || (state === 'done' ? 'ပြီးပြီ' : state === 'skipped' ? 'ကျော်ထားတယ် · ပြန်လုပ်လို့ရတယ်' : current ? 'ဒီကနေ ဆက်မယ်' : 'နောက်အဆင့် · စမ်းလို့ရတယ်')) + '</span></span>' +
+      '<span class="map-arrow" aria-hidden="true">›</span></button></li>';
+  }).join('') + '</ol>';
+}
+function journeyProgress(n, total, label) {
+  const pct = total ? Math.round(n / total * 100) : 0;
+  return '<div class="journey-progress" role="progressbar" aria-label="' + esc(label) + '" aria-valuemin="0" aria-valuemax="' + total + '" aria-valuenow="' + n + '"><i style="width:' + pct + '%"></i></div>';
+}
 /* 今天的步驟（沒有內容的步驟自動略過） */
 function daySteps() {
   const day = ensureDay(), tv = findVar(day.talk);
@@ -2932,38 +3160,41 @@ function daySteps() {
     { t: 'listen', ico: ICON.ear, name: 'နားထောင် မေးခွန်း ၅ ခု', d: 'တရုတ်လို နားထောင်ပြီး မေးခွန်းဖြေ။ ထပ်နားထောင်လို့ရတယ်။', on: true }
   ].filter(x => x.on);
 }
-function nextStep() { const day = ensureDay(); return daySteps().find(x => !day.done[x.t]); }
+function nextStep() { const day = ensureDay(); return daySteps().find(x => !day.done[x.t] && !(day.skip && day.skip[x.t])); }
 
 VIEWS.today = function () {
-  const day = ensureDay(), steps = daySteps();
-  const doneN = steps.filter(x => day.done[x.t]).length, nx = nextStep();
-  const hr = new Date(now() + 8 * 3600e3).getUTCHours();
-  const hi = hr < 11 ? 'မင်္ဂလာနံနက်ခင်းပါ' : hr < 18 ? 'မင်္ဂလာနေ့လယ်ခင်းပါ' : 'မင်္ဂလာညနေခင်းပါ';
-  const say = !nx ? 'ဒီနေ့ အရမ်းတော်တယ်！' : doneN ? 'ဆက်လုပ်ကြမယ်။ နည်းနည်းပဲ ကျန်တော့တယ်။' : hi + '။ ဒီနေ့လည်း အတူတူ လေ့လာကြမယ်။';
-  let h = '<div class="hello-row">' + MASCOT(!nx ? 'cheer' : 'smile', 70, 'bob') + '<div class="bubble grow">' + esc(say) + '</div></div>';
+  const day = ensureDay(), steps = daySteps(), nx = nextStep();
+  const doneN = steps.filter(x => day.done[x.t]).length;
+  const skipN = steps.filter(x => !day.done[x.t] && day.skip && day.skip[x.t]).length;
+  const allDone = doneN === steps.length;
+  const say = allDone ? 'ဒီနေ့ အရမ်းတော်တယ်！' : 'တစ်ဆင့်ချင်း လေ့လာကြမယ်။';
+  let h = '<div class="journey-header"><div class="grow"><span class="map-current-label">' + B('ဒီနေ့ လေ့လာရေးလမ်းကြောင်း') + '</span><h1>' + B(say) + '</h1></div>' + MASCOT(allDone ? 'cheer' : 'smile', 64) + '</div>';
+  h += '<div class="journey-summary">' + B('ပြီးပြီ ' + MYNUM(doneN) + ' / ' + MYNUM(steps.length)) +
+    (skipN ? '<span>' + B('ကျော်ထား ' + MYNUM(skipN)) + '</span>' : '<span>' + B('၁၅ မိနစ်လောက်') + '</span>') + '</div>' + journeyProgress(doneN, steps.length, 'ဒီနေ့ ပြီးမြောက်မှု');
   if (S.run && !S.run.end) {
-    h += '<button class="bigcard" style="margin-top:14px" data-a="tresume"><span class="ico">' + ICON.chat + '</span><span class="grow"><span class="t">စကားပြော ဆက်လုပ်မယ်</span><span class="d">' + esc(findVar(S.run.vid) ? findVar(S.run.vid).sc.my : '') + '</span></span></button>';
+    const f = findVar(S.run.vid);
+    if (f) h += '<button class="resume-card" data-a="tresume"><span class="ico">' + ICON.play + '</span><span class="grow">' + B('စကားပြော ဆက်လုပ်မယ်') + '<span class="map-sub">' + B(f.sc.my) + '</span></span><span aria-hidden="true">›</span></button>';
   }
-  const ring = '<span class="ring">' + steps.map(x => '<i class="' + (day.done[x.t] ? 'on' : '') + '"></i>').join('') + '</span>';
-  if (nx) {
-    h += '<button class="hero" data-a="flowstart"><span class="big">' + (doneN ? 'ဆက်လုပ်မယ်' : 'စမယ်') + '</span><span class="sub">' + esc(doneN ? 'ပြီးပြီ ' + MYNUM(doneN) + ' / ' + MYNUM(steps.length) + '・နောက်တစ်ခု：' + nx.name : 'ဒီနေ့ ၁၅ မိနစ်လောက်・အဆင့် ' + MYNUM(steps.length) + ' ခု') + '</span>' + ring + '</button>';
-  } else {
-    h += '<div class="hero done"><span class="big">ဒီနေ့ ပြီးပါပြီ ✓</span><span class="sub">အရမ်းတော်တယ်။ မနက်ဖြန် ပြန်တွေ့မယ်။</span>' + ring + '</div>' +
-      '<button class="btn block" style="margin-top:12px" data-a="extra">' + B('နောက်ထပ် စကားပြော လေ့ကျင့်မယ်') + '</button>';
-  }
-  h += '<div class="list steps">';
-  steps.forEach((x, i) => {
-    const dn = day.done[x.t];
-    h += '<button class="step' + (dn ? ' done' : '') + (nx && nx.t === x.t ? ' now' : '') + '" data-a="task" data-t="' + x.t + '"><span class="ck">' + (dn ? '✓' : MYNUM(i + 1)) + '</span><span class="grow">' + B(x.name) + '</span></button>';
-  });
-  h += '</div>';
+  if (nx) h += '<button class="btn pri block journey-cta" data-a="flowstart">' + ICON.play + B(doneN || skipN ? 'ဆက်လုပ်မယ်' : 'စမယ်') + '</button>';
+  else h += '<div class="journey-finished">' + B(allDone ? 'ဒီနေ့ ပြီးပါပြီ ✓' : 'ဒီနေ့ လမ်းကြောင်း အဆုံးရောက်ပြီ') + '</div>';
+  h += learningMap(steps.map((x, i) => ({
+    name: x.name, ico: x.ico, sub: 'အဆင့် ' + MYNUM(i + 1) + ' · ' + x.d,
+    state: day.done[x.t] ? 'done' : day.skip && day.skip[x.t] ? 'skipped' : nx && nx.t === x.t ? 'current' : 'upcoming',
+    data: { a: 'flowtask', t: x.t }
+  })), 'ဒီနေ့ အဆင့်များ');
+  if (!nx && skipN) h += '<button class="btn block" data-a="retrySkipped">' + B('ကျော်ထားတဲ့ အဆင့်တွေ ပြန်လုပ်မယ်') + '</button>';
+  h += '<button class="journey-link" data-a="tab" data-t="talk"><span>' + ICON.chat + B('စကားပြော ယူနစ်များ') + '</span><span aria-hidden="true">›</span></button>';
   return h;
 };
+
 function runTask(t) {
   const day = ensureDay();
   if (t === 'new') startStudy(day.newIds, { then: 'quiz', tag: 'new', title: 'စကားလုံးအသစ်' });
   else if (t === 'rev') startStudy(day.rev, { recall: true, tag: 'rev', title: 'ပြန်လေ့ကျင့်' });
-  else if (t === 'talk') startTalk(day.talk, 'talk');
+  else if (t === 'talk') {
+    if (S.run && !S.run.end && S.run.vid === day.talk) { S.run.tag = 'talk'; NAV.sheet = { v: 'talk' }; save(); render(); talkAuto(); }
+    else startTalk(day.talk, 'talk');
+  }
   else if (t === 'ui') startStudy(day.ui, { then: 'screens', tag: null, title: 'ဖုန်းထဲက စကားလုံး' });
   else if (t === 'listen') startPractice({ skill: 'listening', mode: 'guided', count: 5, level: 'all', type: 'all', tag: 'listen' });
 }
@@ -2976,8 +3207,12 @@ SHEETS.step = function (s) {
     '<button class="linkbtn" data-a="stepskip">' + esc('ဒါကို ကျော်မယ်') + '</button>';
 };
 SHEETS.alldone = function () {
-  return '<div class="shead"><button class="ib" data-a="close" aria-label="close">' + ICON.x + '</button><span class="grow"></span></div><div class="intro fade">' + MASCOT('cheer', 130, 'bob') + '<h1>ဒီနေ့ ပြီးပါပြီ</h1><p>အရမ်းတော်တယ်။ နေ့တိုင်း နည်းနည်းစီ လုပ်ရင် တိုးတက်မယ်။</p></div><button class="btn pri block" style="margin-top:22px" data-a="close">' + B('ပင်မစာမျက်နှာ') + '</button>';
+  const day = ensureDay(), steps = daySteps(), done = steps.filter(x => day.done[x.t]).length;
+  const all = done === steps.length;
+  return '<div class="shead"><button class="ib" data-a="close" aria-label="close">' + ICON.x + '</button><span class="grow"></span></div><div class="intro fade">' + MASCOT(all ? 'cheer' : 'happy', 110) + '<h1>' + B(all ? 'ဒီနေ့ ပြီးပါပြီ' : 'ဒီနေ့ လမ်းကြောင်း အဆုံးရောက်ပြီ') + '</h1><p>' + B('ပြီးပြီ ' + MYNUM(done) + ' / ' + MYNUM(steps.length)) + '</p><p>' + B(all ? 'နေ့တိုင်း နည်းနည်းစီ လုပ်ရင် တိုးတက်မယ်။' : 'ကျော်ထားတာတွေ နောက်မှ ပြန်လုပ်လို့ရတယ်။') + '</p></div>' +
+    (all ? '' : '<button class="btn block" data-a="retrySkipped">' + B('ကျော်ထားတာတွေ ပြန်လုပ်မယ်') + '</button>') + '<button class="btn pri block" style="margin-top:18px" data-a="close">' + B('ပင်မစာမျက်နှာ') + '</button>';
 };
+
 function flowNext() {
   stopAll();
   if (S.run && S.run.end) { S.run = null; save(); }
@@ -2996,7 +3231,8 @@ VIEWS.me = function () {
   h += '<div class="list">';
   h += sg('size', 'စာလုံးအရွယ်', [['s', 'အသေး'], ['m', 'အလတ်'], ['l', 'အကြီး']]);
   h += sw('my', 'မြန်မာ ဘာသာပြန် ပြမယ်') + sw('zy', 'ဇူယင်（ㄅㄆㄇ）ပြမယ်') + sw('auto', 'အသံ အလိုအလျောက် ဖွင့်မယ်');
-  h += sg('rate', 'စကားပြော အမြန်နှုန်း', [['0.8', 'နှေး'], ['1', 'ပုံမှန်'], ['1.15', 'မြန်']]);
+  h += sg('rate', 'စကားပြော အမြန်နှုန်း', [['0.8', 'နှေး'], ['1', 'သဘာဝ'], ['1.15', 'မြန်']]);
+  h += sw('sfx', 'ခလုတ်နှင့် အဖြေ အသံ') + sg('motion', 'လှုပ်ရှားမှု', [['auto', 'ပုံမှန်'], ['reduce', 'လျှော့မယ်']]);
   h += sg('theme', 'အရောင်', [['auto', 'အလိုအလျောက်'], ['light', 'အဖြူ'], ['dark', 'အမည်း']]);
   const vs = TTS.voices;
   h += '<div class="set" style="flex-direction:column;align-items:stretch;gap:8px"><span class="setlbl">တရုတ် အသံ</span><span class="row"><select class="sel grow" style="max-width:none" id="voiceSel"><option value="">' + esc('အလိုအလျောက်（ထိုင်ဝမ်）') + '</option>' + vs.map(v => '<option value="' + esc(v.voiceURI) + '"' + (v.voiceURI === set.voice ? ' selected' : '') + '>' + esc(v.name + ' ' + v.lang) + '</option>').join('') + '</select><button class="ib" data-a="say" data-t="你好，我們開始練習吧。">' + ICON.sound + '</button></span></div>';
@@ -3030,6 +3266,7 @@ function applySettings() {
   r.setAttribute('data-size', S.set.size);
   document.body.classList.toggle('hide-my', !S.set.my);
   document.body.classList.toggle('hide-zy', !S.set.zy);
+  r.classList.toggle('motion-reduce', S.set.motion === 'reduce');
 }
 let lastKey = '';
 function render() {
@@ -3049,8 +3286,8 @@ function render() {
   NAV.dir = null;
   $('#app').innerHTML = '<main class="' + (sh ? 'sheet' : 'page') + ' ' + anim + '">' + h + '</main>';
   if (sh && !sh._cele) {
-    const win = sh.v === 'alldone' || sh.v === 'done' || (sh.v === 'qres' && sh.res.every(r => r.ok)) || (sh.v === 'prres' && sh.src.ans.length && sh.src.ans.filter(a => a.ok).length / sh.src.ans.length >= .8) || (sh.v === 'talk' && S.run && S.run.end);
-    if (win) { sh._cele = true; setTimeout(confetti, 120); }
+    const win = (sh.v === 'alldone' && daySteps().every(x => ensureDay().done[x.t])) || sh.v === 'done' || (sh.v === 'qres' && sh.res.every(r => r.ok)) || (sh.v === 'prres' && sh.src.ans.length && sh.src.ans.filter(a => a.ok).length / sh.src.ans.length >= .8) || (sh.v === 'talk' && S.run && S.run.end);
+    if (win) { sh._cele = true; sfx('done'); setTimeout(confetti, 120); }
   }
   $('#nav').innerHTML = '<div class="nav-in">' + TABS.map(t => '<button class="' + (NAV.tab === t[0] ? 'on' : '') + '" data-a="tab" data-t="' + t[0] + '">' + t[2] + '<span class="lbl" lang="my">' + esc(t[1]) + '</span></button>').join('') + '</div>';
   const key = key0;
@@ -3068,7 +3305,9 @@ const ACTS = {
   flowstart: () => { NAV.flow = true; const nx = nextStep(); if (nx) { NAV.sheet = { v: 'step', t: nx.t }; render(); } },
   flownext: () => { const s = NAV.sheet; if (s) { clearTimeout(s.timer); clearInterval(s.tick); } flowNext(); },
   stepgo: () => runTask(NAV.sheet.t),
-  stepskip: () => { doneTask(NAV.sheet.t); flowNext(); },
+  stepskip: () => { skipTask(NAV.sheet.t); flowNext(); },
+  flowtask: el => { stopAll(); NAV.flow = true; NAV.sheet = { v: 'step', t: el.dataset.t }; render(); },
+  retrySkipped: () => { stopAll(); const day = ensureDay(); day.skip = {}; save(); NAV.sheet = null; NAV.flow = false; NAV.stack = []; NAV.tab = 'today'; render(); },
   extra: () => { const tv = recommendVar(); startTalk(tv); },
   wtab: el => { NAV.wtab = el.dataset.t; render(); },
   nf: el => { NAV.nf = el.dataset.f; render(); },
