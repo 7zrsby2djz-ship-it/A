@@ -60,7 +60,7 @@ function recommend() {
   const tk = pick(TASKS); return {tid:tk.id, lv:1 + (Math.random() * tk.levels | 0), why:'自由練習'};
 }
 function pickVariant(tid, lv) {
-  const s = lvPeek(tid, lv), seen = new Set(s ? s.seen : []), vs = TASK[tid].v[lv];
+  const s = lvPeek(tid, lv), seen = new Set(s ? s.seen : []), vs = TASK[tid].v[lv].filter(v => !v.courseOnly);
   const base = vs.filter(v => !v.tr), tr = vs.filter(v => v.tr);
   const ub = base.filter(v => !seen.has(v.id)); if (ub.length) return ub[0];
   const ut = tr.filter(v => !seen.has(v.id)); if (ut.length) return ut[0];
@@ -69,11 +69,40 @@ function pickVariant(tid, lv) {
 
 /* ---------- 執行狀態（存在 S.run，可中斷接續） ---------- */
 let RUN_END = null, SIT = 0;
-function startRun(tid, lv, vid) {
+const TASK_AUDIO = {gen:0,a:null,timer:0,settle:null};
+let RUN_AUDIO_READY = '';
+function taskAudioClip(c) { return (globalThis.ORAL_AUDIO?.items || []).find(it => it.chunks.join('|') === c.join('|')); }
+function taskAudioAvailable(c) { return canSpeak || !!taskAudioClip(c); }
+function taskAudioStop() {
+  TASK_AUDIO.gen++;clearTimeout(TASK_AUDIO.timer);TASK_AUDIO.timer=0;
+  if(TASK_AUDIO.a){TASK_AUDIO.a.pause();TASK_AUDIO.a.onended=null;TASK_AUDIO.a.onerror=null;TASK_AUDIO.a=null;}
+  const settle=TASK_AUDIO.settle;TASK_AUDIO.settle=null;if(settle)settle(false);
+  try{speechSynthesis.cancel();}catch(e){}
+}
+/* 只有完整播完才回傳 true。錯誤、逾時、取消與過期回呼均不能產生成績。 */
+function taskAudioPlay(c,slow,rate,done) {
+  taskAudioStop();const gen=TASK_AUDIO.gen,it=taskAudioClip(c);let settled=false;
+  const finish=ok=>{if(settled)return;settled=true;clearTimeout(TASK_AUDIO.timer);TASK_AUDIO.settle=null;
+    if(gen!==TASK_AUDIO.gen)ok=false;if(done)done(!!ok);};
+  TASK_AUDIO.settle=finish;
+  TASK_AUDIO.timer=setTimeout(()=>{finish(false);taskAudioStop();},30000);
+  if(it){
+    try{const a=new Audio(it[slow?'slow':'normal']);TASK_AUDIO.a=a;
+      a.onended=()=>finish(true);a.onerror=()=>finish(false);const p=a.play();if(p?.catch)p.catch(()=>finish(false));}
+    catch(e){finish(false);}
+  }else{speak(lineText(c),'ja-JP',slow ? 0.7 : rate,finish);}
+  return it?'fixed':'device';
+}
+function upgradeRun(r) {
+  if(!r)return;r.heard=r.heard||{};r.audioEvidence=r.audioEvidence||{};r.plays=r.plays||{};r.actions=r.actions||[];
+}
+function startRun(tid, lv, vid, course) {
   closeSheet();
+  taskAudioStop();RUN_AUDIO_READY='';
   const v = vid ? VAR[vid] : pickVariant(tid, lv);
   S.run = {tid, lv:v.lv, vid:v.id, node:null, cq:{}, vis:{}, ans:{}, ord:{}, easy:{}, pick:{}, said:{}, zh:{}, rep:0, path:[],
-    flags:{text:false, hint:false, help:false, bad:false, crit:false, noAudio:!canSpeak}, board:{known:[], todo:TASK[tid].todo0 || '問清楚怎麼去'}, wrong:[], t0:Date.now()};
+    flags:{text:false, hint:false, help:false, bad:false, crit:false, noAudio:false}, board:{known:[], todo:TASK[tid].todo0 || '問清楚怎麼去'}, wrong:[], t0:Date.now(),
+    heard:{},audioEvidence:{},plays:{},actions:[],course:course||null,novel:!(lvPeek(tid,v.lv)?.seen||[]).includes(v.id)};
   RUN_END = null; fx.start('run');
   openRunView(); enterNode(v.start);
 }
@@ -87,12 +116,14 @@ function curQ(n) {
 }
 function keyOf(n, q) { return S.run.easy[n.id] && q.ke ? q.ke : q.k; }
 function computeVis(n) {
-  if (!canSpeak) return 'full';
+  if (!taskAudioAvailable(n.c)) return 'full';
+  if (S.run.course?.mode === 'assessment') return 'listen';
   if (n.c.some(id => !S.ck[id])) return 'full';
   const weak = (n.q || []).some(q => { const s = S.ck[q.k]; return !s || s.l.s < 2 || s.weak; });
   return weak ? 'part' : 'listen';
 }
 function enterNode(id) {
+  taskAudioStop();RUN_AUDIO_READY='';
   const r = S.run, v = curVar(), n = v.nodes[id];
   r.node = id; r.path.push(id);
   if (n.t === 'hear') {
@@ -108,26 +139,37 @@ function enterNode(id) {
   if (n.t === 'hear' && S.settings.autoSpeak) playNode(n);
 }
 function playNode(n, mode) {
-  const r = S.run, rate = LVR[r.lv];
-  if (mode === 'easy' && n.easy) speak(lineText(n.easy.c), 'ja-JP', 0.85);
-  else if (mode === 'slow') speak(lineText(r.easy[n.id] && n.easy ? n.easy.c : n.c), 'ja-JP', 0.7);
-  else speak(lineText(n.c), 'ja-JP', rate);
+  taskAudioStop();const r = S.run;upgradeRun(r);RUN_AUDIO_READY='';
+  const c=(mode==='easy'||r.easy[n.id])&&n.easy?n.easy.c:n.c;
+  const rate=r.course?.mode==='assessment'?1/S.settings.rate:LVR[r.lv];
+  r.plays[n.id]=(r.plays[n.id]||0)+1;r.playing=n.id;r.audioError='';persist();renderRun();
+  taskAudioPlay(c,mode==='slow',rate,ok=>{
+    if(S.run!==r||r.node!==n.id||document.hidden)return;
+    r.playing=null;r.heard[n.id]=ok;
+    if(ok)RUN_AUDIO_READY=n.id;else r.audioError='播放未完成。請重播；也可以選擇看字練習。';
+    persist();renderRun();
+  });
 }
 function finishHear(n) {
-  const r = S.run;
+  const r = S.run;upgradeRun(r);
+  if(!(n.q||[]).length)r.audioEvidence[n.id]=RUN_AUDIO_READY===n.id;
   n.c.forEach(id => ckSt(id, true)); if (r.easy[n.id] && n.easy) n.easy.c.forEach(id => ckSt(id, true));
   (n.learn || []).forEach(x => { if (!r.board.known.includes(x)) r.board.known.push(x); });
   if (n.todo) r.board.todo = n.todo;
 }
 function answerQ(oi) {
   const r = S.run, n = curNode(); if (!n || n.t !== 'hear') return;
+  upgradeRun(r);const heard=RUN_AUDIO_READY===n.id;
+  if(r.course?.mode==='assessment'&&!heard&&!r.flags.text&&!r.flags.hint){toast('先完整播放，或按「顯示全文」改成看字練習');return;}
   const cur = curQ(n); if (!cur) return;
   r.ans[n.id] = r.ans[n.id] || {}; r.cq[n.id] = cur.i;
   if (r.ans[n.id][cur.i] !== undefined) return;
   r.ans[n.id][cur.i] = oi;
+  r.audioEvidence[n.id]=r.audioEvidence[n.id]||{};r.audioEvidence[n.id][cur.i]=heard;
+  if(!heard)r.flags.noAudio=true;
   const ok = oi === 0, key = keyOf(n, cur.q), ck = CK[key], crit = CRIT.has(ck.cat), mode = r.vis[n.id];
   const rec = ckSt(key, true);
-  if (mode === 'full' || !canSpeak) grade(rec.t, ok); else grade(rec.l, ok);
+  if (mode === 'full' || !heard) grade(rec.t, ok); else grade(rec.l, ok);
   if (ok) rec.weak = false; else { r.wrong.push(key); if (crit) r.flags.crit = true; }
   const lg = L(); lg.jp++; if (ok) lg.jpOk++;
   touchStreak(); addXp(ok ? 6 : 1); persist(); renderRun(); fx.answer('#run', ok);
@@ -137,11 +179,16 @@ function answerQ(oi) {
 /* ---------- 結算 ---------- */
 function runTypes() {
   const r = S.run, f = r.flags, v = curVar();
-  const usedText = f.text || f.noAudio || !canSpeak, help = r.rep > 0 || f.help, out = [];
+  upgradeRun(r);
+  const audioOK=[...new Set(r.path)].filter(id=>v.nodes[id].t==='hear').every(id=>{
+    const n=v.nodes[id],ev=r.audioEvidence[id],qs=activeQs(n);return (n.q||[]).length?qs.length>0&&qs.every(({i})=>r.ans[id]?.[i]!==undefined&&ev?.[i]===true):ev===true;
+  });
+  const usedText = f.text || f.noAudio || !audioOK, help = r.rep > 0 || f.help || Object.values(r.plays).some(n=>n>1), out = [];
+  if(f.crit||f.bad||r.wrong.length)return ['text'];
   if (usedText || f.hint) out.push('text');
   else if (help) out.push('repair');
   else if (!f.crit) out.push('listen');
-  if (v.tr && !usedText && !f.hint && !f.crit) out.push('transfer');
+  if (v.tr && r.novel && !usedText && !f.hint && !help) out.push('transfer');
   return out;
 }
 function finalizeRun(n) {
@@ -149,8 +196,10 @@ function finalizeRun(n) {
   r.done = true;
   const types = runTypes(), st = lvSt(r.tid, r.lv);
   const passedNow = types.some(tp => tp !== 'text');
+  if(r.course){const evidence=courseOnRunEnd(r,types,n);RUN_END={run:JSON.parse(JSON.stringify(r)),types,res:n.res,text:n.text,course:evidence};S.run=null;persist();return;}
   if (passedNow && st.done > 0 && st.last && dayKey(st.last) !== dayKey()) st.later = (st.later || 0) + 1;
   st.done++; types.forEach(tp => st[tp]++); if (!st.seen.includes(r.vid)) st.seen.push(r.vid); st.last = Date.now();
+  if(passedNow)st.audioChecked=(st.audioChecked||0)+1;
   st.rec = st.rec || mkRec(); grade(st.rec, passedNow);
   if (passedNow && st.rec.s < 2) { st.rec.s = 2; st.rec.due = Date.now() + IV[2]; }
   addXp(passedNow ? 15 : 6); SIT++;
@@ -165,17 +214,20 @@ function openRunView() {
   el.hidden = false; document.body.style.overflow = 'hidden';
 }
 function closeRunView(silent) {
+  taskAudioStop();RUN_AUDIO_READY='';
   const el = $('#run'); if (el) el.hidden = true; document.body.style.overflow = '';
   try { speechSynthesis.cancel(); } catch (e) {}
   if (S.run && !silent) toast('已保存，回首頁可以從這裡接續');
-  const t5f = !!RUN_END && !S.run;
+  const course=RUN_END?.run.course||S.run?.course;
+  const t5f = !!RUN_END && !S.run && !course;
   RUN_END = null; render(); homeTop();
-  t5After('dlg', t5f);
+  if(course&&!silent){courseOpen();return;}t5After('dlg', t5f);
 }
 function boardHtml(r) {
   const t = TASK[r.tid];
+  const courseGoal=r.course&&STORE_COURSE.lessons.find(l=>l.id===r.course.lesson)?.goal;
   return `<div class="board" aria-label="任務板">
-    <div><span class="bk">${esc(t.dk || '目的地')}</span><span>${esc(t.dest)}</span></div>
+    <div><span class="bk">${courseGoal?'本課目標':esc(t.dk || '目的地')}</span><span>${esc(courseGoal||t.dest)}</span></div>
     <div><span class="bk">已確認</span><span>${r.board.known.length ? esc(r.board.known.slice(-3).join('；')) : '還沒有'}</span></div>
     <div><span class="bk">下一步</span><span>${esc(r.board.todo || '—')}</span></div></div>`;
 }
@@ -196,10 +248,10 @@ function figHtml(f) {
 function renderRun() {
   const el = $('#run'); if (!el) return;
   if (RUN_END) { el.innerHTML = runEndHtml(); if (fx.once(RUN_END) && RUN_END.res !== 'fail') fx.celebrate(el, {perfect:RUN_END.res === 'ok' && !RUN_END.run.wrong.length}); return; }
-  const r = S.run; if (!r) { el.hidden = true; return; }
+  const r = S.run; if (!r) { el.hidden = true; return; }upgradeRun(r);
   const t = TASK[r.tid], v = curVar(), n = curNode();
   const head = `<div class="ov-head"><button class="icon-btn" data-a="runClose" aria-label="先離開，之後接續">${IC.x}</button>
-    <div style="flex:1;min-width:0"><div style="font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(t.name)}</div><div class="small muted">第 ${r.lv} 級・${esc(t.axis[r.lv])}${v.tr ? '・換說法' : ''}</div>
+    <div style="flex:1;min-width:0"><div style="font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(t.name)}</div><div class="small muted">${r.course ? esc(r.course.mode==='assessment'?'第四課・'+STORE_COURSE.stages.find(s=>s.id===r.course.stage).name:STORE_COURSE.lessons.find(l=>l.id===r.course.lesson).name) : '第 '+r.lv+' 級・'+esc(t.axis[r.lv])}${v.tr ? '・新任務' : ''}</div>
     <div class="prog mini" aria-hidden="true"><i style="width:${runPct(r)}%"></i></div></div>
     <span class="small muted" style="white-space:nowrap">對話進行中</span></div>`;
   let body = '', foot = '';
@@ -233,11 +285,12 @@ function sayHtml(n) {
 }
 function hearHtml(n) {
   const r = S.run, vis = r.vis[n.id], qs = activeQs(n), ans = r.ans[n.id] || {};
+  const assessment=r.course?.mode==='assessment';
   const allDone = qs.every(x => ans[x.i] !== undefined), easy = r.easy[n.id] && n.easy;
   const cur = curQ(n);
   const mask = new Set();
   if (vis === 'part' && !allDone) qs.forEach(x => { if (ans[x.i] === undefined) { mask.add(x.q.k); if (x.q.ke) mask.add(x.q.ke); } });
-  const showText = vis !== 'listen' || allDone;
+  const showText = vis !== 'listen' || (allDone&&!assessment);
   let newCks = vis === 'full' && !allDone ? n.c.filter(id => !S.ck[id] && CRIT.has(CK[id].cat)).slice(0, 2) : [];
   if (newCks.length >= n.c.length) newCks = [];
   let b = '';
@@ -246,21 +299,23 @@ function hearHtml(n) {
   if (newCks.length) b += `<section class="newck"><p class="sec-title" style="margin:0">這段的新句塊（先看一眼）</p>${newCks.map(id => `<div class="row"><div style="flex:1;min-width:0">${lineHtml([id])}<p class="small muted">${esc(CK[id].zh)}</p></div>${spkBtn(spokenJp(CK[id].jp), 'ja-JP')}</div>`).join('')}</section>`;
   b += `<div class="bubble"><div class="grow"><p class="who">${esc(nodeWho(n))}</p>
     ${showText ? lineHtml(n.c, {mask, tap:allDone}) : '<p class="muted" style="padding-block:6px">只用聽的。聽不懂可以用下面的說法求助。</p>'}
-    ${allDone || r.zh[n.id] ? `<p class="small muted" style="margin-top:4px">${esc(n.zh)}</p>` : ''}
+    ${(allDone&&!assessment) || r.zh[n.id] ? `<p class="small muted" style="margin-top:4px">${esc(n.zh)}</p>` : ''}
     ${easy ? `<p class="small" style="margin-top:8px">你請他說簡單一點，他改說：</p>${showText ? lineHtml(n.easy.c, {mask, tap:allDone}) : ''}${allDone ? `<p class="small muted">${esc(n.easy.zh)}</p>` : ''}` : ''}
     </div></div>`;
-  if (canSpeak && n.bc) b += `<button class="btn jp-b block" data-a="hearPlay">${IC.speak}再聽一次</button>
+  b+=`<p class="small muted" role="status">${r.playing===n.id?'正在播放，播完再回答。':r.audioError?esc(r.audioError):RUN_AUDIO_READY===n.id?'這一段已播放完成。':'請先按播放。尚未播完的回答會記成看字練習。'}</p>`;
+  const audioAvailable=taskAudioAvailable(n.c);
+  if (audioAvailable && n.bc) b += `<button class="btn jp-b block" data-a="hearPlay">${IC.speak}播放／重聽</button>
     <div class="row"><button class="btn ghost" style="flex:1" data-a="hearRep" data-v="slow">放慢重播</button></div>
     <p class="small muted">廣播沒辦法請它重說。聽不懂可以重播，或在下一步問旁邊的人、站員。</p>`;
-  else if (canSpeak) b += `<button class="btn jp-b block" data-a="hearPlay">${IC.speak}再聽一次</button>
+  else if (audioAvailable) b += `<button class="btn jp-b block" data-a="hearPlay">${IC.speak}播放／重聽</button>
     <div class="repair3">${['again', 'slow', 'easy'].map(k => `<button class="rep" data-a="hearRep" data-v="${k}"><span lang="ja" class="jpf">${rubyHtml(REP[k].jp)}</span><span class="small muted"><span class="xro">${esc(REP[k].ro)}・</span>${esc(REP[k].zh)}</span></button>`).join('')}</div>`;
   else b += `<p class="small muted">這台裝置不能播放聲音，先用看的練習（這次會記成「看字完成」）。</p>`;
-  if (!allDone && canSpeak) b += `<div class="row wrap" style="justify-content:center">${vis === 'listen' ? '<button class="btn ghost sm" data-a="hearVis" data-v="part">給我提示</button>' : ''}${vis !== 'full' ? '<button class="btn ghost sm" data-a="hearVis" data-v="full">顯示全文</button>' : ''}${!r.zh[n.id] ? '<button class="btn ghost sm" data-a="hearZh">看中文</button>' : ''}</div>`;
+  if (!allDone && audioAvailable) b += `<div class="row wrap" style="justify-content:center">${vis === 'listen' ? '<button class="btn ghost sm" data-a="hearVis" data-v="part">給我提示</button>' : ''}${vis !== 'full' ? '<button class="btn ghost sm" data-a="hearVis" data-v="full">顯示全文</button>' : ''}${!r.zh[n.id] ? '<button class="btn ghost sm" data-a="hearZh">看中文</button>' : ''}</div>`;
   if (cur && (!allDone || ans[cur.i] !== undefined)) {
     const a = ans[cur.i], answered = a !== undefined, key = keyOf(n, cur.q);
     b += `<section class="card stack qcard" style="gap:10px"><p class="small muted">問題 ${qs.findIndex(x => x.i === cur.i) + 1} / ${qs.length}</p><p class="q" style="font-size:18px">${esc(cur.q.q)}</p>
-      <div class="opts">${r.ord[n.id][cur.i].map(oi => `<button class="opt ${answered && oi === 0 ? 'correct' : answered && oi === a ? 'wrong' : ''}" data-a="hearQ" data-v="${oi}" ${answered ? 'disabled' : ''}>${esc(cur.q.o[oi])}</button>`).join('')}</div>
-      ${answered ? (a === 0 ? `<div class="qfb ok">對了。關鍵：<b lang="ja" class="jpf">${rubyHtml(CK[key].jp)}</b>＝${esc(CK[key].zh)}</div>`
+      <div class="opts">${r.ord[n.id][cur.i].map(oi => `<button class="opt ${answered && oi === 0 ? 'correct' : answered && oi === a ? 'wrong' : ''}" data-a="hearQ" data-v="${oi}" ${answered || (r.course?.mode==='assessment'&&RUN_AUDIO_READY!==n.id&&!r.flags.text&&!r.flags.hint) ? 'disabled' : ''}>${esc(cur.q.o[oi])}</button>`).join('')}</div>
+      ${answered ? (a === 0 ? (assessment ? '<div class="qfb ok">判斷已記錄，接著依任務目標選擇回應與動作。全文留到練習結束再看。</div>' : `<div class="qfb ok">對了。關鍵：<b lang="ja" class="jpf">${rubyHtml(CK[key].jp)}</b>＝${esc(CK[key].zh)}</div>`)
         : `<div class="qfb no">答案是「${esc(cur.q.o[0])}」。可以先確認這一塊：<b lang="ja" class="jpf">${rubyHtml(CK[key].jp)}</b>（${esc(CK[key].zh)}）。
           <details><summary>還可以怎麼做</summary><p class="small">不確定時可以按「もう一度」「ゆっくり」或「簡単に」，或在下一步用「〜ですね」確認。${CK[key].note ? '<br>' + esc(CK[key].note) : ''}</p></details></div>`) : ''}
     </section>`;
@@ -271,7 +326,7 @@ function hearHtml(n) {
     b += `${(n.learn || []).length ? (anyWrong
       ? `<div class="fb mid" style="animation:none" data-learn="wrong"><h3>他其實是說</h3>${n.learn.map(x => `<p>・${esc(x)}</p>`).join('')}<p class="small">這次沒聽出來也沒關係。下一步可以用「〜ですね」再確認一次。</p></div>`
       : `<div class="fb ok" style="animation:none" data-learn="ok"><h3>確認了</h3>${n.learn.map(x => `<p>・${esc(x)}</p>`).join('')}</div>`) : ''}${n.fig ? `<p class="sec-title">照這張卡走</p>${figHtml(n.fig)}` : ''}
-      <details class="card flat"><summary style="cursor:pointer;font-weight:700">拆開來看（點句塊看說明）</summary><div class="list" style="margin-top:10px">${(easy ? n.c.concat(n.easy.c.filter(id => !n.c.includes(id))) : n.c).map(id => `<button class="li" data-a="ckInfo" data-v="${id}"><div class="grow"><div lang="ja" class="jpf" style="font-weight:700;font-size:17px">${rubyHtml(CK[id].jp)}</div><div class="zh" style="white-space:normal">${esc(CK[id].zh)}<span class="muted">・${CAT[CK[id].cat]}</span></div></div>${IC.chev}</button>`).join('')}</div></details>`;
+      ${assessment?'':`<details class="card flat"><summary style="cursor:pointer;font-weight:700">拆開來看（點句塊看說明）</summary><div class="list" style="margin-top:10px">${(easy ? n.c.concat(n.easy.c.filter(id => !n.c.includes(id))) : n.c).map(id => `<button class="li" data-a="ckInfo" data-v="${id}"><div class="grow"><div lang="ja" class="jpf" style="font-weight:700;font-size:17px">${rubyHtml(CK[id].jp)}</div><div class="zh" style="white-space:normal">${esc(CK[id].zh)}<span class="muted">・${CAT[CK[id].cat]}</span></div></div>${IC.chev}</button>`).join('')}</div></details>`}`;
   }
   let f;
   if (allDone) f = `<button class="btn primary block" data-a="hearDone">繼續</button>`;
@@ -283,13 +338,13 @@ function lastHear(r) { const v = curVar(); for (let i = r.path.length - 2; i >= 
 function actHtml(n) {
   const r = S.run, p = r.pick[n.id], picked = p !== undefined, showZh = r.zh[n.id] || picked;
   const lh = lastHear(r), skels = [...new Set(n.o.map(o => o.skel).filter(Boolean))];
-  let b = lh ? `<div class="bubble"><div class="grow"><p class="who">${esc(nodeWho(lh))}剛剛說</p>${lineHtml(r.easy[lh.id] && lh.easy ? lh.easy.c : lh.c)}<p class="small muted" style="margin-top:4px">${esc(r.easy[lh.id] && lh.easy ? lh.easy.zh : lh.zh)}</p></div></div>` : '';
+  let b = lh && r.course?.mode!=='assessment' ? `<div class="bubble"><div class="grow"><p class="who">${esc(nodeWho(lh))}剛剛說</p>${lineHtml(r.easy[lh.id] && lh.easy ? lh.easy.c : lh.c)}<p class="small muted" style="margin-top:4px">${esc(r.easy[lh.id] && lh.easy ? lh.easy.zh : lh.zh)}</p></div></div>` : '';
   b += `<p class="q">${esc(n.q)}</p>`;
   if (skels.length && !picked) b += `<details class="card flat"><summary style="cursor:pointer">先自己說說看（可用的骨架）</summary>${skels.map(s => `<p class="small" style="margin-top:6px"><b lang="ja" class="jpf">${esc(SKEL[s].f)}</b><br><span class="muted">${esc(SKEL[s].zh)}</span></p>`).join('')}</details>`;
   b += `<div class="opts">${r.ord[n.id].map(i => { const o = n.o[i];
     const cls = picked && i === p ? (o.g === 'ok' ? 'correct' : o.g === 'part' ? 'partial' : 'wrong') : '';
     return `<button class="opt ${cls}" data-a="actPick" data-v="${i}" ${picked ? 'disabled' : ''}><span style="min-width:0;display:block">${o.c ? lineHtml(o.c) : ''}${o.do ? `<span class="sub">（${esc(o.do)}）</span>` : ''}${showZh ? `<span class="sub">${esc(o.zh)}</span>` : ''}</span></button>`; }).join('')}</div>`;
-  if (!picked && !r.zh[n.id]) b += `<button class="btn ghost sm" style="align-self:center" data-a="actZh">看中文意思</button>`;
+  if (!picked && !r.zh[n.id]) b += `<button class="btn ghost sm" style="align-self:center" data-a="actZh">${r.course?.mode==='assessment'?'看中文（這次記提示練習）':'看中文意思'}</button>`;
   let f = `<p class="small muted" style="text-align:center">選一個你會說或會做的</p>`;
   if (picked) {
     const o = n.o[p];
@@ -299,6 +354,7 @@ function actHtml(n) {
   return [b, f];
 }
 function runEndHtml() {
+  if(RUN_END.run.course)return courseRunEndHtml(RUN_END);
   const e = RUN_END, r = e.run, t = TASK[r.tid], v = VAR[r.vid], rec = recommend(), more = SIT < (S.settings.dlgLen || 1);
   const wrong = [...new Set(r.wrong)];
   const types = e.types.length ? e.types : [];
@@ -323,7 +379,7 @@ function recapText(r) {
   const t = TASK[r.tid];
   return `${t.name}・第 ${r.lv} 級。${t.dk || '目的地'}：${t.dest}。${r.board.known.length ? '已確認：' + r.board.known.slice(-2).join('；') + '。' : ''}${r.board.todo ? '下一步：' + r.board.todo + '。' : ''}`;
 }
-function resumeRun() { if (!S.run || !VAR[S.run.vid]) { S.run = null; return; } RUN_END = null; openRunView(); renderRun(); }
+function resumeRun() { if (!S.run || !VAR[S.run.vid]) { S.run = null; return; } taskAudioStop();RUN_AUDIO_READY='';upgradeRun(S.run);S.run.playing=null;RUN_END = null; openRunView(); renderRun(); }
 
 /* ---------- 事件 ---------- */
 function runAction(a, v) {
@@ -343,11 +399,12 @@ function runAction(a, v) {
     case 'hearZh': r.zh[n.id] = true; r.flags.text = true; persist(); renderRun(); return true;
     case 'hearQ': answerQ(+v); return true;
     case 'hearNextQ': { const ans = r.ans[n.id] || {}, nx = activeQs(n).find(x => ans[x.i] === undefined); r.cq[n.id] = nx ? nx.i : undefined; persist(); renderRun(); return true; }
-    case 'hearDone': finishHear(n); enterNode(n.next); return true;
-    case 'actZh': r.zh[n.id] = true; persist(); renderRun(); return true;
+    case 'hearDone': if(activeQs(n).some(({i})=>r.ans[n.id]?.[i]===undefined))return true;finishHear(n); enterNode(n.next); return true;
+    case 'actZh': r.zh[n.id] = true;if(r.course?.mode==='assessment')r.flags.hint=true; persist(); renderRun(); return true;
     case 'actPick': {
       if (r.pick[n.id] !== undefined) return true;
       const o = n.o[+v]; if (!o) return true; r.pick[n.id] = +v;
+      upgradeRun(r);r.actions.push({node:n.id,choice:+v,grade:o.g,skill:n.skill||'action'});
       if (o.fix || o.g === 'part') r.flags.help = true;
       if (o.g === 'bad') r.flags.bad = true;
       const lg = L(); lg.jp++; if (o.g === 'ok') lg.jpOk++;
@@ -365,6 +422,7 @@ function runAction(a, v) {
 /* ---------- 句塊說明 ---------- */
 function exampleOf(id) {
   for (const t of TASKS) for (let lv = 1; lv <= t.levels; lv++) for (const v of t.v[lv]) for (const nid in v.nodes) { const n = v.nodes[nid];
+    if(v.assessment)continue;
     if (n.t === 'hear' && n.c.includes(id)) return {c:n.c, zh:n.zh}; if (n.t === 'hear' && n.easy && n.easy.c.includes(id)) return {c:n.easy.c, zh:n.easy.zh}; }
   return null;
 }
@@ -374,7 +432,10 @@ function ckSheet(id) {
   return `<div class="row"><div style="flex:1;min-width:0">${lineHtml([id], {big:true})}</div>${spkBtn(spokenJp(k.jp), 'ja-JP')}</div>
     <p style="font-size:20px;font-weight:800">${esc(k.zh)}</p><p class="small muted">${esc(CAT[k.cat])}${CRIT.has(k.cat) ? '・會影響行動的資訊' : ''}</p>
     ${k.note ? `<p class="rule j">${esc(k.note)}</p>` : ''}
+    ${k.register ? `<p class="small"><b>語域：</b>${esc(k.register)}<br><b>旅客使用：</b>${esc(k.production)}<br><b>情境：</b>${esc(k.context)}</p>` : ''}
     ${st ? `<p class="small">看字 <span class="tnum">${dots(st.t)}</span>　聽音 <span class="tnum">${dots(st.l)}</span></p>` : '<p class="small muted">還沒在對話裡遇過</p>'}
     ${ex ? `<div class="card flat stack" style="gap:4px"><p class="small muted">在對話裡：</p>${lineHtml(ex.c)}<p class="small muted">${esc(ex.zh)}</p></div>` : ''}
     <button class="btn block" data-a="ckWeak" data-v="${id}">${st && st.weak ? '已標成不熟（會優先複習）' : '標成不熟，優先複習'}</button>`;
 }
+document.addEventListener('visibilitychange',()=>{if(document.hidden){taskAudioStop();RUN_AUDIO_READY='';if(S.run){S.run.playing=null;persist();}}});
+window.addEventListener('pagehide',()=>{taskAudioStop();RUN_AUDIO_READY='';});

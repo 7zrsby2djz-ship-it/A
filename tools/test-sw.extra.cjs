@@ -26,7 +26,7 @@ const types={'.html':'text/html;charset=utf-8','.png':'image/png','.ico':'image/
   assert(await page.evaluate(async()=>(await caches.keys()).some(k=>k.startsWith('bnk-app-'))));
   // 1) 離線：首頁仍能開、主按鈕在、鎖屏音檔資料在
   await ctx.setOffline(true);
-  await page.reload();await page.waitForSelector('#view [data-a=t5Go]');
+  await page.reload();await page.waitForSelector('#view .course-hero .btn.primary');
   assert(await page.evaluate(()=>!!globalThis.ORAL_AUDIO&&ORAL_AUDIO.items.length===30),'離線時鎖屏音檔仍在');
   // zh/ 不被攔截：離線時打不開（沒被 SW 回應）
   const zh=await page.evaluate(async b=>{try{const r=await fetch(b+'zh/index.html');return r.status;}catch(e){return 'fail';}},base);
@@ -34,7 +34,7 @@ const types={'.html':'text/html;charset=utf-8','.png':'image/png','.ico':'image/
   await ctx.setOffline(false);
   // 2) 上線後有新版：network-first 直接拿到新版
   files['/index.html']=Buffer.from(String(files['/index.html']).replace('<title>按鈕與積木</title>','<title>按鈕與積木 v2</title>'));
-  await page.reload();await page.waitForSelector('#view [data-a=t5Go]');
+  await page.reload();await page.waitForSelector('#view .course-hero .btn.primary');
   assert.equal(await page.title(),'按鈕與積木 v2','上線後拿到新版');
   // 3) 網路很慢（>3 秒）：3 秒左右改用快取（v2），背景再更新
   files['/index.html']=Buffer.from(String(files['/index.html']).replace('按鈕與積木 v2','按鈕與積木 v3'));

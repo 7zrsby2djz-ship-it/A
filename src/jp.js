@@ -143,15 +143,15 @@ function applyRead() {
 function weekDays() { let n = 0; for (let i = 0; i < 7; i++) { const d = S.log[dayKey(Date.now() - i * DAY)]; if (d && (d.en || d.jp || d.look)) n++; } return n; }
 
 function jpProgressHtml() {
-  const sum = {done:0, text:0, listen:0, repair:0, transfer:0, later:0};
+  const sum = {done:0, text:0, listen:0, repair:0, transfer:0, later:0, audioChecked:0};
   TASKS.forEach(t => { for (let lv = 1; lv <= t.levels; lv++) { const s = lvPeek(t.id, lv); if (s) for (const k in sum) sum[k] += s[k] || 0; } });
   const ckN = Object.keys(S.ck).length, ckL = Object.values(S.ck).filter(x => x.l.s >= 3).length;
   if (!sum.done && !ckN) return '';
   return `<p class="sec-title">日文對話進度</p><div class="kpis">
-    <div class="kpi"><span class="small muted">不看字完成</span><b class="tnum">${sum.listen}</b><span class="small muted">求助後完成 ${sum.repair}・看字 ${sum.text}</span></div>
+    <div class="kpi"><span class="small muted">不看字完成（含舊紀錄）</span><b class="tnum">${sum.listen}</b><span class="small muted">求助後完成 ${sum.repair}・看字 ${sum.text}</span></div>
     <div class="kpi"><span class="small muted">換說法也聽懂</span><b class="tnum">${sum.transfer}</b><span class="small muted">隔天仍完成 ${sum.later}</span></div>
     <div class="kpi"><span class="small muted">句塊</span><b class="tnum">${ckN}</b><span class="small muted">聽得出來 ${ckL} 個</span></div>
-    <div class="kpi"><span class="small muted">練過的對話</span><b class="tnum">${sum.done}</b><span class="small muted">次</span></div></div>`;
+    <div class="kpi"><span class="small muted">練過的對話</span><b class="tnum">${sum.done}</b><span class="small muted">次</span></div></div><p class="small muted">新版確認播放完成的不看字紀錄：${sum.audioChecked} 次。舊紀錄原樣保留，當時未驗證播放；上面的「隔天」也不等同滿 24 小時。嚴格的延後驗收請看便利商店路線。</p>`;
 }
 
 function lvList(tid) { return Array.from({length:TASK[tid].levels}, (_, i) => i + 1); }

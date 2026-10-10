@@ -13,7 +13,7 @@ function spy(){Object.defineProperty(window,'speechSynthesis',{configurable:true
   const page=await ctx.newPage();page.on('pageerror',e=>errors.push(e.message));
   await page.goto('http://127.0.0.1:'+server.address().port);
   const vis=s=>page.evaluate(s=>{const e=document.querySelector(s);return !!e&&!e.hidden;},s);
-  const mainBtnVisible=()=>page.evaluate(()=>{const b=document.querySelector('#view [data-a=t5Go]');if(!b)return false;const r=b.getBoundingClientRect(),tab=document.querySelector('.tabbar').getBoundingClientRect();return scrollY===0&&r.top>=0&&r.bottom<=tab.top;});
+  const mainBtnVisible=()=>page.evaluate(()=>{const b=document.querySelector('#view .course-hero .btn.primary');if(!b)return false;const r=b.getBoundingClientRect(),tab=document.querySelector('.tabbar').getBoundingClientRect();return scrollY===0&&r.top>=0&&r.bottom<=tab.top;});
   // #6a 鎖屏聽力：從「全部」下方打開再關掉
   await page.locator('#homeAll summary').click();
   await page.locator('#view [data-a=lpOpen]').scrollIntoViewIfNeeded();
@@ -45,10 +45,11 @@ function spy(){Object.defineProperty(window,'speechSynthesis',{configurable:true
   // #3c 今天 5 分鐘的假名步驟 → 先離開 → 回首頁、主按鈕可見
   await page.locator('#tabs [data-v=home]').click();
   await page.evaluate(()=>{const st=t5St();st.step=2;st.on=false;t5Save();render();});
+  if(!await page.locator('#homeAll').evaluate(e=>e.open))await page.locator('#homeAll summary').click();
   await page.locator('#view [data-a=t5Go]').click();assert(await vis('#kn'));
   await page.locator('#kn [data-k=leave]').click();
   assert.equal(await vis('#kn'),false);assert(await mainBtnVisible());
-  assert.match(await page.locator('#view [data-a=t5Go]').innerText(),/繼續/);
+  assert.match(await page.locator('#view [data-a=t5Go]').textContent(),/繼續/);
   assert.deepEqual(errors,[]);
   await browser.close();server.close();
   console.log('PASS: 關掉鎖屏聽力／對話、重新整理後首頁在最上面且主按鈕完整；假名練習「先離開」回原本頁面（日文頁、首頁），從假名表進來才回假名表；假名表按鈕可點。');

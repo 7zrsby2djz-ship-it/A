@@ -20,7 +20,7 @@ function goldenPath(v) {
 function lsPlaylist(scope) {
   const out = [];
   TASKS.forEach(t => { if (scope && t.id !== scope) return;
-    for (let lv = 1; lv <= t.levels; lv++) { const s = lvPeek(t.id, lv); (s ? s.seen : []).forEach(vid => out.push({vid, last:s.last})); } });
+    for (let lv = 1; lv <= t.levels; lv++) { const s = lvPeek(t.id, lv); (s ? s.seen : []).filter(vid=>VAR[vid]&&!VAR[vid].courseOnly).forEach(vid => out.push({vid, last:s.last})); } });
   out.sort((a, b) => b.last - a.last);
   if (!out.length) { const t = scope ? TASK[scope] : TASKS[0]; out.push({vid:t.v[1].find(v => !v.tr).id, preview:true}); }
   return out;

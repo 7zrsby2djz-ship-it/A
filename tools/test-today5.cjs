@@ -18,12 +18,13 @@ function spy(){Object.defineProperty(window,'speechSynthesis',{configurable:true
   await page.goto('http://127.0.0.1:'+server.address().port);
   await page.evaluate(s=>{localStorage.setItem('bnk-state-v1',JSON.stringify(s));sessionStorage.clear();},old);await page.reload();
   const t5=()=>page.evaluate(()=>JSON.parse(localStorage.getItem('bnk-today5-v1')||'null'));
-  // 首頁：一個大按鈕在最上面，其他收在「全部」
+  // 首頁主路線在最上面；原有自由練習收在「全部」，仍可中斷接續。
   const btn=page.locator('#view [data-a=t5Go]');
-  assert.equal(await btn.count(),1);assert.match(await btn.innerText(),/開始今天 5 分鐘/);
+  assert.equal(await btn.count(),1);assert.equal(await btn.isVisible(),false);
   assert.equal(await page.locator('#homeAll').evaluate(d=>d.open),false);
   assert.equal(await page.locator('#homeAll [data-a=startEn]').isVisible(),false);
   await page.locator('#homeAll summary').click();assert.equal(await page.locator('#homeAll [data-a=startEn]').isVisible(),true);
+  assert.match(await btn.innerText(),/開始今天 5 分鐘/);
   // 舊存檔沒被動到
   assert(await page.evaluate(()=>S.tk.bus.lv[1].listen===2&&S.en.allow.s===3&&S.gm.star===12&&S.settings.read==='ro'&&S.xp===50));
   // 第 1 步：句塊複習
@@ -41,7 +42,9 @@ function spy(){Object.defineProperty(window,'speechSynthesis',{configurable:true
   assert(await page.evaluate(()=>!!S.run));
   assert.match(await btn.innerText(),/繼續・第 2\/3 關（一段對話）/);
   // 重新整理後仍在第 2 步
-  await page.reload();assert.match(await page.locator('#view [data-a=t5Go]').innerText(),/第 2\/3 關/);
+  await page.reload();
+  await page.locator('#homeAll summary').click();
+  assert.match(await page.locator('#view [data-a=t5Go]').innerText(),/第 2\/3 關/);
   await page.locator('#view [data-a=t5Go]').click();
   assert.equal(await page.locator('#run').isVisible(),true);
   // 模擬對話走到結局（真實流程由 run.js finalizeRun 設定 RUN_END、清掉 S.run）
@@ -67,6 +70,7 @@ function spy(){Object.defineProperty(window,'speechSynthesis',{configurable:true
   assert.equal(saved.today5,undefined,'流程狀態不寫進 bnk-state-v1');
   // 壞掉的流程 key 不影響開啟
   await page.evaluate(()=>localStorage.setItem('bnk-today5-v1','{broken'));await page.reload();
+  await page.locator('#homeAll summary').click();
   assert.match(await page.locator('#view [data-a=t5Go]').innerText(),/開始今天 5 分鐘/);
   assert.deepEqual(errors,[]);
   await browser.close();server.close();

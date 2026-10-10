@@ -34,7 +34,8 @@
     if(s&&findLesson(s.id)&&Number.isInteger(s.stage)&&s.stage>=0&&s.stage<=5&&Array.isArray(s.q)&&s.q.length===3) {
       const valid=s.q.every(q=>q&&Array.isArray(q.order)&&q.order.length===3&&[...q.order].sort().join(',')==='0,1,2'&&(q.pick===null||[0,1,2].includes(q.pick)));
       if(valid) out.session={id:s.id,stage:s.stage,recorded:!!s.recorded,result:['text','support','listen'].includes(s.result)?s.result:null,
-        q:s.q.map(q=>({order:q.order,pick:q.pick,assisted:!!q.assisted,slow:!!q.slow,plays:finite(q.plays)?q.plays:0,heard:!!q.heard}))};
+        q:s.q.map(q=>({order:q.order,pick:q.pick,assisted:!!q.assisted,slow:!!q.slow,plays:finite(q.plays)?q.plays:0,heard:!!q.heard})),
+        contextPicks:(findLesson(s.id).contexts||[]).map((q,i)=>Number.isInteger(s.contextPicks?.[i])&&s.contextPicks[i]>=0&&s.contextPicks[i]<q.choices.length?s.contextPicks[i]:null)};
     }
     return out;
   }
@@ -77,7 +78,7 @@
     if(stage===5)return result(l);
     const labels=['先認識第一句','再認識第二句','只聽第一句','再聽第二句','把兩句接起來'];
     let body;
-    if(stage<2){const p=C.phrases[l.phraseIds[stage]];body=`<span class="badge">${labels[stage]} · ${esc(p.register)}</span>${jpLine(p)}<p class="meaning">${esc(p.zh)}</p>${audioControls('teach')}<div class="note-box">${esc(p.note)}</div><details><summary>看看這句怎麼組成</summary><div class="chunks">${p.parts.map(x=>`<div class="chunk">${esc(x)}</div>`).join('')}</div></details><div class="bottom-actions">${btn('next',stage===0?'知道意思了，下一句 →':'來聽聽看 →','class="primary"')}</div>`;}
+    if(stage<2){const p=C.phrases[l.phraseIds[stage]];body=`<span class="badge">${labels[stage]} · ${esc(p.register)}</span>${jpLine(p)}<p class="meaning">${esc(p.zh)}</p>${audioControls('teach')}<div class="note-box">${esc(p.note)}<p class="small">自己使用：${esc(p.production)}</p></div><details><summary>看看這句怎麼組成</summary><div class="chunks">${p.parts.map(x=>`<div class="chunk">${esc(x)}</div>`).join('')}</div></details><div class="bottom-actions">${btn('next',stage===0?'知道意思了，下一句 →':'來聽聽看 →','class="primary"')}</div>`;}
     else {
       const p=quizPhrase(l,stage),q=currentQ(),dialogue=stage===4,canAnswer=sessionAudioReady||q.assisted||q.pick!==null;
       body=`<span class="badge">${labels[stage]}</span><h2 style="margin-top:17px">${dialogue?`聽完後，${l.dialogue[l.focus].who} 說的是什麼意思？`:'這句話，是什麼意思？'}</h2>${dialogue?`<p class="small muted">${esc(l.setup)}</p>`:''}${listeningSymbol}${audioControls(dialogue?'dialogue':'quiz')}
@@ -98,8 +99,12 @@
     d.due=Date.now()+(s.result==='listen'?[1,1,3,7,14,30][d.streak]:correct?1:0.25)*DAY;
     S.done[s.id]=d;s.recorded=true;save();
   }
+  function contextChecks(l){
+    if(!l.contexts)return '';const s=S.session;s.contextPicks=s.contextPicks||[];
+    return `<section class="context-checks"><h2>換場合，意思怎麼變？</h2><p class="small muted">這是看字的情境辨義練習，與剛才的純聽紀錄分開，不產生新的聽力通過。</p>${l.contexts.map((q,i)=>{const pick=s.contextPicks[i],answered=Number.isInteger(pick);return `<div class="context-question"><p>${esc(q.setup)}</p><p class="jp" lang="ja">${ruby(q.jp)}</p><b>${esc(q.q)}</b><div class="context-options">${q.choices.map((t,j)=>btn('context-answer',esc(t),`data-id="${i}" data-value="${j}" ${answered?'disabled':''}`)).join('')}</div>${answered?`<p role="status"><b>${pick===q.answer?'判斷正確。':'再看情境線索。'}</b> ${esc(q.why)}</p>`:''}</div>`;}).join('')}</section>`;
+  }
   function result(l){const s=S.session,next=C.lessons[C.lessons.indexOf(l)+1],mode=s.result==='listen'?'這次，靠聲音認出來了。':s.result==='support'?'慢慢聽，也有聽懂。':'這次，先把意思學起來。';
-    return `<section class="practice"><div class="card study-card"><div class="result-icon" aria-hidden="true">✓</div><p class="eyebrow">兩句，一小步</p><h1>${mode}</h1><p class="muted">${s.result==='listen'?'這 3 題都在播放完成後，沒有看文字、沒有重聽而答對。之後還會安排複習。':s.result==='support'?'這 3 題沒有看文字，透過慢速或重聽完成。這也是有效的練習。':'看提示或答錯之後認識這些句子，也算有收穫。這次不記成純聽完成。'}</p><ul class="result-list">${l.phraseIds.map(id=>{const p=C.phrases[id];return `<li>${jpLine(p)}<span>${esc(p.zh)}</span></li>`;}).join('')}</ul><div class="bottom-actions">${btn('home','今天先到這裡','class="primary"')}${btn('start','再聽一次',`data-id="${l.id}"`)}</div>${next?`<div style="margin-top:12px">${btn('start','還有精神？下一課：'+esc(next.title),`class="text" data-id="${next.id}"`)}</div>`:''}<p class="small muted" style="margin-top:18px">${cloudOn()?'進度已自動保存，也同步到你的 Claude 帳號。':'進度只存在這個瀏覽器；可到「我的」匯出備份。'}</p></div></section>`;
+    return `<section class="practice"><div class="card study-card"><div class="result-icon" aria-hidden="true">✓</div><p class="eyebrow">兩句，一小步</p><h1>${mode}</h1><p class="muted">${s.result==='listen'?'這 3 題都在播放完成後，沒有看文字、沒有重聽而答對。之後還會安排複習。':s.result==='support'?'這 3 題沒有看文字，透過慢速或重聽完成。這也是有效的練習。':'看提示或答錯之後認識這些句子，也算有收穫。這次不記成純聽完成。'}</p><ul class="result-list">${l.phraseIds.map(id=>{const p=C.phrases[id];return `<li>${jpLine(p)}<span>${esc(p.zh)}</span></li>`;}).join('')}</ul>${contextChecks(l)}<div class="bottom-actions">${btn('home','今天先到這裡','class="primary"')}${btn('start','再聽一次',`data-id="${l.id}"`)}</div>${next?`<div style="margin-top:12px">${btn('start','還有精神？下一課：'+esc(next.title),`class="text" data-id="${next.id}"`)}</div>`:''}<p class="small muted" style="margin-top:18px">${cloudOn()?'進度已自動保存，也同步到你的 Claude 帳號。':'進度只存在這個瀏覽器；可到「我的」匯出備份。'}</p></div></section>`;
   }
   function filteredWords(){const term=query.trim().toLocaleLowerCase();return WORDS.filter(w=>{
     const category=dictionaryFilter==='course'?w.type==='phrase':dictionaryFilter==='adult'?w.category==='成人':dictionaryFilter==='star'?S.stars.includes(w.id):w.type==='glossary'&&w.category!=='成人';
@@ -161,6 +166,7 @@
     else if(a==='stop'){stopAudio();audioStatus('已停止。需要時可以重新播放。');}
     else if(a==='reveal'||a==='no-audio'){const q=currentQ();if(q&&q.pick===null){stopAudio();q.assisted=true;save();render();if(a==='no-audio')audioStatus('這題改用文字練習，進度會記為看字學過。');}}
     else if(a==='answer'){const q=currentQ();if(!q||q.pick!==null||(!sessionAudioReady&&!q.assisted))return;stopAudio();q.pick=+b.dataset.value;save();render();}
+    else if(a==='context-answer'){const s=S.session,q=s&&findLesson(s.id).contexts?.[+id];if(!q||s.stage!==5)return;s.contextPicks=s.contextPicks||[];if(Number.isInteger(s.contextPicks[+id]))return;const pick=+b.dataset.value;if(!q.choices[pick])return;s.contextPicks[+id]=pick;save();const pos=window.scrollY;render();window.scrollTo(0,pos);}
     else if(a==='filter'){stopAudio();dictionaryFilter=b.dataset.value;query='';render();}
     else if(a==='star'){if(!WORDMAP[id])return;S.stars=S.stars.includes(id)?S.stars.filter(x=>x!==id):[...S.stars,id];save();$('#word-results').innerHTML=wordResults();}
     else if(a==='word-audio'){const w=WORDMAP[id];if(w)play([w.type==='phrase'?kana(w.jp):w.kana],false,ok=>{if(!ok)notify('沒有成功播放。請到「我的」檢查日文聲音。');});}
@@ -188,6 +194,6 @@
       else if(Object.keys(S.done).length||S.session||S.stars.length)window.ORAL_CLOUD.put(S);
     }catch(e){}
   }
-  window.OralModule = {mount:()=>render(),unmount:()=>{stopAudio();save();sessionAudioReady=false;},cloudReady};
+  window.OralModule = {mount:()=>render(),unmount:()=>{stopAudio();save();sessionAudioReady=false;},openLesson:start,cloudReady};
   render();
 })();

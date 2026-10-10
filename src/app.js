@@ -32,7 +32,7 @@ const SYN = {retry:['tryagain','refresh'], tryagain:['retry'], run:['execute'], 
   loading:['processing','inprogress','pending','thinking'], processing:['loading','inprogress','thinking'], inprogress:['processing','loading','pending'], pending:['waiting','inprogress','loading'], waiting:['pending'], thinking:['processing','loading'],
   complete:['done','success'], done:['complete'], success:['complete'], failed:['error','wrong'], error:['failed','wrong'], wrong:['error','failed'], connection:['network'], network:['connection'],
   unable:['failed'], limit:['usage'], usage:['limit'], access:['permission'], permission:['access'], cantundo:['sure'], sure:['cantundo','confirm'], confirm:['sure']};
-const OPP = {allow:'deny', deny:'allow', approve:'reject', reject:'approve', accept:'decline', decline:'accept', confirm:'cancel', save:'discard', discard:'keep', keep:'discard', continue:'cancel', cancel:'continue',
+const OPP = {expand:'collapse',collapse:'expand',allow:'deny', deny:'allow', approve:'reject', reject:'approve', accept:'decline', decline:'accept', confirm:'cancel', save:'discard', discard:'keep', keep:'discard', continue:'cancel', cancel:'continue',
   always:'once', once:'always', enable:'cancel', disable:'cancel', submit:'cancel', send:'cancel', apply:'cancel', delete:'cancel', remove:'cancel', proceed:'cancel', next:'back', back:'next', skip:'next', done:'back', retry:'cancel', upload:'cancel', replace:'keep'};
 const PAT_MAP = Object.fromEntries(PAT.map(p => [p.id, p]));
 const SCENE_MAP = Object.fromEntries(SCENES.map(s => [s.id, s]));
@@ -40,7 +40,7 @@ const SCENE_MAP = Object.fromEntries(SCENES.map(s => [s.id, s]));
 /* ================= state ================= */
 const LSK = 'bnk-state-v1';
 const DEF = () => ({v:1, updatedAt:0, created:Date.now(), settings:{romaji:true, read:'furi', dlgLen:1, dailyNew:5, rate:1, autoSpeak:true, jaVoice:'', sfx:true, motion:'auto'},
-  en:{}, custom:{}, gm:{}, kana:{v:1, prefs:{script:'mixed', romaji:false}, cards:{}, wordFamiliarity:{}, active:null}, jp:{}, dlg:{}, dlgMiss:{}, jpw:{}, ck:{}, tk:{}, run:null, lsp:null, migDlg:0, jpConf:{}, scenes:{}, favs:[], pastes:[], log:{}, xp:0, streak:{n:0, last:''}, newDay:{d:'', n:0}, boost:[], again:{d:'', ids:[]}});
+  en:{}, custom:{}, gm:{}, kana:{v:1, prefs:{script:'mixed', romaji:false}, cards:{}, wordFamiliarity:{}, active:null}, jp:{}, dlg:{}, dlgMiss:{}, jpw:{}, ck:{}, tk:{}, course:{v:1,lessons:{},assessments:{},self:{},seen:[]}, run:null, lsp:null, migDlg:0, jpConf:{}, scenes:{}, favs:[], pastes:[], log:{}, xp:0, streak:{n:0, last:''}, newDay:{d:'', n:0}, boost:[], again:{d:'', ids:[]}});
 function migrate(o) { const d = DEF(); if (!o || typeof o !== 'object') return d; for (const k in d) if (o[k] === undefined) o[k] = d[k];
   const had = o.settings || {}; o.settings = Object.assign(d.settings, had); if (had.read === undefined) o.settings.read = had.romaji === false ? 'none' : 'furi'; return o; }
 let S = DEF();
@@ -199,18 +199,18 @@ function pickJaVoice() {
 window.pickJaVoice = pickJaVoice;
 if (canSpeak) { loadVoices(); try { speechSynthesis.onvoiceschanged = loadVoices; } catch (e) {} }
 function speak(text, lang, rate, onend) {
-  if (!canSpeak || !text) return;
+  if (!canSpeak || !text) { if(onend)onend(false);return; }
   try {
     speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(text.replace(/[（(].*?[）)]/g, ''));
     u.lang = lang; u.rate = (rate || (lang.startsWith('ja') ? 0.9 : 0.95)) * S.settings.rate;
     const v = lang.startsWith('ja') ? pickJaVoice() : (VOICES.find(v => v.lang && v.lang.replace('_', '-').startsWith(lang)) || VOICES.find(v => v.lang && v.lang.startsWith(lang.slice(0, 2))));
     if (v) u.voice = v;
-    if (onend) { u.onend = onend; u.onerror = onend; }
+    if (onend) { u.onend = () => onend(true); u.onerror = () => onend(false); }
     u.onstart = () => fx.duck(); // 語音一開始就把音效靜音（語音優先）
     speechSynthesis.speak(u);
     return u;
-  } catch (e) { if (onend) setTimeout(onend, 300); }
+  } catch (e) { if (onend) onend(false); }
 }
 const spkBtn = (text, lang, label) => canSpeak ? `<button class="icon-btn speak" data-a="speak" data-v="${esc(text)}" data-l="${lang}" aria-label="${esc(label || '播放發音')}">${IC.speak}</button>` : '';
 
@@ -392,11 +392,12 @@ function vHome() {
   const lw = lookWeek(0), pw = lookWeek(7);
   const first = S.xp === 0;
   return topbar('按鈕與積木') + `<div class="stack">
-    ${t5CardHtml()}
+    ${courseCardHtml()}
     <details id="homeAll" class="stack" ${UI.allOpen ? 'open' : ''}><summary class="sec-title" style="cursor:pointer;min-height:44px;display:flex;align-items:center;gap:8px"><span style="flex:1">全部</span><span class="small muted" style="font-weight:400">英文・日文・五十音・鎖屏聽力・小店・紀錄 ▾</span></summary><div class="stack">
+    ${t5CardHtml()}
     ${first ? `<div class="card flat"><h3 style="font-size:17px;margin-bottom:6px">從這裡開始</h3><p class="muted">先按下面的「開始英文練習」。今天會學 ${S.settings.dailyNew} 個 Claude 畫面上最常出現的英文。在 Claude 看到不懂的字，就到下方中間的「查」貼上。</p></div>` : ''}
     <section class="card hero-en stack" aria-label="英文">
-      <div class="row"><div class="grow" style="flex:1"><p class="small muted">英文 · 看懂 Claude 介面</p><p class="big tnum">${Math.round(cov * 100)}%</p><p class="small muted">Claude 常見英文，你已經看得懂的比例・已學 ${allEnIds().filter(id => S.en[id]).length} 個字</p></div></div>
+      <div class="row"><div class="grow" style="flex:1"><p class="small muted">本教材詞彙熟悉度</p><p class="big tnum">${Math.round(cov * 100)}%</p><p class="small muted">按字庫的教學權重估計・已學 ${allEnIds().filter(id => S.en[id]).length} 個字；不是 Claude 所有介面或句子的理解比例。</p></div></div>
       <div class="meter"><i style="width:${Math.max(2, cov * 100)}%"></i></div>
       <p class="small">${due ? `${due} 個字等你複習` : '沒有要複習的字'}　·　${nw ? `今天還有 ${nw} 個新字` : '今天新字學完了'}</p>
       <button class="btn onhero block" data-a="startEn">${due || nw ? '開始英文練習' : '再多學 3 個新字'}</button>
@@ -413,7 +414,7 @@ function vHome() {
     </div>
     <section class="card"><div class="row" style="margin-bottom:10px"><p class="sec-title" style="flex:1;margin:0">這 7 天</p><span class="small muted"><span style="color:var(--en)">■</span> 英文　<span style="color:var(--jp-ink)">■</span> 日文</span></div>
       <div class="week">${week.map(w => `<div><span style="display:flex;flex-direction:column;justify-content:flex-end;width:100%;align-items:center;flex:1;gap:2px">${w.jp ? `<i class="jpbar" style="height:${w.jp / mx * 52}px"></i>` : ''}<i style="height:${Math.max(3, w.en / mx * 52)}px;${w.en ? '' : 'opacity:.25'}"></i></span>${w.day}</div>`).join('')}</div></section>
-    <p class="small muted" style="text-align:center">查字次數越少，代表你越不需要翻譯就看得懂 Claude。</p>
+    <p class="small muted" style="text-align:center">查字次數用來觀察練習習慣；使用頻率也會影響次數，不能單靠它判定理解能力。</p>
   </div></details></div>`;
 }
 
@@ -439,7 +440,7 @@ function vEn() {
         return `<button class="li" data-a="group" data-v="${gid}"><div class="grow"><div style="font-weight:800">${esc(g.t)}</div><div class="zh en">${g.ids.map(id => EN[id].w).join(' · ')}</div></div>${errs ? `<span class="pill st-conf">錯 ${errs}</span>` : ''}${IC.chev}</button>`; }).join('')}</div>`;
   }
   return topbar('英文') + `<div class="stack">
-    <section class="card hero-en stack"><div class="row"><div style="flex:1"><p class="small muted">Claude 常見英文 看懂率</p><p class="big tnum">${Math.round(cov * 100)}%</p></div>
+    <section class="card hero-en stack"><div class="row"><div style="flex:1"><p class="small muted">本教材詞彙熟悉度</p><p class="big tnum">${Math.round(cov * 100)}%</p><p class="small muted">字庫內的加權估計；不代表所有 Claude 介面的理解率。</p></div>
       <div style="text-align:right" class="small"><div>複習 <b class="tnum">${due}</b></div><div>新字 <b class="tnum">${nw}</b></div></div></div>
       <div class="meter"><i style="width:${Math.max(2, cov * 100)}%"></i></div>
       <button class="btn onhero block" data-a="startEn">${due || nw ? '開始練習' : '再多學 3 個新字'}</button>
@@ -512,6 +513,7 @@ function vJp() {
       ${PT_EXAMPLES.map(ex => `<section class="card stack" style="gap:12px"><p style="font-weight:800">${esc(ex.t)}</p>${ex.rows.map(seq => `<div class="row" style="align-items:flex-end"><div style="flex:1;min-width:0">${sentHtml(seq)}<p class="small muted" style="margin-top:4px">${esc(zhOfSeq(seq))}</p></div>${spkBtn(sentText(seq), 'ja-JP')}</div>`).join('')}</section>`).join('')}`;
   }
   return topbar('日文') + `<div class="stack">
+    ${courseCardHtml(true)}
     <section class="card hero-jp stack">${jpNextHtml(true)}</section>
     ${kanaCardHtml()}
     ${gmCardHtml()}
@@ -541,6 +543,7 @@ function vMe() {
     ${favs ? `<p class="sec-title">收藏</p><div class="list">${favs}</div>` : ''}
     ${my.length ? `<p class="sec-title">我自己加的字（${my.length}）</p><div class="list">${my.map(id => `<button class="li" data-a="word" data-v="${id}"><div class="grow"><div class="w">${esc(S.custom[id].w)}</div><div class="zh">${esc(S.custom[id].zh)}</div></div>${pill(status(S.en[id]))}</button>`).join('')}</div>` : ''}
     ${jpProgressHtml()}
+    ${courseProgressHtml()}
     <p class="sec-title">設定</p>
     <div class="list">
       <div class="set-row" style="flex-wrap:wrap"><div class="grow"><b>日文讀音</b><p class="small muted">振假名、羅馬拼音可以選</p></div><div style="min-width:220px;flex:1">${readSegHtml()}</div></div>
@@ -921,8 +924,10 @@ words 規則：列出這段裡基礎程度的人可能看不懂的字，最多 8
 document.addEventListener('click', e => {
   const t = e.target.closest('[data-a]'); if (!t) return;
   const a = t.dataset.a, v = t.dataset.v;
+  if(t.disabled)return;
+  if(typeof courseAction==='function'&&courseAction(a,v,t))return;
   switch (a) {
-    case 'tab': if(UI.tab==='oral')window.OralModule.unmount();if(v==='oral'){lsStop();try{speechSynthesis.cancel();}catch(x){}}UI.tab = v; try { sessionStorage.setItem('bnk-tab', v); } catch (x) {} fx.view(() => { render(); window.scrollTo(0, 0); }); break;
+    case 'tab': taskAudioStop();RUN_AUDIO_READY='';if(UI.tab==='oral')window.OralModule.unmount();if(v==='oral'){lsStop();try{speechSynthesis.cancel();}catch(x){}}UI.tab = v; try { sessionStorage.setItem('bnk-tab', v); } catch (x) {} fx.view(() => { render(); window.scrollTo(0, 0); }); break;
     case 'startEn': startEn(enDue().length || newCandidates().length ? 0 : 3); break;
     case 'more': SES.more = true; { const extra = newCandidates(3).filter(id => !S.en[id]).slice(0, 3); if (!extra.length) { toast('字庫裡的字都學過了！'); break; } extra.forEach(id => SES.cards.push({t:'teach', id}, {t:'q', id, isNew:true})); renderSes(); autoSpeakCard(); } break;
     case 'startJp': startJp(); break;

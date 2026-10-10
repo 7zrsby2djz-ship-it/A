@@ -1,15 +1,15 @@
 {
   "schemaVersion": 1,
-  "preparedOn": "2026-10-07",
+  "preparedOn": "2026-10-10",
   "app": {
     "repository": "7zrsby2djz-ship-it/A",
-    "commit": "c762de7fdf3a7988a3ede835852a10ca400e5da9",
+    "commit": "b3419d5140fb326c1f1c6464805d2bb30a68c109",
     "files": {
-      "src/data_jp.js": "9f200ded7c6e8380288fd2e179c19fdf1e92f412f620634205f36505805ba04f",
+      "src/data_jp.js": "60e57359a8c240936c4f10c6a2e054b077e57b7a16534108562f4fc912cfaa88",
       "src/data_tasks.js": "b2701caf5d97094cdd55082d9b94e8ea54763ddc0a46a62852abed7aa1a8ef1c",
-      "src/data_life.js": "42e38931a781c8cd01fe668b00f8a37ee1c2a18f2723d3f8d4f862d19e76b504",
+      "src/data_life.js": "f4b6406969a86a39bab0530e8a09a461aeee4b52e0f527f82c967dd34cb01d22",
       "src/data_game.js": "039dfa3e09ac6b1d9d4b40aa1c40b3ebed37d5ae0e52a4d733824056e5603000",
-      "listening-jp/src/data.js": "100226f13393b0f4a9c3139439e6ea42b55e5ea337cc298aeb0a34b368fab11b"
+      "listening-jp/src/data.js": "83ca5e6cf8f8fbc8fe76c5110c594bb6c25a46e60269d7175af5b7c2d03225fa"
     }
   },
   "duolingo": {

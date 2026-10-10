@@ -4,7 +4,7 @@
 const fs = require('fs'), vm = require('vm'), path = require('path');
 const ctx = {console};
 vm.createContext(ctx);
-vm.runInContext(['data_tasks.js', 'data_life.js', 'data_game.js'].map(f => fs.readFileSync(path.join(__dirname, '../src', f), 'utf8')).join('\n') + '\n;this.CK=CK;this.TASKS=TASKS;this.GSHOP=GSHOP;this.CRIT=CRIT;this.SKEL=SKEL;', ctx);
+vm.runInContext(['data_tasks.js', 'data_life.js', 'data_game.js', 'data_course.js'].map(f => fs.readFileSync(path.join(__dirname, '../src', f), 'utf8')).join('\n') + '\n;this.CK=CK;this.TASKS=TASKS;this.GSHOP=GSHOP;this.CRIT=CRIT;this.SKEL=SKEL;', ctx);
 const {CK, TASKS, CRIT, SKEL} = ctx;
 const errs = [], warns = [], used = new Set();
 const ruby = /\{([^|{}]+)\|([^|{}]+)\}/g;

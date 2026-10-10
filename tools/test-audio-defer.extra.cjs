@@ -15,7 +15,7 @@ const repo=path.resolve(__dirname,'..'),errors=[];
   const page=await ctx.newPage();page.on('pageerror',e=>errors.push(e.message));
   page.goto('http://127.0.0.1:'+server.address().port).catch(()=>{});
   // 音檔還沒到：首頁主按鈕已出現且可用
-  await page.waitForSelector('#view [data-a=t5Go]',{timeout:20000});
+  await page.waitForSelector('#view .course-hero .btn.primary',{timeout:20000});
   assert.equal(await page.evaluate(()=>!!globalThis.ORAL_AUDIO),false);
   await page.locator('#homeAll summary').click();
   assert.match(await page.locator('#lpSlot').innerText(),/音檔載入中/);

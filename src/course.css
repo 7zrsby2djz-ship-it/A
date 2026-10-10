@@ -1,0 +1,25 @@
+.course-hero{background:var(--surface);border:2px solid var(--jp);gap:12px}
+.course-hero h2,.course-intro h2{font-size:24px;line-height:1.4;margin:0;letter-spacing:-.3px}
+.course-eyebrow{font-size:12px;font-weight:750;color:var(--jp-ink);letter-spacing:.03em}
+.course-hero>.row{justify-content:space-between;flex-wrap:wrap}
+.course-next{border-left:4px solid var(--jp);background:var(--surface2);padding:14px;border-radius:12px}
+.course-next p{margin-top:5px;line-height:1.65}
+.course-intro{display:grid;gap:10px;padding:8px 0}
+.course-roadmap{list-style:none;margin:0;padding:0;display:grid;gap:16px}
+.course-roadmap li{display:grid;grid-template-columns:42px minmax(0,1fr);gap:12px;padding:16px;border:1px solid var(--line);border-radius:16px;background:var(--surface)}
+.course-roadmap h3{font-size:17px;margin-bottom:7px;line-height:1.5}
+.course-roadmap .row{margin-top:12px;justify-content:space-between}
+.course-number{display:grid;place-items:center;align-self:start;width:40px;height:40px;border-radius:12px;background:var(--surface2);color:var(--jp-ink);font-weight:850}
+.course-evidence{display:grid;gap:0}
+.course-evidence>div{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid var(--line);font-size:14px}
+.course-evidence span{text-align:right}.course-evidence small{display:block;color:var(--muted);margin-top:5px}
+.course-clip .jl{overflow-wrap:anywhere}.course-clip .row .btn{flex:1;min-width:115px}
+.course-self{text-align:left;white-space:normal;line-height:1.6;min-height:48px}
+.course-self[aria-pressed=true]{border-color:var(--jp);background:var(--surface2)}
+#course audio{width:100%;min-height:48px}#course .ov-body .in{padding-bottom:28px}
+#course .ov-head b{font-size:16px}#course .btn:disabled{opacity:.6}
+#course p,#course h3{overflow-wrap:anywhere}#courseChecks{scroll-margin-top:12px}
+.context-checks{display:grid;gap:16px;margin-top:24px;text-align:left}.context-checks h2{font-size:20px}
+.context-question{border:1px solid var(--line);padding:16px;border-radius:14px;display:grid;gap:10px}
+.context-question .context-options{display:grid;gap:8px}.context-question button{white-space:normal;text-align:left}
+@media(min-width:700px){.course-hero{padding:24px}.course-evidence{grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.course-evidence>div{display:grid;gap:8px}.course-evidence span{text-align:left}}
