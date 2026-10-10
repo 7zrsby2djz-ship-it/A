@@ -3,6 +3,7 @@
 <meta name="description" content="個人用的 iPhone 學習 App：看懂 AI 工具介面的英文；去日本獨旅時聽懂回答、把一段對話走完（五十音、口語聽力、鎖屏聽力）。">
 <meta name="theme-color" content="#EEF1F6" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#10141C" media="(prefers-color-scheme: dark)">
+<meta name="color-scheme" content="light dark">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="按鈕與積木">
@@ -16,23 +17,27 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Zen+Maru+Gothic:wght@500;700&display=swap" media="print" onload="this.media='all'">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Zen+Maru+Gothic:wght@500;700&display=swap"></noscript>
 <style>
+/* Theme: 預設「跟隨系統」完全靠 CSS（prefers-color-scheme＋meta color-scheme），不需要 JS、不會閃。
+   手動選擇時 src/theme-boot.js 設 html[data-theme=light|dark]，覆寫 media query；下面兩個深色區塊必須保持一致（tools/test-theme.extra.cjs 會檢查）。 */
 /* Layout: one-handed phone app — content column, fixed bottom tab bar, full-screen practice overlay, bottom sheets.
    English = cobalt "button" world; Japanese = deep teal "block" world; block roles each keep one color everywhere. */
 :root{
+  color-scheme:light;
   --bg:#EEF1F6; --surface:#FFFFFF; --surface2:#F6F8FB; --ink:#18202F; --muted:#5B6479; --line:#D8DDE8;
   --en:#2F55E4; --en-soft:#E3E9FF; --en-ink:#1D3BB0; --en-hero:#2F55E4;
   --jp:#0B7F6A; --jp-soft:#D9F1EB; --jp-ink:#075D4E; --jp-hero:#0B7F6A;
-  --ok:#1B8F4E; --ok-soft:#DDF3E6; --bad:#CC3B3B; --bad-soft:#FBE3E3; --warn:#B7790E; --warn-soft:#FBF0D8;
+  --ok:#177A43; --ok-soft:#DDF3E6; --bad:#B53030; --bad-soft:#FBE3E3; --warn:#8A5A00; --warn-soft:#FBF0D8;
   --r-purpose:#9A5B00; --r-purpose-bg:#FFEBC9;
   --r-place:#08756E; --r-place-bg:#D5F1EE;
   --r-thing:#5A3CC4; --r-thing-bg:#E8E1FF;
   --r-num:#1467B8; --r-num-bg:#DAEBFF;
   --r-way:#B03570; --r-way-bg:#FCE0EE;
-  --r-qual:#4F7A0B; --r-qual-bg:#E6F3CF;
+  --r-qual:#4A7209; --r-qual-bg:#E6F3CF;
   --r-pt:#56607A; --r-pt-bg:#E6E9F1;
   --r-end:#18202F; --r-end-bg:#D9DEEA;
   --r-reply:#8A4B12; --r-reply-bg:#F6E4D3;
   --shadow:0 1px 2px rgba(24,32,47,.06),0 4px 14px rgba(24,32,47,.06);
+  --btn-lip:rgba(24,32,47,.22); /* 按鈕立體底邊（給 motion.css）；純裝飾 */
   --f-body:-apple-system,BlinkMacSystemFont,"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;
   --f-en:"Atkinson Hyperlegible",-apple-system,"Helvetica Neue",Arial,sans-serif;
   --f-jp:"Zen Maru Gothic","Hiragino Maru Gothic ProN","Hiragino Sans","Noto Sans JP",sans-serif;
@@ -47,7 +52,7 @@
   --r-purpose:#FFC56B; --r-purpose-bg:#3B2C12; --r-place:#6BDDD2; --r-place-bg:#10332F; --r-thing:#B9A5FF; --r-thing-bg:#2A2150;
   --r-num:#8CC4FF; --r-num-bg:#15304D; --r-way:#FF9CC9; --r-way-bg:#40172B; --r-qual:#B5E36B; --r-qual-bg:#253312;
   --r-pt:#B7BFD3; --r-pt-bg:#2A3140; --r-end:#E8ECF4; --r-end-bg:#343D50; --r-reply:#F2B77E; --r-reply-bg:#3D2814;
-  --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 18px rgba(0,0,0,.25); color-scheme:dark}}
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 18px rgba(0,0,0,.25); --btn-lip:rgba(0,0,0,.45); color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#10141C; --surface:#1A202C; --surface2:#151A24; --ink:#E8ECF4; --muted:#9AA3B8; --line:#2A3242;
   --en:#7C98FF; --en-soft:#222C4E; --en-ink:#AFC0FF; --en-hero:#2C47B5;
@@ -56,8 +61,10 @@
   --r-purpose:#FFC56B; --r-purpose-bg:#3B2C12; --r-place:#6BDDD2; --r-place-bg:#10332F; --r-thing:#B9A5FF; --r-thing-bg:#2A2150;
   --r-num:#8CC4FF; --r-num-bg:#15304D; --r-way:#FF9CC9; --r-way-bg:#40172B; --r-qual:#B5E36B; --r-qual-bg:#253312;
   --r-pt:#B7BFD3; --r-pt-bg:#2A3140; --r-end:#E8ECF4; --r-end-bg:#343D50; --r-reply:#F2B77E; --r-reply-bg:#3D2814;
-  --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 18px rgba(0,0,0,.25); color-scheme:dark}
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 18px rgba(0,0,0,.25); --btn-lip:rgba(0,0,0,.45); color-scheme:dark}
 
+/* 換主題時才有顏色過場：theme-boot 在套用主題後的下一個 frame 才加 .theme-ready；themeSet 切換時加 .theme-switching 約 0.3 秒。載入時絕不做顏色動畫。 */
+@media (prefers-reduced-motion: no-preference){html.theme-ready.theme-switching *,html.theme-ready.theme-switching *::before,html.theme-ready.theme-switching *::after{transition:background-color .25s,color .25s,border-color .25s,fill .25s!important}}
 [hidden]{display:none!important}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{height:100%}
@@ -284,14 +291,17 @@ textarea{min-height:120px;resize:vertical;font-family:var(--f-en)}
 /* ---------- 把對話走完（新版） ---------- */
 .jl{display:flex;flex-direction:column;gap:2px;min-width:0}
 .jl .xro{font-family:var(--f-en);font-size:13px;color:var(--muted);line-height:1.3;display:none}
-.jl .jp{font-family:var(--f-jp);font-size:20px;font-weight:700;line-height:1.9;word-break:break-word}
+.jl .jp{font-family:var(--f-jp);font-size:20px;font-weight:700;line-height:2.15;word-break:break-word}
 .jl .jp.big{font-size:26px}
 .rd-ro .jl .xro,.rd-both .jl .xro{display:block}
 .xro{display:none}
 .rd-ro .xro,.rd-both .xro{display:inline}
 .rd-ro .jl .xro,.rd-both .jl .xro{display:block}
 .rd-ro rt,.rd-none rt{display:none}
-rt{font-size:.5em;font-weight:500;color:var(--muted);font-family:var(--f-body)}
+ruby{ruby-position:over;ruby-align:center}
+rt{font-size:max(.58em,11px);line-height:1;letter-spacing:.02em;font-weight:500;color:var(--muted);font-family:var(--f-body)}
+/* 振假名最少 11px（QA #7）：有振假名的行拉高行高，避免讀音貼到上一行 */
+.rep .jpf,.gl,.qfb,.li .jpf,.chip.jpf{line-height:1.9}
 .ck,.ckb{display:inline}
 .ckb{font:inherit;color:inherit;background:none;border:0;padding:0 1px;border-bottom:2px dotted var(--line);cursor:pointer}
 .ckb:hover{background:var(--jp-soft)}
@@ -305,8 +315,9 @@ rt{font-size:.5em;font-weight:500;color:var(--muted);font-family:var(--f-body)}
 .newck{display:flex;flex-direction:column;gap:8px;background:var(--surface2);border:1px solid var(--line);border-radius:16px;padding:12px}
 .repair3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .repair3 .rep{min-height:64px;padding:8px 10px}
-.repair3 .rep .jpf{font-size:13.5px;line-height:1.35}
-@media (max-width:380px){.repair3{grid-template-columns:1fr}}
+.repair3 .rep .jpf{font-size:15px;line-height:1.9}
+@media (max-width:430px){.repair3{grid-template-columns:1fr}.repair3 .rep{min-height:52px}
+  .set-row.theme-row{flex-direction:column;align-items:stretch;gap:8px}.set-row.theme-row .seg{width:100%;min-width:0}}
 .qfb{border-radius:12px;padding:10px 12px;font-size:15px}
 .qfb.ok{background:var(--ok-soft)}
 .qfb.no{background:var(--bad-soft)}
@@ -314,7 +325,7 @@ rt{font-size:.5em;font-weight:500;color:var(--muted);font-family:var(--f-body)}
 .fb.mid{background:var(--warn-soft)}
 .fb.mid h3{color:var(--warn)}
 .opt.partial{border-color:var(--warn);background:var(--warn-soft)}
-.opt .jl .jp{font-size:18px;line-height:1.8}
+.opt .jl .jp{font-size:18px;line-height:2.1}
 .fig{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:12px}
 .fig.steps{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
 .stp{display:flex;flex-direction:column;align-items:center;gap:2px;background:var(--surface2);border:1px solid var(--line);border-radius:12px;padding:8px 10px;min-width:72px;text-align:center;font-size:13px;font-weight:700}
