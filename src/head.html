@@ -37,7 +37,8 @@
   --r-end:#18202F; --r-end-bg:#D9DEEA;
   --r-reply:#8A4B12; --r-reply-bg:#F6E4D3;
   --shadow:0 1px 2px rgba(24,32,47,.06),0 4px 14px rgba(24,32,47,.06);
-  --btn-lip:rgba(24,32,47,.22); /* 按鈕立體底邊（給 motion.css）；純裝飾 */
+  /* 按鈕立體底邊（motion.css 用 --btn-lip；純裝飾，不需對比）：一般按鈕／藍／綠／ink 底按鈕各一色，每個主題都要定義 */
+  --btn-lip:#C3CAD8; --lip-en:#1D3BB0; --lip-jp:#075D4E; --lip-ink:#05080D;
   --f-body:-apple-system,BlinkMacSystemFont,"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;
   --f-en:"Atkinson Hyperlegible",-apple-system,"Helvetica Neue",Arial,sans-serif;
   --f-jp:"Zen Maru Gothic","Hiragino Maru Gothic ProN","Hiragino Sans","Noto Sans JP",sans-serif;
@@ -52,7 +53,7 @@
   --r-purpose:#FFC56B; --r-purpose-bg:#3B2C12; --r-place:#6BDDD2; --r-place-bg:#10332F; --r-thing:#B9A5FF; --r-thing-bg:#2A2150;
   --r-num:#8CC4FF; --r-num-bg:#15304D; --r-way:#FF9CC9; --r-way-bg:#40172B; --r-qual:#B5E36B; --r-qual-bg:#253312;
   --r-pt:#B7BFD3; --r-pt-bg:#2A3140; --r-end:#E8ECF4; --r-end-bg:#343D50; --r-reply:#F2B77E; --r-reply-bg:#3D2814;
-  --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 18px rgba(0,0,0,.25); --btn-lip:rgba(0,0,0,.45); color-scheme:dark}}
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 18px rgba(0,0,0,.25); --btn-lip:rgba(0,0,0,.45); --lip-en:#1C2E7A; --lip-jp:#073D33; --lip-ink:#9AA3B8; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#10141C; --surface:#1A202C; --surface2:#151A24; --ink:#E8ECF4; --muted:#9AA3B8; --line:#2A3242;
   --en:#7C98FF; --en-soft:#222C4E; --en-ink:#AFC0FF; --en-hero:#2C47B5;
@@ -61,10 +62,15 @@
   --r-purpose:#FFC56B; --r-purpose-bg:#3B2C12; --r-place:#6BDDD2; --r-place-bg:#10332F; --r-thing:#B9A5FF; --r-thing-bg:#2A2150;
   --r-num:#8CC4FF; --r-num-bg:#15304D; --r-way:#FF9CC9; --r-way-bg:#40172B; --r-qual:#B5E36B; --r-qual-bg:#253312;
   --r-pt:#B7BFD3; --r-pt-bg:#2A3140; --r-end:#E8ECF4; --r-end-bg:#343D50; --r-reply:#F2B77E; --r-reply-bg:#3D2814;
-  --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 18px rgba(0,0,0,.25); --btn-lip:rgba(0,0,0,.45); color-scheme:dark}
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 18px rgba(0,0,0,.25); --btn-lip:rgba(0,0,0,.45); --lip-en:#1C2E7A; --lip-jp:#073D33; --lip-ink:#9AA3B8; color-scheme:dark}
 
 /* 換主題時才有顏色過場：theme-boot 在套用主題後的下一個 frame 才加 .theme-ready；themeSet 切換時加 .theme-switching 約 0.3 秒。載入時絕不做顏色動畫。 */
 @media (prefers-reduced-motion: no-preference){html.theme-ready.theme-switching *,html.theme-ready.theme-switching *::before,html.theme-ready.theme-switching *::after{transition:background-color .25s,color .25s,border-color .25s,fill .25s!important}}
+/* 依按鈕底色選底邊顏色（motion.css 讀 var(--btn-lip)）：彩色按鈕用同色系加深，不用一般灰邊；深色模式不會出現淺色底邊 */
+.btn.primary{--btn-lip:var(--lip-ink)}
+.btn.en-b,.overlay .btn.primary{--btn-lip:var(--lip-en)}
+.btn.jp-b,.overlay.jpmode .btn.primary{--btn-lip:var(--lip-jp)}
+.btn.onhero{--btn-lip:rgba(0,0,0,.28)}
 [hidden]{display:none!important}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{height:100%}

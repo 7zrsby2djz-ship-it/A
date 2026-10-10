@@ -53,7 +53,7 @@ function spy(){Object.defineProperty(window,'speechSynthesis',{configurable:true
     const page=await ctx.newPage();page.on('pageerror',e=>errors.push(e.message));await page.goto(url);
     await page.evaluate(()=>localStorage.removeItem('bnk-theme'));await page.reload();
     await page.locator('#tabs [data-v=me]').click();
-    const y0=await page.evaluate(()=>{document.querySelector('.theme-row').scrollIntoView();return scrollY;});
+    await page.evaluate(()=>document.querySelector('.theme-row').scrollIntoView({block:'center'}));await page.waitForTimeout(400);const y0=await page.evaluate(()=>scrollY);
     await page.locator('[data-a=theme][data-v=light]').click();
     assert.equal(await page.evaluate(()=>localStorage.getItem('bnk-theme')),'light');
     assert.equal(await page.evaluate(()=>document.documentElement.dataset.theme),'light');
@@ -69,6 +69,31 @@ function spy(){Object.defineProperty(window,'speechSynthesis',{configurable:true
     assert.equal(await page.evaluate(()=>localStorage.getItem('bnk-theme')),null);
     assert.equal(await page.evaluate(()=>document.documentElement.hasAttribute('data-theme')),false);
     await page.reload();await page.waitForTimeout(100);assert.equal(await page.evaluate(()=>getComputedStyle(document.body).backgroundColor),BG.dark,'跟隨系統＝深色');
+    await ctx.close();}
+  // 實際畫面：「答對了」綠字在綠底上的對比、按鈕立體底邊 token（每種外觀組合都要有，深色不可是淺色底邊）
+  const lum=c=>{const m=c.match(/[\d.]+/g).map(Number);const f=v=>{v/=255;return v<=0.04045?v/12.92:((v+0.055)/1.055)**2.4;};return 0.2126*f(m[0])+0.7152*f(m[1])+0.0722*f(m[2]);};
+  const ratio=(a,b)=>{const x=[lum(a),lum(b)].sort((p,q)=>q-p);return (x[0]+0.05)/(x[1]+0.05);};
+  for(const [scheme,mode] of [['light','auto'],['dark','light'],['dark','auto'],['light','dark']]){
+    const ctx=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,colorScheme:scheme});
+    await ctx.route('https://**',r=>r.abort());await ctx.addInitScript(spy);
+    await ctx.addInitScript(m=>{if(m==='auto')localStorage.removeItem('bnk-theme');else localStorage.setItem('bnk-theme',m);},mode);
+    const page=await ctx.newPage();page.on('pageerror',e=>errors.push(e.message));await page.goto(url);
+    const eff=mode==='auto'?scheme:mode,tag=`系統${scheme}／外觀${mode}`;
+    const lips=await page.evaluate(()=>{const cs=getComputedStyle(document.documentElement);return ['--btn-lip','--lip-en','--lip-jp','--lip-ink'].map(k=>cs.getPropertyValue(k).trim());});
+    lips.forEach((v,i)=>assert(v,`${tag} 缺 ${['--btn-lip','--lip-en','--lip-jp','--lip-ink'][i]}`));
+    assert.equal(lips[0],eff==='dark'?'rgba(0,0,0,.45)':'#C3CAD8',tag+' --btn-lip 跟外觀');
+    await page.evaluate(()=>{document.querySelector('[data-a=startEn]').click();});await page.waitForTimeout(300);
+    for(let i=0;i<14;i++){const t=await page.evaluate(()=>{const c=curCard();return c?c.t:null;});if(t==='q')break;
+      const nx=page.locator('#ses .ov-foot .btn.primary, #ses .ov-foot [data-a=next]').first();if(await nx.count())await nx.click();else break;await page.waitForTimeout(150);}
+    const idx=await page.evaluate(()=>{const c=curCard();return c&&c.q?c.q.opts.indexOf(c.q.id):-1;});assert(idx>=0,tag+' 走到英文選擇題');
+    await page.locator('#ses .opt').nth(idx).click();await page.waitForTimeout(700);
+    const r=await page.evaluate(()=>{const h=document.querySelector('#ses .fb.ok h3');const fb=h.closest('.fb');
+      const lipOf=sel=>{const e=document.querySelector(sel);return e?getComputedStyle(e).getPropertyValue('--lip').trim():null;};
+      return {txt:h.textContent,fg:getComputedStyle(h).color,bg:getComputedStyle(fb).backgroundColor,op:getComputedStyle(fb).opacity,primLip:lipOf('#ses .ov-foot .btn.primary')};});
+    assert.match(r.txt,/答對了/);assert.equal(r.op,'1');
+    const cr=ratio(r.fg,r.bg);assert(cr>=4.5,`${tag} 「答對了」對比 ${cr.toFixed(2)}（${r.fg} on ${r.bg}）`);
+    if(r.primLip){const exp=await page.evaluate(()=>getComputedStyle(document.documentElement).getPropertyValue('--lip-en').trim());assert.equal(r.primLip,exp,tag+' 練習頁主按鈕底邊用 --lip-en');}
+    console.log(`  ${tag}：「答對了」${r.fg} on ${r.bg} = ${cr.toFixed(2)}:1；--btn-lip ${lips[0]}`);
     await ctx.close();}
   // 振假名：對話聽力題，320／390 寬
   for(const w of [320,390]){
@@ -100,5 +125,5 @@ function spy(){Object.defineProperty(window,'speechSynthesis',{configurable:true
       host.appendChild(d);const v=[...d.querySelectorAll('rt')].map(e=>parseFloat(getComputedStyle(e).fontSize));d.remove();return Math.min(...v);});
     assert(m>=11,'口語振假名最小 '+m+'px');await ctx.close();}
   assert.deepEqual(errors,[]);await browser.close();server.close();
-  console.log(`PASS: 外觀 ${combos} 種組合（3 種外觀 × 系統淺深）含口語分頁與 axe 對比、切換與重新整理保留、載入無顏色過場、深色區塊一致；振假名 ≥11px、求助按鈕單欄且各一行（320／390）。`);
+  console.log(`PASS: 外觀 ${combos} 種組合（3 種外觀 × 系統淺深）含口語分頁與 axe 對比、切換與重新整理保留、載入無顏色過場、深色區塊一致、「答對了」對比 ≥4.5、立體底邊 token 各外觀都有；振假名 ≥11px、求助按鈕單欄且各一行（320／390）。`);
 })().catch(e=>{console.error(e);process.exit(1);});
