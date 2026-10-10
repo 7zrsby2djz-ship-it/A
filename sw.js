@@ -5,7 +5,7 @@
    - 首頁 network-first：先上網拿最新版（no-cache 重新驗證），3 秒沒回應或離線才用快取；網路之後回來會更新快取。
    - 新版上線後 sw.js 內容（版本）改變，瀏覽器會自動換新 worker，並刪掉舊版快取。
    - 「我的 → 清除快取並重新載入」會取消註冊並刪掉 bnk- 開頭的快取（不動進度）。 */
-const VERSION = 'a446d4509d0a';
+const VERSION = '9979cd348c17';
 const CACHE = 'bnk-app-' + VERSION;
 const SCOPE = new URL('./', self.location).href;
 const PAGE = new URL('./index.html', self.location).href;

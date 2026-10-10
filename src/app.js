@@ -411,7 +411,7 @@ function vHome() {
       <div class="kpi"><span class="small muted">本週查字次數</span><b class="tnum">${lw}</b><span class="small muted">上週 ${pw} 次${pw && lw < pw ? '，變少了' : ''}</span></div>
       <div class="kpi"><span class="small muted">今天答題</span><b class="tnum">${lg.en + lg.jp}<span class="small muted"> / 15</span></b><span class="small muted">答對 ${lg.enOk + lg.jpOk} 題</span></div>
     </div>
-    <section class="card"><div class="row" style="margin-bottom:10px"><p class="sec-title" style="flex:1;margin:0">這 7 天</p><span class="small muted"><span style="color:var(--en)">■</span> 英文　<span style="color:var(--jp)">■</span> 日文</span></div>
+    <section class="card"><div class="row" style="margin-bottom:10px"><p class="sec-title" style="flex:1;margin:0">這 7 天</p><span class="small muted"><span style="color:var(--en)">■</span> 英文　<span style="color:var(--jp-ink)">■</span> 日文</span></div>
       <div class="week">${week.map(w => `<div><span style="display:flex;flex-direction:column;justify-content:flex-end;width:100%;align-items:center;flex:1;gap:2px">${w.jp ? `<i class="jpbar" style="height:${w.jp / mx * 52}px"></i>` : ''}<i style="height:${Math.max(3, w.en / mx * 52)}px;${w.en ? '' : 'opacity:.25'}"></i></span>${w.day}</div>`).join('')}</div></section>
     <p class="small muted" style="text-align:center">查字次數越少，代表你越不需要翻譯就看得懂 Claude。</p>
   </div></details></div>`;
