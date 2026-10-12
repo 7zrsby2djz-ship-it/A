@@ -417,6 +417,10 @@ rt{font-size:max(.58em,11px);line-height:1;letter-spacing:.02em;font-weight:500;
 .kolist .grow{flex:1;min-width:0;display:flex;flex-direction:column}
 .kopair{font-family:var(--f-jp);font-size:26px;font-weight:700;min-width:64px}.kopair span{margin-left:6px;color:var(--jp-ink)}
 .kosum{font-family:var(--f-jp);font-weight:700;font-size:17px}
+.kosnd{background:var(--en-soft);border-radius:10px;padding:8px 10px;font-size:14px;line-height:1.55}.kosnd b{color:var(--en-ink)}
+.korules{display:flex;flex-direction:column;gap:6px;font-size:14px;line-height:1.55}.korules span{font-family:var(--f-jp);font-weight:700}
+.kobigk{font-family:var(--f-jp);font-size:76px;font-weight:700;line-height:1.1;color:var(--jp-ink)}.kobigk.kana{color:var(--ink)}
+.kopt.koro{font-family:var(--f-en);font-size:26px}
 @media (prefers-reduced-motion: reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 </style>
 <style>
@@ -4146,7 +4150,7 @@ function knClose() { const t5f = !!KG.roundDone; KG.roundDone = false; knStop();
 function knRender() {
   const el = $('#kn'); if (!el || el.hidden) return;
   const v = KG.view;
-  el.innerHTML = v === 'card' ? knCardView() : v === 'round' ? knRoundView() : v === 'done' ? knDoneView() : v === 'words' ? knWordsView() : v === 'origin' ? knOriginView() : knHomeView();
+  el.innerHTML = v === 'card' ? knCardView() : v === 'round' ? knRoundView() : v === 'done' ? knDoneView() : v === 'words' ? knWordsView() : v === 'origin' ? knOriginView() : v === 'oq' ? knOQView() : v === 'oqdone' ? knOQDoneView() : knHomeView();
   if (v === 'round' && knSt().active) fx.after(el, 'kn', knSt().active.i);
   if (v === 'done' && fx.once(KG.summary)) fx.celebrate(el, {perfect:KG.summary.ans.every(x => !x.r || x.r.ok !== false)});
 }
@@ -4185,7 +4189,7 @@ function knHomeView() {
     <div class="ktable" role="grid" aria-label="假名表">${rows.join('')}</div>
     <p class="small muted">點任何一格看代表詞和發音。符號：✓ 已練（沒看提示答對過）、✓✓ 熟（兩天以上答對）、⟳ 需複習、· 看過。</p>
     <button class="set-row gset" data-k="romaji"><div class="grow"><b>一直顯示羅馬拼音</b><p class="small muted">預設關。卡片和題目可以按「看拼音」暫時看一下（那一題會記成有看提示）。</p></div><span class="switch" role="switch" aria-checked="${st.prefs.romaji}"></span></button>
-    <button class="btn jp-b block" data-k="origin">平假名 ↔ 片假名：從哪個漢字來</button>
+    <div class="row"><button class="btn jp-b" style="flex:1" data-k="origin">字源對照</button><button class="btn jp-b" style="flex:1" data-k="oqstart">字源練習</button></div>
     <button class="btn block" data-k="words">全部代表詞（${KD.words.length} 個）</button>
     <details class="card flat"><summary style="cursor:pointer;font-weight:700">說明與來源</summary><div class="stack small" style="gap:6px;margin-top:8px">
       <p>代表詞先用 App 裡已有的詞，其次是多鄰國截圖確認看過的詞，再補旅行日常詞。來源標籤只代表「接觸過」，不代表已經會。</p>
@@ -4388,7 +4392,8 @@ function knOriginHtml(id, opt = {}) {
       <div class="kotx"><b>片假名</b>：取「${esc(o.k)}」${esc(o.kw)}${o.kp ? `<br>${knOParts(o)}` : ''}</div></div>
     <p><span class="pill ${same ? 'kosame' : 'kodiff'}">${same ? '同一個漢字' : '不同漢字'}</span></p>
     <p class="kowhy-t">${esc(o.why)}</p>
-    ${o.fun ? `<p class="kofun"><b>邪門記憶</b>　${esc(o.fun)}</p>` : ''}
+    ${o.fun ? `<p class="kofun"><b>邪門記憶・字形</b>　${esc(o.fun)}</p>` : ''}
+    ${KN_SOUND[id] ? `<p class="kosnd"><b>為什麼念 ${esc(k.romaji)}</b>　${esc(KN_SOUND[id].s)}</p>${KN_SOUND[id].f ? `<p class="kofun"><b>邪門記憶・念法</b>　${esc(KN_SOUND[id].f)}</p>` : ''}` : ''}
     ${o.tip ? `<p class="kotip"><b>別搞混</b>　${esc(o.tip)}</p>` : ''}
     ${o.un ? `<p class="small muted">註：${esc(o.un)}</p>` : ''}
     ${opt.more ? '<button class="btn ghost sm" data-k="origin">看全部 46 組字源對照</button>' : ''}
@@ -4414,10 +4419,168 @@ function knOriginView() {
       <p><b>結果</b>：同一個漢字變來的一對（${nSame} 組），片假名常常就藏在平假名裡（か＝カ＋一點）。不同漢字變來的（${nAll - nSame} 組），就用下面的因果和記憶法分開記。</p>
       <p class="small muted">選哪個漢字，是看它當時的念法（安 古音 an → あ a）。</p>
     </section>
+    <button class="btn jp-b block" data-k="oqstart">字源練習（${KO_N} 題）</button>
+    ${KN_SOUND_RULES}
     <div class="seg" role="group" aria-label="篩選">${[['all', '全部'], ['same', '同一個字'], ['diff', '不同字']].map(([v, l]) => `<button data-k="ofilter" data-v="${v}" aria-pressed="${f === v}">${l}</button>`).join('')}</div>
     <div class="stack" style="gap:8px">${ids.map(row).join('')}</div>
     <p class="small muted">字源用學界主流說法，有爭議的會標「註」。「邪門記憶」只是幫你記，不是歷史。</p>
   </div></div>`;
+}
+
+/* ---------- 念法：漢字的音怎麼變成假名的音（s＝邏輯，f＝邪門記憶） ---------- */
+const KN_SOUND = {
+  a:{s:'安 國語 an，去掉尾巴的 n → a。阿 國語本來就是 a。',f:'「阿～」一張嘴就是 a。'},
+  i:{s:'以、伊 國語都念 yi，就是 i。日文「以上（ijō）」＝店員問「這樣就好嗎」的那個以上。'},
+  u:{s:'宇 國語 yu，嘴巴再嘟一點就是 u。日文 宇宙＝uchū，第一個音就是 う。'},
+  e:{s:'衣 國語 yi，嘴巴再張開一點就是 e。江：日文「入り江（irie，海灣）」的 江 就念 e。',f:'衣服髒了：「え～」（嫌棄的聲音）。'},
+  o:{s:'於 國語 yu，嘴唇再圓一點就是 o。',f:'「於是乎…」→ 驚訝的「oh～」。'},
+  ka:{s:'加 台語念 ka（加減）。規則：國語 j 開頭的字，古代多半念 k。日文 追加（tsuika）＝加點。',f:'加拿大的「加」＝Ca-nada 的 Ca。'},
+  ki:{s:'幾 國語 ji。規則：國語 j 開頭，古代念 k → ki。'},
+  ku:{s:'久 台語念 ku（真久）。國語 jiu 的 j，古代是 k。',f:'等很「久」：台語 ku～'},
+  ke:{s:'計 台語就念 ke（計較）。日文 時計（tokei）＝手錶。介 國語 jie，j → k，也是 ke。',f:'計程車跳錶：ke、ke、ke。'},
+  ko:{s:'己 國語 ji，j → k。日文 自己紹介（jiko-shōkai）＝自我介紹，己 就念 ko。'},
+  sa:{s:'散 國語 san，去掉 n → sa；日文 散歩（sanpo）＝散步。左 日文念 sa（左右＝sayū）。',f:'散步＝さんぽ，跟國語幾乎一樣。'},
+  shi:{s:'之 國語 zhi，跟 shi 只差一點點。日文 之 就念 shi。'},
+  su:{s:'寸 日文念 sun，去掉 n＝su。須：日文 必須（hissu）。'},
+  se:{s:'世 台語念 se，跟日文一模一樣。日文 世界＝sekai。',f:'世界＝せかい，第一個字就是 せ。'},
+  so:{s:'曾 國語 ceng，日文念 sō（曾祖父＝sōsofu），收短、去掉尾巴就是 so。',f:'曾經 so sad：曾 頭上那兩點是兩滴眼淚 → ソ。'},
+  ta:{s:'太 國語 tai，去掉 i → ta；日文 太郎（Tarō）。多：日文 多分（tabun，大概）。',f:'太太（tai-tai）去掉尾巴 → ta。'},
+  chi:{s:'知 台語念 ti，日文念 chi（知識＝chishiki）。千：日文地名 千葉（Chiba），千 就念 chi。'},
+  tsu:{s:'川 國語 chuan，開頭 ch 的嘴型 → tsu。這組的音關聯最弱，靠記憶法。',f:'川的水「ㄘㄨ～」一聲流過去 → tsu。'},
+  te:{s:'天 國語 tian（台語 thian），去掉尾巴 → te。日文 天ぷら（tempura，天婦羅）。',f:'天婦羅＝てんぷら，第一個字就是 て。'},
+  to:{s:'止 這裡用的是日文意思：止まる（tomaru）＝停下來，所以念 to。',f:'日本路口的紅色倒三角牌「止まれ（tomare）」＝停！止＝to。'},
+  na:{s:'奈 國語 nai，去掉 i → na。日文 奈良（Nara）。'},
+  ni:{s:'二 日文就念 ni（ichi、ni、san）。仁 日文念 nin，去掉 n＝ni。'},
+  nu:{s:'奴 國語 nu，跟日文一模一樣。'},
+  ne:{s:'祢 國語 ni（長得像「你」），嘴巴再張開一點 → ne。',f:'祢≈你：「你～ne」。'},
+  no:{s:'乃 國語 nai，日文念 no。',f:'乃＝牛奶的「奶」拿掉女：沒有女生要喝 → no！'},
+  ha:{s:'規則：日文 は行 古代念 p/b，所以國語 b 開頭的字 → は行。波 bo → ha；八 ba → ha（日文 八＝hachi）。',f:'八：哈哈（ha ha）笑成八字嘴。'},
+  hi:{s:'比 國語 bi（台語 pi），b → h，hi。日文 比較＝hikaku。'},
+  fu:{s:'不 國語 bu，b → f，fu。日文 不便＝fuben。'},
+  he:{s:'部 國語 bu，b → h。日文 部屋（heya）＝房間，第一個字就念 he。',f:'部屋＝へや：旅館房間。'},
+  ho:{s:'保 國語 bao，b → h，ho。日文 保険＝hoken（保險）。'},
+  ma:{s:'規則：國語 m／w 開頭 → ま行。末 mo → ma；日文 週末＝shūmatsu。'},
+  mi:{s:'三：日文「三個」＝三つ（mittsu），三 就念 mi。美 國語 mei，m → mi。',f:'ミ 三條線＝みっつ（三個）。'},
+  mu:{s:'武 國語 wu（台語 bu）；古代 w 很多念 m → mu。牟 國語 mou → mu。',f:'牟＝牛叫 moo → ム。'},
+  me:{s:'女：日文「女」本來就念 me（女神＝megami）。',f:'女神＝めがみ：女＝め。'},
+  mo:{s:'毛 國語 mao，日文念 mō（毛布＝mōfu，毯子），收短就是 mo。'},
+  ya:{s:'也 國語 ye，嘴巴張大 → ya。'},
+  yu:{s:'由 國語 you → yu。日文 自由＝jiyū、理由＝riyū。'},
+  yo:{s:'与（與）國語 yu，嘴巴圓一點 → yo。'},
+  ra:{s:'規則：日文沒有 l，國語 l 開頭的字都變 ら行。良 liang → ra。',f:'奈良（Nara）＝な（奈）＋ら（良），兩個字都在這張表裡。'},
+  ri:{s:'利 國語 li，l → r，ri。日文 便利＝benri（便利商店的便利）。'},
+  ru:{s:'留 國語 liu，l → r，ru；日文 留守（rusu）＝不在家。流 liu → ru。'},
+  re:{s:'礼 國語 li（台語 le），l → r，re。日文 失礼（shitsurei）。',f:'失礼します＝しつれいします：礼＝れ。'},
+  ro:{s:'呂 國語 lü，l → r，ro。日文 お風呂（ofuro）＝泡澡。',f:'お風呂＝おふろ：呂＝ろ。'},
+  wa:{s:'和 國語 he，古音接近 hwa → wa。日文 和食（washoku）＝日本料理。',f:'和食＝わしょく：和＝わ。'},
+  wo:{s:'遠 國語 yuan，古音接近 won → wo；乎 國語 hu → wo。現在念 o。'},
+  n:{s:'无（＝無）國語 wu。',f:'「無」話可說的時候，只能發出「嗯（ん）」。'}
+};
+const KN_SOUND_RULES = `<section class="card stack" style="gap:8px">
+  <p style="font-weight:800">念法規則：國語 → 日文</p>
+  <p class="small muted">這些字是一千多年前的中文音傳到日本的。台語留下比較多古音，所以台語念起來常常更像。</p>
+  <div class="korules">
+    <p><b>l 開頭 → ら行</b>（日文沒有 l）：<span lang="ja">良 ra・利 ri・留 ru・礼 re・呂 ro</span></p>
+    <p><b>b 開頭 → は行</b>（は行 古代念 p/b）：<span lang="ja">波 ha・比 hi・不 fu・部 he・保 ho</span></p>
+    <p><b>j 開頭 → か行</b>（古代念 k；台語 加 ka、久 ku）：<span lang="ja">加 ka・幾 ki・久 ku・計 ke・己 ko</span></p>
+    <p><b>n 開頭 → な行</b>：<span lang="ja">奈 na・奴 nu・祢 ne・乃 no</span></p>
+    <p><b>m／w 開頭 → ま行</b>：<span lang="ja">末 ma・武 mu・毛 mo</span></p>
+    <p><b>尾巴 n／ng 拿掉</b>：<span lang="ja">安 an→a・散 san→sa・曾 ceng→so</span></p>
+  </div></section>`;
+
+/* ---------- 字源練習：看漢字選假名、看假名選漢字、看漢字選念法 ---------- */
+const KO_N = 12;
+function koSt() { const st = knSt(); if (!st.origin || typeof st.origin !== 'object') st.origin = {}; return st.origin; }
+const koIds = () => KN_ORDER.filter(id => KN_ORIGIN[id] && KN[id].kind === 'basic');
+function koPickIds(n) {
+  const o = koSt(), ids = koIds();
+  const score = id => { const r = o[id]; if (!r) return 1.5 + Math.random(); return (r.bad - r.ok * 0.5) + (Date.now() - r.last) / 864e5 * 0.2 + Math.random(); };
+  return ids.map(id => [id, score(id)]).sort((a, b) => b[1] - a[1]).slice(0, n).map(x => x[0]);
+}
+function koKanaOpts(id, script) {
+  const glyph = j => script === 'hira' ? KN[j].hiragana : KN[j].katakana, ids = koIds();
+  const conf = KD.confusables.filter(c => c.script === script && c.keys.includes(id)).flatMap(c => c.keys);
+  const out = [id];
+  [...shuffle(conf), ...shuffle(ids)].forEach(j => { if (out.length < 3 && !out.includes(j) && glyph(j) !== glyph(id)) out.push(j); });
+  return shuffle(out);
+}
+function koKanjiOpts(id, script) {
+  const kj = j => script === 'hira' ? KN_ORIGIN[j].h : KN_ORIGIN[j].k, ids = koIds(), ans = kj(id);
+  const conf = KD.confusables.filter(c => c.script === script && c.keys.includes(id)).flatMap(c => c.keys);
+  const out = [id];
+  [...shuffle(conf), ...shuffle(ids)].forEach(j => { if (out.length < 3 && !out.includes(j) && kj(j) !== ans && !out.some(x => kj(x) === kj(j))) out.push(j); });
+  return shuffle(out);
+}
+function koQuestion(type, id) {
+  if (type === 'kh') return {type, id, script:'hira', opts:koKanaOpts(id, 'hira')};
+  if (type === 'kk') return {type, id, script:'kata', opts:koKanaOpts(id, 'kata')};
+  if (type === 'rv') { const script = Math.random() < .5 ? 'hira' : 'kata'; return {type, id, script, opts:koKanjiOpts(id, script)}; }
+  const script = KN_ORIGIN[id].h === KN_ORIGIN[id].k ? 'kata' : (Math.random() < .5 ? 'hira' : 'kata');
+  const out = [id]; shuffle(koIds()).forEach(j => { if (out.length < 3 && j !== id) out.push(j); });
+  return {type:'snd', id, script, opts:shuffle(out)};
+}
+function koStart() {
+  const ids = koPickIds(KO_N / 2), qs = [];
+  ids.forEach(id => { const t = shuffle(['kh', 'kk', 'rv', 'snd']).slice(0, 2); t.forEach(x => qs.push(koQuestion(x, id))); });
+  const order = []; let pool = shuffle(qs);
+  while (pool.length) { const last = order[order.length - 1]; let k = pool.findIndex(q => !last || q.id !== last.id); if (k < 0) k = 0; order.push(pool.splice(k, 1)[0]); }
+  KG.oq = {items:order, i:0, ans:{}}; KG.view = 'oq'; fx.start('kn'); knRender(); const b = $('#knBody'); if (b) b.scrollTop = 0;
+}
+function koAnswer(v) {
+  const q = KG.oq, it = q && q.items[q.i]; if (!it || q.ans[q.i]) return;
+  const ok = v === it.id; q.ans[q.i] = {choice:v, ok};
+  const o = koSt(), r = o[it.id] || (o[it.id] = {ok:0, bad:0, last:0}); if (ok) r.ok++; else r.bad++; r.last = Date.now();
+  if (!ok && !q.retried) q.retried = {};
+  if (!ok && !q.retried[it.id]) { q.retried[it.id] = 1; q.items.splice(Math.min(q.i + 3, q.items.length), 0, koQuestion(it.type, it.id)); }
+  touchStreak(); addXp(ok ? 3 : 1); persist(); knRender();
+  fx.answer('#kn', ok, () => knSayKana(it.id, false));
+}
+function koNext() {
+  const q = KG.oq; if (!q) return; knStop(); q.i++;
+  if (q.i >= q.items.length) { KG.view = 'oqdone'; KG.oqSum = q; } knRender(); const b = $('#knBody'); if (b) b.scrollTop = 0;
+}
+function koGlyph(id, script) { return script === 'hira' ? KN[id].hiragana : KN[id].katakana; }
+function koKanjiOf(id, script) { return script === 'hira' ? KN_ORIGIN[id].h : KN_ORIGIN[id].k; }
+function knOQView() {
+  const q = KG.oq; if (!q) { KG.view = 'origin'; return knOriginView(); }
+  const it = q.items[q.i], r = q.ans[q.i], o = KN_ORIGIN[it.id], k = KN[it.id];
+  const head = `<div class="ov-head"><button class="icon-btn" data-k="origin" aria-label="離開字源練習">${IC.x}</button><div class="prog" aria-hidden="true"><i style="width:${q.i / q.items.length * 100}%"></i></div><span class="small muted tnum">題 ${q.i + 1}/${q.items.length}</span></div>`;
+  let ask = '', show = '', opts = '';
+  const cls = j => r ? (j === it.id ? 'correct' : j === r.choice ? 'wrong' : '') : '';
+  const kanaBtn = (j, sc) => `<button class="opt kopt ${cls(j)}" data-k="oqans" data-v="${j}" ${r ? 'disabled' : ''} lang="ja">${esc(koGlyph(j, sc))}${r ? `<span class="sub">${esc(KN[j].romaji)}</span>` : ''}</button>`;
+  if (it.type === 'kh') {
+    ask = `整個「${o.h}」寫快，變成哪個平假名？`; show = `<div class="kobigk" lang="ja">${esc(o.h)}</div>`;
+    opts = it.opts.map(j => kanaBtn(j, 'hira')).join('');
+  } else if (it.type === 'kk') {
+    ask = `取「${o.k}」${o.kw}，變成哪個片假名？`;
+    show = `<div class="kobigk" lang="ja">${esc(o.k)}</div>${o.kp ? `<p class="kopt-p" style="font-size:22px">${knOParts(o).replace(/^<span[^>]*>|<\/span>$/g, '')}</p>` : ''}`;
+    opts = it.opts.map(j => kanaBtn(j, 'kata')).join('');
+  } else if (it.type === 'rv') {
+    ask = `${KN_SCRIPT[it.script]}「${koGlyph(it.id, it.script)}」是從哪個漢字來的？`; show = `<div class="kobigk kana" lang="ja">${esc(koGlyph(it.id, it.script))}</div>`;
+    opts = it.opts.map(j => `<button class="opt kopt ${cls(j)}" data-k="oqans" data-v="${j}" ${r ? 'disabled' : ''} lang="ja">${esc(koKanjiOf(j, it.script))}${r ? `<span class="sub">${esc(koGlyph(j, it.script))}</span>` : ''}</button>`).join('');
+  } else {
+    ask = `「${koKanjiOf(it.id, it.script)}」變成的假名念什麼？`; show = `<div class="kobigk" lang="ja">${esc(koKanjiOf(it.id, it.script))}</div>`;
+    opts = it.opts.map(j => `<button class="opt kopt koro ${cls(j)}" data-k="oqans" data-v="${j}" ${r ? 'disabled' : ''}>${esc(KN[j].romaji)}${r ? `<span class="sub" lang="ja">${esc(koGlyph(j, it.script))}</span>` : ''}</button>`).join('');
+  }
+  let b = `<p class="q">${esc(ask)}</p><section class="card" style="text-align:center;padding:18px">${show}</section><div class="kopts">${opts}</div>`, f;
+  if (r) {
+    b += `<div class="fb ${r.ok ? 'ok' : 'no'}"><h3>${r.ok ? '對了' : '答案是這個'}</h3>
+      <div class="row" style="align-items:center;gap:12px"><span class="kmid jpf" lang="ja">${esc(k.hiragana)}<span style="margin-left:6px">${esc(k.katakana)}</span></span><p style="flex:1"><b>${esc(k.romaji)}</b>${r.ok ? '' : '　等一下會再考一次。'}</p>
+      <button class="icon-btn speak" data-k="sayKana" data-v="hira:${it.id}" aria-label="聽假名">${IC.speak}</button></div></div>
+      <section class="card">${knOriginHtml(it.id)}</section>`;
+    f = `<button class="btn primary block" data-k="oqnext">${q.i + 1 >= q.items.length ? '看結果' : '下一題'}</button>`;
+  } else f = `<p class="small muted" style="text-align:center">選一個答案</p>`;
+  return head + `<div class="ov-body" id="knBody"><div class="in">${b}</div></div><div class="ov-foot"><div class="in">${f}</div></div>`;
+}
+function knOQDoneView() {
+  const q = KG.oqSum || {items:[], ans:{}};
+  const done = q.items.map((it, i) => ({it, r:q.ans[i]})).filter(x => x.r);
+  const okN = done.filter(x => x.r.ok).length, bad = [...new Set(done.filter(x => !x.r.ok).map(x => x.it.id))];
+  return knHead('字源練習完成', '') + `<div class="ov-body" id="knBody"><div class="in">
+    <div class="done-hero"><h2 style="font-size:24px">答對 ${okN}／${done.length} 題</h2><p class="muted">答錯的字，下一輪會優先出現。</p></div>
+    ${bad.length ? `<p class="sec-title">這幾個再看一次</p><div class="stack" style="gap:8px">${bad.map(id => `<details class="kolist"><summary><span class="kopair" lang="ja">${esc(KN[id].hiragana)}<span>${esc(KN[id].katakana)}</span></span><span class="grow"><span class="kosum" lang="ja">${esc(KN_ORIGIN[id].h)}${knOSame(id) ? '' : '｜' + esc(KN_ORIGIN[id].k)}</span><span class="small muted">${esc(KN[id].romaji)}</span></span></summary>${knOriginHtml(id)}</details>`).join('')}</div>` : ''}
+  </div></div>
+  <div class="ov-foot"><div class="in"><button class="btn primary block" data-k="oqstart">再來 ${KO_N} 題</button><button class="btn block" data-k="origin">回字源對照</button></div></div>`;
 }
 
 /* ---------- 事件 ---------- */
@@ -4437,6 +4600,9 @@ document.addEventListener('click', e => {
     case 'words': KG.view = 'words'; knRender(); break;
     case 'origin': knStop(); KG.view = 'origin'; knRender(); { const b = $('#knBody'); if (b) b.scrollTop = 0; } break;
     case 'ofilter': KG.ofilter = v; knRender(); break;
+    case 'oqstart': koStart(); break;
+    case 'oqans': koAnswer(v); break;
+    case 'oqnext': koNext(); break;
     case 'open': if (!v) break; knStop(); KG.key = v; KG.view = 'card'; KG.peek = false; { const c = knCard(v, true); c.seen = true; c.lastSeen = Date.now(); persist(); } knRender(); { const b = $('#knBody'); if (b) b.scrollTop = 0; } break;
     case 'peek': KG.peek = true; knRender(); break;
     case 'sayKana': { const k = KN[v.split(':')[1]]; knSayKana(k.id, false, ok => { if (!ok) toast('沒有播出聲音'); }); } break;
