@@ -394,6 +394,29 @@ rt{font-size:max(.58em,11px);line-height:1;letter-spacing:.02em;font-weight:500;
 .kopts{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 .kopt{justify-content:center;flex-direction:column;font-family:var(--f-jp);font-size:34px;font-weight:700;min-height:84px;gap:0}
 .kopt .sub{font-family:var(--f-body);font-size:13px}
+.korg{display:flex;flex-direction:column;gap:10px}
+.korow{display:grid;grid-template-columns:40px 16px 40px 1fr;align-items:center;gap:6px}
+.kog{font-family:var(--f-jp);font-size:30px;font-weight:700;text-align:center;line-height:1}
+.koar{color:var(--muted);text-align:center}
+.kokj{font-family:var(--f-jp);font-size:28px;font-weight:700;text-align:center;line-height:1;color:var(--jp-ink)}
+.kotx{font-size:14px;line-height:1.5;min-width:0}
+.kopt-p{display:inline-block;margin-top:2px;font-family:var(--f-jp);font-size:16px}
+.kopt-p mark,.korg mark{background:var(--jp-soft);color:var(--jp-ink);border-radius:5px;padding:0 4px;font-weight:800;box-shadow:inset 0 -3px 0 var(--jp)}
+.kosame{background:var(--jp-soft);color:var(--jp-ink)}.kodiff{background:var(--warn-soft);color:var(--warn)}
+.kowhy-t{font-size:15px;line-height:1.6}
+.kofun{background:var(--r-purpose-bg);border-radius:10px;padding:8px 10px;font-size:14px;line-height:1.55}.kofun b{color:var(--r-purpose)}
+.kotip{background:var(--surface2);border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:14px;line-height:1.55}
+.kod>summary,.kowhy>summary{cursor:pointer;font-weight:700;min-height:44px;display:block;font-size:15px;line-height:1.6;padding:8px 0}
+.kowhy>summary .kol{display:block;font-weight:400;font-size:15px}
+.kod{border-top:1px solid var(--line);padding-top:4px}
+.kowhy{background:var(--surface);border-radius:12px;padding:2px 12px 10px;margin-top:4px}
+.kolist{background:var(--surface);border-radius:16px;box-shadow:var(--shadow);padding:0 14px}
+.kolist[open]{padding-bottom:14px}
+.kolist>summary{display:flex;align-items:center;gap:12px;min-height:60px;cursor:pointer;list-style:none}
+.kolist>summary::-webkit-details-marker{display:none}
+.kolist .grow{flex:1;min-width:0;display:flex;flex-direction:column}
+.kopair{font-family:var(--f-jp);font-size:26px;font-weight:700;min-width:64px}.kopair span{margin-left:6px;color:var(--jp-ink)}
+.kosum{font-family:var(--f-jp);font-weight:700;font-size:17px}
 @media (prefers-reduced-motion: reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 </style>
 <style>
@@ -4123,7 +4146,7 @@ function knClose() { const t5f = !!KG.roundDone; KG.roundDone = false; knStop();
 function knRender() {
   const el = $('#kn'); if (!el || el.hidden) return;
   const v = KG.view;
-  el.innerHTML = v === 'card' ? knCardView() : v === 'round' ? knRoundView() : v === 'done' ? knDoneView() : v === 'words' ? knWordsView() : knHomeView();
+  el.innerHTML = v === 'card' ? knCardView() : v === 'round' ? knRoundView() : v === 'done' ? knDoneView() : v === 'words' ? knWordsView() : v === 'origin' ? knOriginView() : knHomeView();
   if (v === 'round' && knSt().active) fx.after(el, 'kn', knSt().active.i);
   if (v === 'done' && fx.once(KG.summary)) fx.celebrate(el, {perfect:KG.summary.ans.every(x => !x.r || x.r.ok !== false)});
 }
@@ -4162,6 +4185,7 @@ function knHomeView() {
     <div class="ktable" role="grid" aria-label="假名表">${rows.join('')}</div>
     <p class="small muted">點任何一格看代表詞和發音。符號：✓ 已練（沒看提示答對過）、✓✓ 熟（兩天以上答對）、⟳ 需複習、· 看過。</p>
     <button class="set-row gset" data-k="romaji"><div class="grow"><b>一直顯示羅馬拼音</b><p class="small muted">預設關。卡片和題目可以按「看拼音」暫時看一下（那一題會記成有看提示）。</p></div><span class="switch" role="switch" aria-checked="${st.prefs.romaji}"></span></button>
+    <button class="btn jp-b block" data-k="origin">平假名 ↔ 片假名：從哪個漢字來</button>
     <button class="btn block" data-k="words">全部代表詞（${KD.words.length} 個）</button>
     <details class="card flat"><summary style="cursor:pointer;font-weight:700">說明與來源</summary><div class="stack small" style="gap:6px;margin-top:8px">
       <p>代表詞先用 App 裡已有的詞，其次是多鄰國截圖確認看過的詞，再補旅行日常詞。來源標籤只代表「接觸過」，不代表已經會。</p>
@@ -4182,6 +4206,7 @@ function knCardHtml(key, opt = {}) {
       ${st.prefs.script === 'mixed' || opt.showOther ? (opt.inRound ? `<p class="small">${KN_SCRIPT[other.split(':')[0]]}：<span lang="ja" class="jpf" style="font-size:20px">${esc(knGlyph(other))}</span></p>` : `<button class="btn ghost sm" data-k="open" data-v="${other}">${KN_SCRIPT[other.split(':')[0]]}：<span lang="ja" class="jpf" style="font-size:20px">${esc(knGlyph(other))}</span></button>`) : ''}
       ${!showRo && !opt.noPeek ? `<button class="btn ghost sm" data-k="peek">看拼音</button>` : ''}
     </div></div>`;
+  if (KN_ORIGIN[id]) h += `<details class="kod" ${opt.noPeek ? '' : 'open'}><summary>字源：從哪個漢字來、取哪一塊</summary>${knOriginHtml(id, {more:!opt.inRound})}</details>`;
   if (a && a.status === 'reference_only') {
     h += `<p>ヲ 先認得就好：它和「を」同音（o），一般單字幾乎不用。</p><button class="btn block" data-k="open" data-v="${a.linkedSpecial}">看 を 的例子</button>`;
   } else {
@@ -4259,7 +4284,8 @@ function knRoundView() {
         <div class="row" style="align-items:center;gap:12px"><span class="kmid jpf" lang="ja">${esc(knGlyph(it.key))}</span><div style="flex:1;min-width:0">
         <p><b>${esc(k.romaji)}</b>${w ? `　<span lang="ja" class="jpf">${w.word === ref.displayedReading ? knReadingHtml(ref) : esc(w.word) + '（' + knReadingHtml(ref) + '）'}</span> ${esc(w.meaningZh)}` : ''}</p>
         ${r.ok ? '' : '<p class="small">等一下會再出現一次，不用急。</p>'}</div>
-        ${k.speechText && k.kind === 'basic' ? `<button class="icon-btn speak" data-k="sayKana" data-v="${it.key}" aria-label="聽假名">${IC.speak}</button>` : ''}</div></div>`;
+        ${k.speechText && k.kind === 'basic' ? `<button class="icon-btn speak" data-k="sayKana" data-v="${it.key}" aria-label="聽假名">${IC.speak}</button>` : ''}</div>
+        ${KN_ORIGIN[id] ? `<details class="kowhy"${it.type === 'pair' && !r.ok ? ' open' : ''}><summary>為什麼長這樣？<span class="kol">${knOriginLine(id)}</span></summary>${knOriginHtml(id)}</details>` : ''}</div>`;
       f = `<button class="btn primary block" data-k="next">${a.i + 1 >= a.items.length ? '完成這一輪' : '下一題'}</button>`;
     } else f = `<p class="small muted" style="text-align:center">選一個答案</p>`;
   }
@@ -4294,6 +4320,106 @@ function kanaCardHtml() {
     <div class="row"><button class="btn jp-b" style="flex:1" data-a="knOpen" data-v="go">${a ? '繼續' : '練五個字'}</button><button class="btn" data-a="knOpen">假名表</button></div></section>`;
 }
 
+/* ---------- 字源：平假名 ↔ 片假名 從哪個漢字來、取哪一塊、兩者的因果 ----------
+   h＝平假名的字源漢字（整個字寫草書）；k＝片假名的字源漢字；kp＋kt＝把漢字拆開、取第 kt 塊；kw＝取的是哪裡。
+   why＝事實上的因果；fun＝邪門記憶（幫助記，不是史實）；tip＝易混字提醒；un＝有爭議的說法。 */
+const KN_ORIGIN = {
+  a:{h:'安',k:'阿',kp:['阝','可'],kt:0,kw:'左邊的「阝」',why:'兩個字古時都念 a。あ 是「安」整個字快寫；ア 只切「阿」左邊的耳朵旁。',fun:'あ＝安：上面一橫一豎是屋頂 宀，下面那一圈是屋裡的「女」。ア＝阿姨的耳朵 阝。'},
+  i:{h:'以',k:'伊',kp:['亻','尹'],kt:0,kw:'左邊的「亻」',why:'い 是「以」快寫，只剩左右兩筆；イ 只取「伊」的單人旁。',fun:'い 和 イ 左邊那一筆都是「一個人站著」。'},
+  u:{h:'宇',k:'宇',kp:['宀','于'],kt:0,kw:'上面的「宀」',why:'同一個字「宇」。ウ 只切屋頂 宀；う 是整個字快寫：上面那一點還是屋頂，下面的彎鉤是「于」。',fun:'ウ＝屋頂；う＝屋頂下面掛一個鉤。'},
+  e:{h:'衣',k:'江',kp:['氵','工'],kt:1,kw:'右邊的「工」',why:'え 是「衣」快寫，最上面那一點是衣領；エ 是「江」拿掉三點水，剩下的「工」。',fun:'エ＝工：長江的江，水流光了只剩工。'},
+  o:{h:'於',k:'於',kp:['方','仒'],kt:0,kw:'左邊的「方」（寫成像 扌）',why:'同一個字「於」。オ 取左邊的 方，筆畫變得像「扌」；お 是整個 於 快寫，右上那一點就是 於 右邊的點。',fun:'お＝オ 的骨架＋右上一點，下面再繞一圈。'},
+  ka:{h:'加',k:'加',kp:['力','口'],kt:0,kw:'左邊的「力」',why:'同一個字「加」。カ 就是左邊的「力」；か 是整個 加 快寫：力 還在，右邊的「口」縮成右上一點。',fun:'か＝カ＋一點，那一點就是被壓扁的「口」。'},
+  ki:{h:'幾',k:'幾',kw:'草書再簡化，只留兩橫一豎',why:'同一個字「幾」。キ 是 幾 草書剩下的骨架；き 是同一副骨架，下面再接一個彎（幾 下半部快寫）。',fun:'き＝キ＋下面一條尾巴。'},
+  ku:{h:'久',k:'久',kw:'前兩筆',why:'同一個字「久」。ク 取 久 的前兩筆；く 是整個 久 一筆寫完，只剩一個尖角。',fun:'く 和 ク 都是「<」，ク 多戴一頂帽子。'},
+  ke:{h:'計',k:'介',kw:'整個字簡化（上面 人 的兩撇＋一豎）',why:'け 是「計」快寫：左邊那一豎是 言 字旁，右邊就是「十」；ケ 是「介」：上面兩撇是 人，下面一豎。',fun:'け＝左豎＋十＝計算的計。ケ＝戴斗笠的人（介 的頭是 人）。',tip:'ケ 和 ク 很像：ケ 的橫線穿出去，中間還多一條往下的豎。'},
+  ko:{h:'己',k:'己',kw:'上面兩筆（方框）',why:'同一個字「己」。コ 是 己 上半的框；こ 是 己 快寫成上下兩橫。',fun:'コ 是缺一邊的框，こ 是把框拆成兩條。',tip:'コ 和 ユ：ユ 最下面那一橫伸出去，コ 沒有。'},
+  sa:{h:'左',k:'散',kp:['龷','月','攵'],kt:0,kw:'左上角（長得像草字頭）',why:'さ 是「左」快寫：上面一橫一撇是 ナ，下面的彎是「工」；サ 是「散」左上那一塊。',fun:'サ 就是草字頭：散步時踩到的草。'},
+  shi:{h:'之',k:'之',kw:'草書的筆勢（點點＋挑）',why:'同一個字「之」，兩個都是 之 的草書：し 留下最後那一大筆；シ 留下前面的點和最後的挑。',tip:'シ 和 ツ：シ 的兩點橫著排，最後一筆由下往上挑（像笑臉往上看）；ツ 的點直著排，最後一筆由上往下。'},
+  su:{h:'寸',k:'須',kw:'最後幾筆（右下）',un:'ス 一般說來自「須」，也有其他說法。',why:'す 是「寸」快寫：一橫、一豎，豎上打的結就是 寸 的那一點；ス 取自「須」最後的筆畫。',fun:'す＝寸：一把尺上打一個結。',tip:'ス 和 ヌ：ヌ 中間多一點（那是「又」的一筆）。'},
+  se:{h:'世',k:'世',kw:'整個字簡化',why:'同一個字「世」。兩個都是 世 簡化；せ 比 セ 多一豎，最下面收成彎。'},
+  so:{h:'曽',k:'曽',kp:['丷','曰','日'],kt:0,kw:'最上面兩點「丷」',why:'同一個字「曽」。ソ 只取最上面兩點；そ 是整個 曽 快寫成一條 Z 字線。',tip:'ソ 和 ン：ソ 兩筆都由上往下（兩滴雨直直落）；ン 第二筆由下往上挑。'},
+  ta:{h:'太',k:'多',kp:['夕','夕'],kt:0,kw:'上面的「夕」',why:'た 是「太」快寫：左邊 ナ 是 大 的前兩筆，右下的 こ 是 大 的捺加那一點；タ 是「多」上面的一個「夕」。',fun:'多＝兩個夕陽疊起來，タ 只拿走一個。'},
+  chi:{h:'知',k:'千',kw:'整個字',why:'ち 是「知」快寫；チ 就是「千」整個字。',fun:'チ＝千：一千塊。',tip:'チ 和 テ：チ 頭上是斜的一撇（千 的頭）；テ 頭上是平的一橫（天 的頭）。'},
+  tsu:{h:'川',k:'川',kw:'整個字（三筆變短）',why:'同一個字「川」。ツ 是川的三筆變短；つ 是川一筆快寫，三條線連成一個彎。',tip:'ツ 的點直著排、最後一筆由上往下——就像川的水往下流。シ 則是往上挑。'},
+  te:{h:'天',k:'天',kw:'兩橫＋一撇',why:'同一個字「天」。テ 留下 天 的兩橫和一撇；て 是 天 一筆寫完，只剩一橫帶一個大彎。'},
+  to:{h:'止',k:'止',kw:'上面那一豎＋一短橫',why:'同一個字「止」。ト 取 止 上面的一豎一短橫；と 是 止 快寫，像 ト 底下再拉一個彎。'},
+  na:{h:'奈',k:'奈',kp:['大','示'],kt:0,kw:'最上面「大」的一橫一撇',why:'同一個字「奈」。ナ 就是 奈 最上面 大 的前兩筆；な＝ナ＋右上一點（大 的捺）＋下面一圈（示 快寫）。',fun:'な＝ナ＋點＋圈。'},
+  ni:{h:'仁',k:'二',kw:'整個字',why:'差一點就同一個字：に 是「仁」＝亻＋二，快寫後左邊一豎是 亻、右邊還是 二；ニ 就是那個「二」。',fun:'に＝一豎＋ニ。'},
+  nu:{h:'奴',k:'奴',kp:['女','又'],kt:1,kw:'右邊的「又」',why:'同一個字「奴」。ヌ 是右邊的「又」；ぬ 是整個 奴 快寫，左邊的 女 和右邊的 又 連成一筆，最後打一個圈。',tip:'ぬ 和 め：ぬ 尾巴多打一個圈，め 沒有。'},
+  ne:{h:'祢',k:'祢',kp:['礻','尔'],kt:0,kw:'左邊的「礻」',why:'同一個字「祢」。ネ 就是左邊的示字旁 礻；ね 是整個 祢 快寫：左邊一豎是 礻，右邊的 尔 寫成打圈的尾巴。',tip:'ね、れ、わ 左邊都是一豎：ね 尾巴打圈、れ 尾巴往外甩、わ 收成大彎。'},
+  no:{h:'乃',k:'乃',kw:'第一筆的撇',why:'同一個字「乃」。ノ 只取第一撇；の 是 乃 一筆繞完。'},
+  ha:{h:'波',k:'八',kw:'整個字',why:'は 是「波」快寫：左邊一豎是三點水 氵，右邊是「皮」；ハ 就是「八」。',fun:'ハ＝八：嘴巴笑成八字形，ha ha。'},
+  hi:{h:'比',k:'比',kp:['匕','匕'],kt:1,kw:'右邊的「匕」',why:'同一個字「比」。ヒ 是右邊的 匕；ひ 是整個 比 一筆寫，兩個 匕 連成一個大彎。'},
+  fu:{h:'不',k:'不',kw:'一橫一撇',why:'同一個字「不」。フ 是 不 的前兩筆；ふ 是 不 快寫，四筆各縮成點和鉤。'},
+  he:{h:'部',k:'部',kp:['咅','阝'],kt:1,kw:'右邊的「阝」',why:'同一個字「部」，而且兩邊取的都是右邊的 阝，所以 へ 和 ヘ 幾乎一模一樣（平假名稍微圓一點）。'},
+  ho:{h:'保',k:'保',kp:['亻','口','木'],kt:2,kw:'右下的「木」',why:'同一個字「保」。ホ 是右下角的「木」；ほ 是整個 保 快寫：左邊一豎是 亻，右邊兩橫加打結是 呆（口＋木）。',fun:'ほ＝一豎＋ま。'},
+  ma:{h:'末',k:'末',kw:'上面一橫加一撇',un:'マ 也有一說來自「万」。',why:'同一個字「末」。マ 取上半；ま 是 末 快寫：兩橫一豎，最下面打結。',tip:'マ 和 ア：ア 多一條往下的撇（阝 的那一豎）。'},
+  mi:{h:'美',k:'三',kw:'整個字',why:'み 是「美」快寫；ミ 就是「三」，三橫斜著寫。三 本來就有 mi 的念法：三つ＝みっつ。',fun:'ミ＝三條線＝みっつ（三個）。'},
+  mu:{h:'武',k:'牟',kp:['厶','牛'],kt:0,kw:'上面的「厶」',why:'む 是「武」快寫；ム 是「牟」上面的 厶。',fun:'牟 是牛叫聲：moo～ → ム。'},
+  me:{h:'女',k:'女',kw:'交叉的那兩筆',why:'同一個字「女」。メ 是 女 交叉的那兩筆；め＝メ 再繞一圈。',fun:'め＝メ＋一圈。'},
+  mo:{h:'毛',k:'毛',kw:'兩橫加一彎（去掉頭上那撇）',why:'同一個字「毛」。モ 是 毛 的兩橫加彎；も 是 毛 快寫：一條彎鉤穿過兩橫。'},
+  ya:{h:'也',k:'也',kw:'整個字簡化',why:'同一個字「也」，兩個都是 也 簡化；や 比 ヤ 多右上一點。'},
+  yu:{h:'由',k:'由',kw:'下半的框',why:'同一個字「由」。ユ 取 由 的框；ゆ 是整個 由 快寫，中間那一豎穿出來。'},
+  yo:{h:'与',k:'与',kw:'方框的部分',why:'同一個字「与」（與）。ヨ 是 与 的方框（像倒過來的 E）；よ 是 与 快寫，一豎打一個結。'},
+  ra:{h:'良',k:'良',kw:'最上面一點＋橫折',why:'同一個字「良」。ラ 取 良 上面的點和橫折；ら 是整個 良 快寫：上面一點、下面一個鉤。'},
+  ri:{h:'利',k:'利',kp:['禾','刂'],kt:1,kw:'右邊的「刂」',why:'同一個字「利」，而且兩個都長得像 刂：リ 就是 刂；り 是整字快寫，左右兩筆連起來。所以 り ≈ リ。'},
+  ru:{h:'留',k:'流',kw:'右下的部分（像 儿）',why:'る 是「留」快寫，最後打一個圈；ル 是「流」右下角像 儿 的兩筆。',fun:'ル＝流下來的兩條水；る＝「留」住，所以尾巴打結留下來。',tip:'る 和 ろ：る 尾巴打圈（留住），ろ 沒有。'},
+  re:{h:'礼',k:'礼',kp:['礻','乚'],kt:1,kw:'右邊的「乚」',why:'同一個字「礼」。レ 是右邊的 乚；れ＝左邊一豎（礻）＋右邊的彎，尾巴就是 レ。'},
+  ro:{h:'呂',k:'呂',kp:['口','口'],kt:0,kw:'上面的「口」',why:'同一個字「呂」。ロ 是上面那個 口；ろ 是 呂 快寫成像 3 的彎。'},
+  wa:{h:'和',k:'和',kp:['禾','口'],kt:1,kw:'右邊的「口」',why:'同一個字「和」。ワ 取右邊的 口；わ＝左邊一豎（禾）＋右邊一個大彎（口）。',tip:'ワ 和 ウ：ウ 頭上多一點（宇 的屋頂）。'},
+  wo:{h:'遠',k:'乎',kw:'整個字變形',why:'を 是「遠」快寫；ヲ 是「乎」變形。現在兩個都只當助詞，念 o。'},
+  n:{h:'无',k:'尓',kw:'來源沒有定論',un:'ン 一說是「尓（爾）」的變形，也有一說原本只是一個記號。',why:'ん 是「无」（無 的古字）快寫；ン 的來源沒有定論。',tip:'ン 和 ソ：ン 第二筆由下往上挑；ソ 兩筆都往下。'}
+};
+const knOSame = id => { const o = KN_ORIGIN[id]; return !!o && o.h === o.k; };
+const knOKanji = o => `<span class="kokj" lang="ja">${esc(o.k)}</span>`;
+function knOParts(o) {
+  if (!o.kp) return '';
+  return `<span lang="ja" class="kopt-p">${esc(o.k)} ＝ ${o.kp.map((p, i) => i === o.kt ? `<mark>${esc(p)}</mark>` : esc(p)).join(' ＋ ')}</span>`;
+}
+// 一個字的字源框：平假名那行、片假名那行、同不同字、因果、邪門記憶、易混提醒
+function knOriginHtml(id, opt = {}) {
+  const o = KN_ORIGIN[id], k = KN[id]; if (!o || !k) return '';
+  const same = knOSame(id);
+  return `<div class="korg">
+    <div class="korow"><span class="kog" lang="ja">${esc(k.hiragana)}</span><span class="koar" aria-hidden="true">←</span><span class="kokj" lang="ja">${esc(o.h)}</span>
+      <div class="kotx"><b>平假名</b>：整個「${esc(o.h)}」寫快（草書）</div></div>
+    <div class="korow"><span class="kog" lang="ja">${esc(k.katakana)}</span><span class="koar" aria-hidden="true">←</span>${knOKanji(o)}
+      <div class="kotx"><b>片假名</b>：取「${esc(o.k)}」${esc(o.kw)}${o.kp ? `<br>${knOParts(o)}` : ''}</div></div>
+    <p><span class="pill ${same ? 'kosame' : 'kodiff'}">${same ? '同一個漢字' : '不同漢字'}</span></p>
+    <p class="kowhy-t">${esc(o.why)}</p>
+    ${o.fun ? `<p class="kofun"><b>邪門記憶</b>　${esc(o.fun)}</p>` : ''}
+    ${o.tip ? `<p class="kotip"><b>別搞混</b>　${esc(o.tip)}</p>` : ''}
+    ${o.un ? `<p class="small muted">註：${esc(o.un)}</p>` : ''}
+    ${opt.more ? '<button class="btn ghost sm" data-k="origin">看全部 46 組字源對照</button>' : ''}
+  </div>`;
+}
+// 一行摘要（放在答題回饋裡，不展開也看得到因果）
+function knOriginLine(id) {
+  const o = KN_ORIGIN[id], k = KN[id]; if (!o || !k) return '';
+  return `<span lang="ja" class="jpf">${esc(k.hiragana)}</span> ← ${esc(o.h)}｜<span lang="ja" class="jpf">${esc(k.katakana)}</span> ← ${esc(o.k)}（${knOSame(id) ? '同一個字' : '不同字'}）`;
+}
+function knOriginView() {
+  const f = KG.ofilter || 'all';
+  const ids = KN_ORDER.filter(id => KN_ORIGIN[id] && (f === 'all' || (f === 'same') === knOSame(id)));
+  const nSame = KN_ORDER.filter(knOSame).length, nAll = KN_ORDER.filter(id => KN_ORIGIN[id]).length;
+  const row = id => { const k = KN[id], o = KN_ORIGIN[id];
+    return `<details class="kolist"><summary><span class="kopair" lang="ja">${esc(k.hiragana)}<span>${esc(k.katakana)}</span></span>
+      <span class="grow"><span class="kosum" lang="ja">${esc(o.h)}${knOSame(id) ? '' : '｜' + esc(o.k)}</span><span class="small muted">${knOSame(id) ? '同一個字' : '不同字'}・片假名取${esc(o.kw)}</span></span></summary>${knOriginHtml(id)}</details>`; };
+  return knHead('平假名 ↔ 片假名', '從哪個漢字來・取哪一塊', 'home') + `<div class="ov-body" id="knBody"><div class="in">
+    <section class="card stack" style="gap:8px">
+      <p style="font-weight:800">先記一條規則，後面都是它的結果</p>
+      <p><b>平假名</b>＝把<b>整個漢字</b>寫快（草書）。所以圓、一筆連到底。</p>
+      <p><b>片假名</b>＝只<b>切漢字的一小塊</b>。最早是和尚在佛經的字縫裡註讀音，地方小、要快，只抄一塊，所以筆畫直、有角。</p>
+      <p><b>結果</b>：同一個漢字變來的一對（${nSame} 組），片假名常常就藏在平假名裡（か＝カ＋一點）。不同漢字變來的（${nAll - nSame} 組），就用下面的因果和記憶法分開記。</p>
+      <p class="small muted">選哪個漢字，是看它當時的念法（安 古音 an → あ a）。</p>
+    </section>
+    <div class="seg" role="group" aria-label="篩選">${[['all', '全部'], ['same', '同一個字'], ['diff', '不同字']].map(([v, l]) => `<button data-k="ofilter" data-v="${v}" aria-pressed="${f === v}">${l}</button>`).join('')}</div>
+    <div class="stack" style="gap:8px">${ids.map(row).join('')}</div>
+    <p class="small muted">字源用學界主流說法，有爭議的會標「註」。「邪門記憶」只是幫你記，不是歷史。</p>
+  </div></div>`;
+}
+
 /* ---------- 事件 ---------- */
 document.addEventListener('click', e => {
   const t = e.target.closest('[data-k]'); if (!t || !$('#kn') || $('#kn').hidden) return;
@@ -4309,6 +4435,8 @@ document.addEventListener('click', e => {
     case 'resume': KG.view = 'round'; KG.peek = false; KG.play = {}; knRender(); break;
     case 'drop': st.active = null; persist(); knRender(); break;
     case 'words': KG.view = 'words'; knRender(); break;
+    case 'origin': knStop(); KG.view = 'origin'; knRender(); { const b = $('#knBody'); if (b) b.scrollTop = 0; } break;
+    case 'ofilter': KG.ofilter = v; knRender(); break;
     case 'open': if (!v) break; knStop(); KG.key = v; KG.view = 'card'; KG.peek = false; { const c = knCard(v, true); c.seen = true; c.lastSeen = Date.now(); persist(); } knRender(); { const b = $('#knBody'); if (b) b.scrollTop = 0; } break;
     case 'peek': KG.peek = true; knRender(); break;
     case 'sayKana': { const k = KN[v.split(':')[1]]; knSayKana(k.id, false, ok => { if (!ok) toast('沒有播出聲音'); }); } break;
